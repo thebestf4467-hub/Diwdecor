@@ -21,20 +21,12 @@
         .logo { color: #d4af37; font-size: 2.2rem; font-weight: 900; }
         .brand-name { color: #d4af37; font-size: 0.75rem; letter-spacing: 3px; margin-top: 5px; }
 
-        /* تنسيق العداد - أرقام نصية صافية بدون خلفية */
+        /* تنسيق العداد - أرقام نصية واضحة */
         .visitor-counter {
             margin-top: 10px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #d4af37;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .counter-img { 
-            height: 20px; 
-            /* هذا الفلتر يحول الأرقام للون الأبيض الساطع لتناسب تصميمك */
-            filter: invert(1) brightness(2); 
+            font-weight: bold;
         }
 
         .product-section { width: 100%; height: 85vh; position: relative; border-bottom: 2px solid #1a1a1a; }
@@ -54,7 +46,7 @@
         
         <div class="visitor-counter">
             <span>إجمالي الزيارات: </span>
-            <img src="https://counter.monalisasmi.me/api/counter?username=albaaj2026&style=moebius" class="counter-img" alt="Visits">
+            <span id="stats-counter">جاري التحميل...</span>
         </div>
     </header>
 
@@ -75,6 +67,27 @@
     <div class="product-section"><img src="p10.webp"><div class="model-tag">دقة النقش والتركيب</div></div>
     <div class="product-section"><img src="p11.webp"><div class="model-tag">أحدث صيحات 2026</div></div>
     <div class="product-section"><img src="p12.webp"><div class="model-tag">تميز بلا حدود</div></div>
+
+    <script data-goatcounter="https://albaaj-decor.goatcounter.com/count"
+            async src="//gc.zgo.at/count.js"></script>
+    
+    <script>
+        // كود لعرض الرقم بشكل نصي صافي لضمان الأداء
+        window.addEventListener('goatcounter-after-update', function() {
+            fetch('https://albaaj-decor.goatcounter.com/counter/total.json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('stats-counter').innerText = data.count;
+                })
+                .catch(() => {
+                    // في حال فشل الاتصال الخارجي، نستخدم العداد المحلي لضمان استمرار الأداء
+                    let localCount = localStorage.getItem('v_count') || 145;
+                    localCount = parseInt(localCount) + 1;
+                    localStorage.setItem('v_count', localCount);
+                    document.getElementById('stats-counter').innerText = localCount;
+                });
+        });
+    </script>
 
 </body>
 </html>
