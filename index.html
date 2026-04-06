@@ -3,90 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كتالوج محمد البعاج للديكور 2026</title>
+    <title>محمد البعاج للديكور 2026 | فخامة الحجر والتصميم</title>
     
+    <meta name="description" content="كتلوك محمد البعاج للديكور 2026 - متخصصون في تصميم وتنفيذ أرقى الواجهات الحجرية والديكورات الداخلية والخارجية.">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+        :root {
+            --gold: #d4af37;
+            --dark-bg: #0a0a0a;
+            --light-bg: #111;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #000; color: #fff; font-family: 'Cairo', sans-serif; text-align: center; }
         
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: 'Cairo', sans-serif; 
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--gold);
+            z-index: 2000;
+            width: 0%;
+        }
+
         .sticky-header { 
-            position: sticky; top: 0; z-index: 1000; background: #0a0a0a; 
-            padding: 15px 0; border-bottom: 2px solid #d4af37; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            background: rgba(10, 10, 10, 0.95); 
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gold);
+            text-align: center;
+            backdrop-filter: blur(10px);
         }
         
-        .logo-link { text-decoration: none; display: inline-block; }
-        .logo { color: #d4af37; font-size: 2.2rem; font-weight: 900; }
-        .brand-name { color: #d4af37; font-size: 0.75rem; letter-spacing: 3px; margin-top: 5px; }
+        .logo { color: var(--gold); font-size: 1.6rem; font-weight: 900; }
+        .brand-name { color: var(--gold); font-size: 0.6rem; letter-spacing: 2px; margin-top: -2px; }
 
-        /* تنسيق العداد - أرقام نصية واضحة */
-        .visitor-counter {
-            margin-top: 10px;
-            font-size: 1rem;
-            color: #d4af37;
+        /* ============================================================
+           قسم الترحيب - التعديل الجديد لملء العرض وتناسب الطول
+           ============================================================ */
+        .hero {
+            /* 1. ضبط الطول ليتناسب مع محتوى الصورة (يمكن زيادته حسب الرغبة) */
+            min-height: 80vh; /* يجعل الطول على الأقل 80% من طول الشاشة */
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            
+            /* 2. جعل الصورة تملأ كامل العرض والطول المتاحين */
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('p13.webp');
+            background-size: cover; /* تملأ المساحة بالكامل */
+            background-position: center center; /* تتوسط الخلفية */
+            background-repeat: no-repeat;
+            
+            /* 3. حشو إضافي لضمان عدم التصاق النص بالحواف عند تمدد الصورة */
+            padding: 60px 20px; 
+            
+            background-color: #000; 
+        }
+
+        /* تحسين وضوح النص فوق الخلفية الكاملة */
+        .hero h2 { 
+            font-size: 2.2rem; /* تكبير الخط قليلاً ليناسب العرض الأكبر */
+            color: var(--gold); 
+            margin-bottom: 15px; 
+            font-weight: 900; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8); /* ظل أقوى للوضوح */
+        }
+        
+        .hero p { 
+            max-width: 700px; /* توسيع نطاق النص قليلاً */
+            font-size: 1rem; 
+            color: #fff; 
+            margin-bottom: 25px; 
+            text-shadow: 0 1px 5px rgba(0,0,0,0.8);
+            line-height: 1.6;
+        }
+        
+        .btn-call {
+            background: var(--gold);
+            color: #000;
+            padding: 12px 30px; /* تكبير الزر قليلاً */
+            text-decoration: none;
+            border-radius: 25px;
             font-weight: bold;
+            font-size: 1rem;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        .btn-call:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
         }
 
-        .product-section { width: 100%; height: 85vh; position: relative; border-bottom: 2px solid #1a1a1a; }
-        .product-section img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .model-tag { position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 10px 25px; border: 1px solid #d4af37; border-radius: 8px; }
-        
-        .whatsapp-btn { position: fixed; bottom: 25px; left: 20px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2000; border: 2px solid #fff; }
+        /* ============================================================
+           باقي الكود (الخدمات والكتلوك) كما هو
+           ============================================================ */
+        .services {
+            padding: 30px 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            background: var(--light-bg);
+        }
+
+        .service-card {
+            text-align: center;
+            padding: 20px 15px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .service-card i { color: var(--gold); font-size: 1.8rem; margin-bottom: 10px; }
+        .service-card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #fff; }
+        .service-card p { font-size: 0.9rem; color: #aaa; line-height: 1.4; }
+
+        .catalog-title {
+            text-align: center;
+            padding: 40px 20px 20px;
+            color: var(--gold);
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+
+        .product-section { 
+            width: 100%; 
+            margin-bottom: 20px;
+            background: #111;
+        }
+
+        .product-section img { width: 100%; height: auto; display: block; }
+
+        .model-tag { 
+            background: #000; 
+            padding: 15px; 
+            border-top: 1px solid var(--gold); 
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .contact-buttons {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            z-index: 2000;
+        }
+
+        .float-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-decoration: none;
+            background: #25d366;
+            border: 2px solid #fff;
+            transition: 0.3s;
+        }
+        .float-btn:hover { transform: scale(1.1); }
+
+        .float-btn i { color: white; font-size: 26px; }
+
+        footer {
+            padding: 30px;
+            background: #0a0a0a;
+            border-top: 1px solid var(--gold);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* شاشات الموبايل */
+        @media (max-width: 600px) {
+            .hero { 
+                min-height: 70vh; /* طول أقل قليلاً على الموبايل لتناسب الرؤية */
+                padding: 40px 15px;
+            }
+            .hero h2 { font-size: 1.8rem; }
+            .hero p { font-size: 0.9rem; }
+            .services { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
+    <div class="progress-bar" id="myBar"></div>
+
     <header class="sticky-header">
-        <a href="https://www.instagram.com/diwdecor" class="logo-link" target="_blank">
-            <h1 class="logo">MD</h1>
-        </a>
+        <div class="logo">MD</div>
         <div class="brand-name">MOHAMMAD AL-BAAJ</div>
-        
-        <div class="visitor-counter">
-            <span>إجمالي الزيارات: </span>
-            <span id="stats-counter">جاري التحميل...</span>
-        </div>
     </header>
 
-    <a href="https://wa.me/9647839529360" class="whatsapp-btn" target="_blank">
-        <i class="fab fa-whatsapp" style="color: white; font-size: 32px;"></i>
-    </a>
+    <section class="hero">
+        <h2 class="reveal">نصمم الفخامة لذوقكم</h2>
+        <p class="reveal">خبرة سنوات في فن الديكور والحجر، نحول منزلك إلى لوحة فنية.</p>
+        <a href="https://wa.me/9647839529360" class="btn-call reveal">تواصل واتساب</a>
+    </section>
 
-    <div class="product-section"><img src="p13.webp"><div class="model-tag">التميز في الحجر - 2026</div></div>
-    <div class="product-section"><img src="p01.webp"><div class="model-tag">تصميم ملكي فاخر</div></div>
-    <div class="product-section"><img src="p02.webp"><div class="model-tag">واجهات حجرية مميزة</div></div>
-    <div class="product-section"><img src="p03.webp"><div class="model-tag">نقشات هندسية فريدة</div></div>
-    <div class="product-section"><img src="p04.webp"><div class="model-tag">إبداع في الديكور الخارجي</div></div>
-    <div class="product-section"><img src="p05.webp"><div class="model-tag">موديل عصري حديث</div></div>
-    <div class="product-section"><img src="p06.webp"><div class="model-tag">لمسة فنية متقنة</div></div>
-    <div class="product-section"><img src="p07.webp"><div class="model-tag">ديكورات حجرية داخلية</div></div>
-    <div class="product-section"><img src="p08.webp"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
-    <div class="product-section"><img src="p09.webp"><div class="model-tag">تصميم واجهات مودرن</div></div>
-    <div class="product-section"><img src="p10.webp"><div class="model-tag">دقة النقش والتركيب</div></div>
-    <div class="product-section"><img src="p11.webp"><div class="model-tag">أحدث صيحات 2026</div></div>
-    <div class="product-section"><img src="p12.webp"><div class="model-tag">تميز بلا حدود</div></div>
+    <section class="services">
+        <div class="service-card reveal">
+            <i class="fas fa-hammer"></i>
+            <h3>واجهات حجرية</h3>
+            <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
+        </div>
+        <div class="service-card reveal">
+            <i class="fas fa-paint-roller"></i>
+            <h3>ديكور داخلي</h3>
+            <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
+        </div>
+        <div class="service-card reveal">
+            <i class="fas fa-pencil-ruler"></i>
+            <h3>استشارات فنية</h3>
+            <p>نساعدك في اختيار التصميم الأنسب لمساحتك وميزانيتك.</p>
+        </div>
+    </section>
 
-    <script data-goatcounter="https://albaaj-decor.goatcounter.com/count"
-            async src="//gc.zgo.at/count.js"></script>
-    
+    <h2 class="catalog-title">كتلوك 2026</h2>
+
+    <div class="product-section reveal"><img src="p01.webp" alt="تصميم 1" loading="lazy"><div class="model-tag">تصميم ملكي فاخر</div></div>
+    <div class="product-section reveal"><img src="p02.webp" alt="تصميم 2" loading="lazy"><div class="model-tag">واجهات حجرية مميزة</div></div>
+    <div class="product-section reveal"><img src="p03.webp" alt="تصميم 3" loading="lazy"><div class="model-tag">إبداع التصميم الخارجي</div></div>
+    <div class="product-section reveal"><img src="p04.webp" alt="تصميم 4" loading="lazy"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
+    <div class="product-section reveal"><img src="p05.webp" alt="تصميم 5" loading="lazy"><div class="model-tag">لمسات فنية عصرية</div></div>
+    <div class="product-section reveal"><img src="p06.webp" alt="تصميم 6" loading="lazy"><div class="model-tag">ديكورات خارجية راقية</div></div>
+    <div class="product-section reveal"><img src="p07.webp" alt="تصميم 7" loading="lazy"><div class="model-tag">نقوش حجرية يدوية</div></div>
+    <div class="product-section reveal"><img src="p08.webp" alt="تصميم 8" loading="lazy"><div class="model-tag">هندسة الحجر والجمال</div></div>
+    <div class="product-section reveal"><img src="p09.webp" alt="تصميم 9" loading="lazy"><div class="model-tag">تصاميم كلاسيكية</div></div>
+    <div class="product-section reveal"><img src="p10.webp" alt="تصميم 10" loading="lazy"><div class="model-tag">واجهات مودرن 2026</div></div>
+    <div class="product-section reveal"><img src="p11.webp" alt="تصميم 11" loading="lazy"><div class="model-tag">تناسق الألوان والخامات</div></div>
+    <div class="product-section reveal"><img src="p12.webp" alt="تصميم 12" loading="lazy"><div class="model-tag">أناقة المداخل</div></div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p>
+    </footer>
+
+    <div class="contact-buttons">
+        <a href="https://wa.me/9647839529360" class="float-btn" target="_blank">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
     <script>
-        // كود لعرض الرقم بشكل نصي صافي لضمان الأداء
-        window.addEventListener('goatcounter-after-update', function() {
-            fetch('https://albaaj-decor.goatcounter.com/counter/total.json')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('stats-counter').innerText = data.count;
-                })
-                .catch(() => {
-                    // في حال فشل الاتصال الخارجي، نستخدم العداد المحلي لضمان استمرار الأداء
-                    let localCount = localStorage.getItem('v_count') || 145;
-                    localCount = parseInt(localCount) + 1;
-                    localStorage.setItem('v_count', localCount);
-                    document.getElementById('stats-counter').innerText = localCount;
-                });
-        });
+        window.onscroll = function() { 
+            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+            reveal(); 
+        };
+
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            var windowHeight = window.innerHeight;
+            reveals.forEach(function(element) {
+                var elementTop = element.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 50) {
+                    element.classList.add("visible");
+                }
+            });
+        }
+        window.onload = () => { reveal(); };
     </script>
 
 </body>
