@@ -5,94 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>كتالوج محمد البعاج للديكور 2026</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #000; color: #fff; font-family: 'Cairo', sans-serif; }
+        body { background-color: #000; color: #fff; font-family: 'Cairo', sans-serif; text-align: center; }
         
-        .sticky-header-container { position: sticky; top: 0; z-index: 2000; background: #0a0a0a; border-bottom: 1px solid #222; }
-        .brand-section { text-align: center; padding: 15px 0; }
-        .brand-logo { font-size: 2.2rem; font-weight: 900; color: #d4af37; text-decoration: none; }
-        .brand-sub { font-size: 0.75rem; color: #d4af37; letter-spacing: 3px; margin-top: 5px; font-weight: 600; }
+        .sticky-header { 
+            position: sticky; top: 0; z-index: 1000; background: #0a0a0a; 
+            padding: 15px 0; border-bottom: 2px solid #d4af37; 
+        }
+        .logo { color: #d4af37; font-size: 2.2rem; font-weight: 900; text-decoration: none; display: block; }
+        .brand-name { color: #d4af37; font-size: 0.75rem; letter-spacing: 3px; margin-top: 5px; }
 
-        .info-bar {
-            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728);
-            display: flex; justify-content: space-around;
-            padding: 10px 5px; color: #000; font-weight: 900; font-size: 0.75rem;
+        /* تنسيق الأرقام الصافية */
+        .visitor-counter {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .counter-img { 
+            height: 20px; 
+            /* جعل الأرقام تبدو بيضاء صافية لتناسب النص */
+            filter: invert(1) brightness(2); 
         }
 
-        .product-display { 
-            position: relative; 
-            width: 100%; 
-            height: 85vh; 
-            background: #111; 
-            border-bottom: 2px solid #1a1a1a;
-        }
+        .product-section { width: 100%; height: 85vh; position: relative; border-bottom: 2px solid #1a1a1a; }
+        .product-section img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .model-tag { position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 10px 25px; border: 1px solid #d4af37; border-radius: 8px; }
         
-        .product-display img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            display: block;
-            /* تم إزالة الـ opacity 0 لضمان ظهور الصور فوراً */
-        }
-
-        .model-tag {
-            position: absolute; bottom: 40px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 12px 25px; border-radius: 8px;
-            border: 1px solid #d4af37;
-            text-align: center; min-width: 220px;
-        }
-
-        .whatsapp-float {
-            position: fixed; width: 60px; height: 60px; bottom: 30px; left: 20px;
-            background: #25d366; color: #FFF; border-radius: 50px; 
-            display: flex; align-items: center; justify-content: center;
-            font-size: 30px; z-index: 1000; text-decoration: none; border: 2px solid #fff;
-        }
+        .whatsapp-btn { position: fixed; bottom: 25px; left: 20px; background: #25d366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2000; border: 2px solid #fff; }
     </style>
 </head>
 <body>
 
-    <div class="sticky-header-container">
-        <header class="brand-section">
-            <a href="https://www.instagram.com/diwdecor" style="text-decoration: none;" target="_blank">
-                <h1 class="brand-logo">MD</h1>
-            </a>
-            <p class="brand-sub">MOHAMMAD AL-BAAJ</p>
-        </header>
-        <nav class="info-bar">
-            <span>● جودة عالمية</span>
-            <span>● ضمان الألوان</span>
-            <span>● مقاومة الجو</span>
-        </nav>
-    </div>
+    <header class="sticky-header">
+        <a href="#" class="logo">MD</a>
+        <div class="brand-name">MOHAMMAD AL-BAAJ</div>
+        
+        <div class="visitor-counter">
+            <span>إجمالي الزيارات: </span>
+            <img src="https://hitwebcounter.com/counter/counter.php?page=MadanAlbaaj_Official&style=0006&nbdigits=5&type=page&initCount=0" class="counter-img" alt="Visits">
+        </div>
+    </header>
 
-    <a href="https://wa.me/9647839529360" class="whatsapp-float" target="_blank">
-        <i class="fab fa-whatsapp"></i>
+    <a href="https://wa.me/9647839529360" class="whatsapp-btn" target="_blank">
+        <i class="fab fa-whatsapp" style="color: white; font-size: 32px;"></i>
     </a>
 
-    <section class="product-display"><img src="p13.webp"><div class="model-tag"><p>التميز في الحجر - 2026</p></div></section>
-    <section class="product-display"><img src="p01.webp"><div class="model-tag"><p>تصميم ملكي فاخر</p></div></section>
-    <section class="product-display"><img src="p02.webp"><div class="model-tag"><p>واجهات حجرية مميزة</p></div></section>
-    <section class="product-display"><img src="p03.webp"><div class="model-tag"><p>نقشات هندسية فريدة</p></div></section>
-    <section class="product-display"><img src="p04.webp"><div class="model-tag"><p>إبداع في الديكور الخارجي</p></div></section>
-    <section class="product-display"><img src="p05.webp"><div class="model-tag"><p>موديل عصري حديث</p></div></section>
-    <section class="product-display"><img src="p06.webp"><div class="model-tag"><p>لمسة فنية متقنة</p></div></section>
-    <section class="product-display"><img src="p07.webp"><div class="model-tag"><p>ديكورات حجرية داخلية</p></div></section>
-    <section class="product-display"><img src="p08.webp"><div class="model-tag"><p>فخامة الحجر الطبيعي</p></div></section>
-    <section class="product-display"><img src="p09.webp"><div class="model-tag"><p>تصميم واجهات مودرن</p></div></section>
-    <section class="product-display"><img src="p10.webp"><div class="model-tag"><p>دقة النقش والتركيب</p></div></section>
-    <section class="product-display"><img src="p11.webp"><div class="model-tag"><p>أحدث صيحات 2026</p></div></section>
-    <section class="product-display"><img src="p12.webp"><div class="model-tag"><p>تميز بلا حدود</p></div></section>
-
-    <footer style="padding: 20px; text-align: center; color: #666;">
-        <p>© 2026 محمد البعاج للديكور</p>
-    </footer>
+    <div class="product-section"><img src="p13.webp"><div class="model-tag">التميز في الحجر - 2026</div></div>
+    <div class="product-section"><img src="p01.webp"><div class="model-tag">تصميم ملكي فاخر</div></div>
+    <div class="product-section"><img src="p02.webp"><div class="model-tag">واجهات حجرية مميزة</div></div>
+    <div class="product-section"><img src="p03.webp"><div class="model-tag">نقشات هندسية فريدة</div></div>
+    <div class="product-section"><img src="p04.webp"><div class="model-tag">إبداع في الديكور الخارجي</div></div>
+    <div class="product-section"><img src="p05.webp"><div class="model-tag">موديل عصري حديث</div></div>
+    <div class="product-section"><img src="p06.webp"><div class="model-tag">لمسة فنية متقنة</div></div>
+    <div class="product-section"><img src="p07.webp"><div class="model-tag">ديكورات حجرية داخلية</div></div>
+    <div class="product-section"><img src="p08.webp"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
+    <div class="product-section"><img src="p09.webp"><div class="model-tag">تصميم واجهات مودرن</div></div>
+    <div class="product-section"><img src="p10.webp"><div class="model-tag">دقة النقش والتركيب</div></div>
+    <div class="product-section"><img src="p11.webp"><div class="model-tag">أحدث صيحات 2026</div></div>
+    <div class="product-section"><img src="p12.webp"><div class="model-tag">تميز بلا حدود</div></div>
 
 </body>
 </html>
