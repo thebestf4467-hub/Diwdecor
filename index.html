@@ -16,10 +16,12 @@
             position: sticky; top: 0; z-index: 1000; background: #0a0a0a; 
             padding: 15px 0; border-bottom: 2px solid #d4af37; 
         }
-        .logo { color: #d4af37; font-size: 2.2rem; font-weight: 900; text-decoration: none; display: block; }
+        
+        .logo-link { text-decoration: none; display: inline-block; }
+        .logo { color: #d4af37; font-size: 2.2rem; font-weight: 900; }
         .brand-name { color: #d4af37; font-size: 0.75rem; letter-spacing: 3px; margin-top: 5px; }
 
-        /* تنسيق الأرقام الصافية */
+        /* تنسيق العداد - أرقام نصية صافية بدون خلفية */
         .visitor-counter {
             margin-top: 10px;
             font-size: 0.9rem;
@@ -27,11 +29,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
         }
         .counter-img { 
             height: 20px; 
-            /* جعل الأرقام تبدو بيضاء صافية لتناسب النص */
+            /* هذا الفلتر يحول الأرقام للون الأبيض الساطع لتناسب تصميمك */
             filter: invert(1) brightness(2); 
         }
 
@@ -45,12 +47,14 @@
 <body>
 
     <header class="sticky-header">
-        <a href="#" class="logo">MD</a>
+        <a href="https://www.instagram.com/diwdecor" class="logo-link" target="_blank">
+            <h1 class="logo">MD</h1>
+        </a>
         <div class="brand-name">MOHAMMAD AL-BAAJ</div>
         
         <div class="visitor-counter">
             <span>إجمالي الزيارات: </span>
-            <img src="https://hitwebcounter.com/counter/counter.php?page=MadanAlbaaj_Official&style=0006&nbdigits=5&type=page&initCount=0" class="counter-img" alt="Visits">
+            <img src="https://counter.monalisasmi.me/api/counter?username=albaaj2026&style=moebius" class="counter-img" alt="Visits">
         </div>
     </header>
 
