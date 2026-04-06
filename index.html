@@ -10,18 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <link rel="preload" as="image" href="p13.jpg">
-    <link rel="preload" as="image" href="p01.jpg">
+    <link rel="preload" as="image" href="p13.webp">
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #000; color: #fff; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
         
-        .sticky-header-container { position: sticky; top: 0; z-index: 2000; box-shadow: 0 4px 15px rgba(0,0,0,0.9); }
-        .brand-section { background-color: #0a0a0a; text-align: center; padding: 15px 0; border-bottom: 1px solid #222; }
-        .brand-logo { font-size: 2.2rem; font-weight: 900; color: #d4af37; margin: 0; text-decoration: none; }
-        .instagram-hint { font-size: 0.7rem; color: #888; margin-top: 5px; display: block; }
-        .brand-sub { font-size: 0.75rem; color: #d4af37; letter-spacing: 3px; margin-top: 10px; font-weight: 600; }
+        .sticky-header-container { position: sticky; top: 0; z-index: 2000; background: #0a0a0a; box-shadow: 0 4px 15px rgba(0,0,0,0.9); }
+        .brand-section { text-align: center; padding: 15px 0; border-bottom: 1px solid #222; }
+        .brand-logo { font-size: 2.2rem; font-weight: 900; color: #d4af37; text-decoration: none; }
+        .brand-sub { font-size: 0.75rem; color: #d4af37; letter-spacing: 3px; margin-top: 10px; font-weight: 600; text-transform: uppercase; }
 
         .info-bar {
             background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728);
@@ -33,21 +31,21 @@
             position: relative; 
             width: 100%; 
             height: 85vh; 
-            background-color: #111; 
+            background: #111; /* لون مؤقت خلف الصورة */
             overflow: hidden;
             border-bottom: 2px solid #1a1a1a;
         }
         
         .product-display img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
+            width: 100%; height: 100%; object-fit: cover; 
             filter: brightness(0.9);
             display: block;
-            animation: fadeIn 1s ease-in;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* كلاس يضيفه المتصفح بمجرد اكتمال تحميل الصورة */
+        .img-loaded { opacity: 1 !important; }
 
         .model-tag {
             position: absolute; bottom: 40px; left: 50%;
@@ -78,10 +76,8 @@
             <a href="https://www.instagram.com/diwdecor" style="text-decoration: none;" target="_blank">
                 <h1 class="brand-logo">MD</h1>
             </a>
-            <span class="instagram-hint">عالم التميز في الديكور والأحجار</span>
             <p class="brand-sub">MOHAMMAD AL-BAAJ</p>
         </header>
-
         <nav class="info-bar">
             <span>● حجر طبيعي وصناعي</span>
             <span>● دقة في التنفيذ</span>
@@ -93,19 +89,23 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <section class="product-display"><img src="p13.jpg" fetchpriority="high"><div class="model-tag"><p>التميز في الحجر - 2026</p></div></section>
-    <section class="product-display"><img src="p01.jpg" fetchpriority="high"><div class="model-tag"><p>تصميم ملكي فاخر</p></div></section>
-    <section class="product-display"><img src="p02.jpg" loading="lazy"><div class="model-tag"><p>واجهات حجرية مميزة</p></div></section>
-    <section class="product-display"><img src="p03.jpg" loading="lazy"><div class="model-tag"><p>نقشات هندسية فريدة</p></div></section>
-    <section class="product-display"><img src="p04.jpg" loading="lazy"><div class="model-tag"><p>إبداع في الديكور الخارجي</p></div></section>
-    <section class="product-display"><img src="p05.jpg" loading="lazy"><div class="model-tag"><p>موديل عصري حديث</p></div></section>
-    <section class="product-display"><img src="p06.jpg" loading="lazy"><div class="model-tag"><p>لمسة فنية متقنة</p></div></section>
-    <section class="product-display"><img src="p07.jpg" loading="lazy"><div class="model-tag"><p>ديكورات حجرية داخلية</p></div></section>
-    <section class="product-display"><img src="p08.jpg" loading="lazy"><div class="model-tag"><p>فخامة الحجر الطبيعي</p></div></section>
-    <section class="product-display"><img src="p09.jpg" loading="lazy"><div class="model-tag"><p>تصميم واجهات مودرن</p></div></section>
-    <section class="product-display"><img src="p10.jpg" loading="lazy"><div class="model-tag"><p>دقة النقش والتركيب</p></div></section>
-    <section class="product-display"><img src="p11.jpg" loading="lazy"><div class="model-tag"><p>أحدث صيحات 2026</p></div></section>
-    <section class="product-display"><img src="p12.jpg" loading="lazy"><div class="model-tag"><p>تميز بلا حدود</p></div></section>
+    <section class="product-display">
+        <img src="p13.webp" fetchpriority="high" onload="this.classList.add('img-loaded')">
+        <div class="model-tag"><p>التميز في الحجر - 2026</p></div>
+    </section>
+
+    <section class="product-display"><img src="p01.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>تصميم ملكي فاخر</p></div></section>
+    <section class="product-display"><img src="p02.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>واجهات حجرية مميزة</p></div></section>
+    <section class="product-display"><img src="p03.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>نقشات هندسية فريدة</p></div></section>
+    <section class="product-display"><img src="p04.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>إبداع في الديكور الخارجي</p></div></section>
+    <section class="product-display"><img src="p05.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>موديل عصري حديث</p></div></section>
+    <section class="product-display"><img src="p06.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>لمسة فنية متقنة</p></div></section>
+    <section class="product-display"><img src="p07.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>ديكورات حجرية داخلية</p></div></section>
+    <section class="product-display"><img src="p08.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>فخامة الحجر الطبيعي</p></div></section>
+    <section class="product-display"><img src="p09.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>تصميم واجهات مودرن</p></div></section>
+    <section class="product-display"><img src="p10.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>دقة النقش والتركيب</p></div></section>
+    <section class="product-display"><img src="p11.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>أحدث صيحات 2026</p></div></section>
+    <section class="product-display"><img src="p12.jpg" loading="lazy" onload="this.classList.add('img-loaded')"><div class="model-tag"><p>تميز بلا حدود</p></div></section>
 
     <footer>
         <p>جميع الحقوق محفوظة لصالح محمد البعاج للديكور © 2026</p>
