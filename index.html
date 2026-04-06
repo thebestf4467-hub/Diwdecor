@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محمد البعاج للديكور 2026 | فخامة الحجر والتصميم</title>
     
-    <meta name="description" content="كتلوك محمد البعاج للديكور 2026 - متخصصون في تصميم وتنفيذ أرقى الواجهات الحجرية والديكورات الداخلية والخارجية.">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -26,6 +25,7 @@
             line-height: 1.5;
         }
 
+        /* شريط التقدم */
         .progress-bar {
             position: fixed;
             top: 0;
@@ -50,70 +50,47 @@
         .logo { color: var(--gold); font-size: 1.6rem; font-weight: 900; }
         .brand-name { color: var(--gold); font-size: 0.6rem; letter-spacing: 2px; margin-top: -2px; }
 
-        /* ============================================================
-           قسم الترحيب - التعديل الجديد لملء العرض وتناسب الطول
-           ============================================================ */
+        /* قسم الترحيب */
         .hero {
-            /* 1. ضبط الطول ليتناسب مع محتوى الصورة (يمكن زيادته حسب الرغبة) */
-            min-height: 80vh; /* يجعل الطول على الأقل 80% من طول الشاشة */
-            
+            min-height: 85vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            
-            /* 2. جعل الصورة تملأ كامل العرض والطول المتاحين */
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('p13.webp');
-            background-size: cover; /* تملأ المساحة بالكامل */
-            background-position: center center; /* تتوسط الخلفية */
-            background-repeat: no-repeat;
-            
-            /* 3. حشو إضافي لضمان عدم التصاق النص بالحواف عند تمدد الصورة */
-            padding: 60px 20px; 
-            
-            background-color: #000; 
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('p13.webp') center/cover no-repeat;
+            padding: 60px 20px;
         }
 
-        /* تحسين وضوح النص فوق الخلفية الكاملة */
-        .hero h2 { 
-            font-size: 2.2rem; /* تكبير الخط قليلاً ليناسب العرض الأكبر */
-            color: var(--gold); 
-            margin-bottom: 15px; 
-            font-weight: 900; 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8); /* ظل أقوى للوضوح */
-        }
-        
-        .hero p { 
-            max-width: 700px; /* توسيع نطاق النص قليلاً */
-            font-size: 1rem; 
-            color: #fff; 
-            margin-bottom: 25px; 
-            text-shadow: 0 1px 5px rgba(0,0,0,0.8);
-            line-height: 1.6;
-        }
+        .hero h2 { font-size: 2.2rem; color: var(--gold); margin-bottom: 15px; font-weight: 900; }
+        .hero p { max-width: 700px; font-size: 1rem; color: #fff; margin-bottom: 25px; }
         
         .btn-call {
             background: var(--gold);
             color: #000;
-            padding: 12px 30px; /* تكبير الزر قليلاً */
+            padding: 12px 30px;
             text-decoration: none;
             border-radius: 25px;
             font-weight: bold;
-            font-size: 1rem;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-        }
-        .btn-call:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+            display: inline-block;
         }
 
-        /* ============================================================
-           باقي الكود (الخدمات والكتلوك) كما هو
-           ============================================================ */
+        /* --- تأثير السوفت المطور (يتحرك صعوداً ونزولاً) --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* حركة أكثر انسيابية */
+            will-change: transform, opacity;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* أقسام المحتوى */
         .services {
-            padding: 30px 15px;
+            padding: 40px 15px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
@@ -122,19 +99,15 @@
 
         .service-card {
             text-align: center;
-            padding: 20px 15px;
-            border: 1px solid rgba(212, 175, 55, 0.15);
-            border-radius: 8px;
+            padding: 25px 15px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
             background: rgba(255, 255, 255, 0.02);
         }
 
-        .service-card i { color: var(--gold); font-size: 1.8rem; margin-bottom: 10px; }
-        .service-card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #fff; }
-        .service-card p { font-size: 0.9rem; color: #aaa; line-height: 1.4; }
-
         .catalog-title {
             text-align: center;
-            padding: 40px 20px 20px;
+            padding: 50px 20px 30px;
             color: var(--gold);
             font-size: 1.8rem;
             font-weight: 900;
@@ -142,7 +115,7 @@
 
         .product-section { 
             width: 100%; 
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             background: #111;
         }
 
@@ -151,60 +124,26 @@
         .model-tag { 
             background: #000; 
             padding: 15px; 
-            border-top: 1px solid var(--gold); 
+            border-top: 2px solid var(--gold); 
             text-align: center;
-            font-size: 1rem;
-            font-weight: bold;
             color: var(--gold);
+            font-weight: bold;
         }
 
-        .contact-buttons {
-            position: fixed;
-            bottom: 25px;
-            left: 25px;
-            z-index: 2000;
-        }
-
+        /* زر واتساب */
+        .contact-buttons { position: fixed; bottom: 25px; left: 25px; z-index: 2000; }
         .float-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: #25d366; border: 2px solid #fff;
             text-decoration: none;
-            background: #25d366;
-            border: 2px solid #fff;
-            transition: 0.3s;
-        }
-        .float-btn:hover { transform: scale(1.1); }
-
-        .float-btn i { color: white; font-size: 26px; }
-
-        footer {
-            padding: 30px;
-            background: #0a0a0a;
-            border-top: 1px solid var(--gold);
-            text-align: center;
-            font-size: 0.9rem;
         }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
+        footer { padding: 40px; background: #0a0a0a; border-top: 1px solid var(--gold); text-align: center; }
 
-        /* شاشات الموبايل */
         @media (max-width: 600px) {
-            .hero { 
-                min-height: 70vh; /* طول أقل قليلاً على الموبايل لتناسب الرؤية */
-                padding: 40px 15px;
-            }
+            .hero { min-height: 70vh; }
             .hero h2 { font-size: 1.8rem; }
-            .hero p { font-size: 0.9rem; }
             .services { grid-template-columns: 1fr; }
         }
     </style>
@@ -220,23 +159,23 @@
 
     <section class="hero">
         <h2 class="reveal">نصمم الفخامة لذوقكم</h2>
-        <p class="reveal">خبرة سنوات في فن الديكور والحجر، نحول منزلك إلى لوحة فنية.</p>
+        <p class="reveal">خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
         <a href="https://wa.me/9647839529360" class="btn-call reveal">تواصل واتساب</a>
     </section>
 
     <section class="services">
         <div class="service-card reveal">
-            <i class="fas fa-hammer"></i>
+            <i class="fas fa-hammer" style="color: var(--gold); font-size: 2rem; margin-bottom: 10px;"></i>
             <h3>واجهات حجرية</h3>
             <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
         </div>
         <div class="service-card reveal">
-            <i class="fas fa-paint-roller"></i>
+            <i class="fas fa-paint-roller" style="color: var(--gold); font-size: 2rem; margin-bottom: 10px;"></i>
             <h3>ديكور داخلي</h3>
             <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
         </div>
         <div class="service-card reveal">
-            <i class="fas fa-pencil-ruler"></i>
+            <i class="fas fa-pencil-ruler" style="color: var(--gold); font-size: 2rem; margin-bottom: 10px;"></i>
             <h3>استشارات فنية</h3>
             <p>نساعدك في اختيار التصميم الأنسب لمساحتك وميزانيتك.</p>
         </div>
@@ -244,18 +183,18 @@
 
     <h2 class="catalog-title">كتلوك 2026</h2>
 
-    <div class="product-section reveal"><img src="p01.webp" alt="تصميم 1" loading="lazy"><div class="model-tag">تصميم ملكي فاخر</div></div>
-    <div class="product-section reveal"><img src="p02.webp" alt="تصميم 2" loading="lazy"><div class="model-tag">واجهات حجرية مميزة</div></div>
-    <div class="product-section reveal"><img src="p03.webp" alt="تصميم 3" loading="lazy"><div class="model-tag">إبداع التصميم الخارجي</div></div>
-    <div class="product-section reveal"><img src="p04.webp" alt="تصميم 4" loading="lazy"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
-    <div class="product-section reveal"><img src="p05.webp" alt="تصميم 5" loading="lazy"><div class="model-tag">لمسات فنية عصرية</div></div>
-    <div class="product-section reveal"><img src="p06.webp" alt="تصميم 6" loading="lazy"><div class="model-tag">ديكورات خارجية راقية</div></div>
-    <div class="product-section reveal"><img src="p07.webp" alt="تصميم 7" loading="lazy"><div class="model-tag">نقوش حجرية يدوية</div></div>
-    <div class="product-section reveal"><img src="p08.webp" alt="تصميم 8" loading="lazy"><div class="model-tag">هندسة الحجر والجمال</div></div>
-    <div class="product-section reveal"><img src="p09.webp" alt="تصميم 9" loading="lazy"><div class="model-tag">تصاميم كلاسيكية</div></div>
-    <div class="product-section reveal"><img src="p10.webp" alt="تصميم 10" loading="lazy"><div class="model-tag">واجهات مودرن 2026</div></div>
-    <div class="product-section reveal"><img src="p11.webp" alt="تصميم 11" loading="lazy"><div class="model-tag">تناسق الألوان والخامات</div></div>
-    <div class="product-section reveal"><img src="p12.webp" alt="تصميم 12" loading="lazy"><div class="model-tag">أناقة المداخل</div></div>
+    <div class="product-section reveal"><img src="p01.webp" alt="1"><div class="model-tag">تصميم ملكي فاخر</div></div>
+    <div class="product-section reveal"><img src="p02.webp" alt="2"><div class="model-tag">واجهات حجرية مميزة</div></div>
+    <div class="product-section reveal"><img src="p03.webp" alt="3"><div class="model-tag">إبداع التصميم الخارجي</div></div>
+    <div class="product-section reveal"><img src="p04.webp" alt="4"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
+    <div class="product-section reveal"><img src="p05.webp" alt="5"><div class="model-tag">لمسات فنية عصرية</div></div>
+    <div class="product-section reveal"><img src="p06.webp" alt="6"><div class="model-tag">ديكورات خارجية راقية</div></div>
+    <div class="product-section reveal"><img src="p07.webp" alt="7"><div class="model-tag">نقوش حجرية يدوية</div></div>
+    <div class="product-section reveal"><img src="p08.webp" alt="8"><div class="model-tag">هندسة الحجر والجمال</div></div>
+    <div class="product-section reveal"><img src="p09.webp" alt="9"><div class="model-tag">تصاميم كلاسيكية</div></div>
+    <div class="product-section reveal"><img src="p10.webp" alt="10"><div class="model-tag">واجهات مودرن 2026</div></div>
+    <div class="product-section reveal"><img src="p11.webp" alt="11"><div class="model-tag">تناسق الألوان والخامات</div></div>
+    <div class="product-section reveal"><img src="p12.webp" alt="12"><div class="model-tag">أناقة المداخل</div></div>
 
     <footer>
         <p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p>
@@ -263,31 +202,44 @@
 
     <div class="contact-buttons">
         <a href="https://wa.me/9647839529360" class="float-btn" target="_blank">
-            <i class="fab fa-whatsapp"></i>
+            <i class="fab fa-whatsapp" style="color: white; font-size: 30px;"></i>
         </a>
     </div>
 
     <script>
-        window.onscroll = function() { 
+        function updateProgress() {
             var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             var scrolled = (winScroll / height) * 100;
             document.getElementById("myBar").style.width = scrolled + "%";
-            reveal(); 
-        };
+        }
 
+        // --- تعديل ميزة الظهور لتشمل الصعود والأعلى ---
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             var windowHeight = window.innerHeight;
-            reveals.forEach(function(element) {
-                var elementTop = element.getBoundingClientRect().top;
-                if (elementTop < windowHeight - 50) {
-                    element.classList.add("visible");
+
+            reveals.forEach(el => {
+                var elementTop = el.getBoundingClientRect().top;
+                var elementBottom = el.getBoundingClientRect().bottom;
+                var elementVisible = 100;
+
+                // إذا كان العنصر دخل مجال الرؤية (من الأسفل أو الأعلى)
+                if (elementTop < windowHeight - elementVisible && elementBottom > 0) {
+                    el.classList.add("active");
+                } else {
+                    // إزالة الفئة active عند الخروج من مجال الرؤية لكي يتكرر التأثير
+                    el.classList.remove("active");
                 }
             });
         }
-        window.onload = () => { reveal(); };
-    </script>
 
+        window.addEventListener("scroll", () => {
+            updateProgress();
+            reveal();
+        });
+
+        window.addEventListener("load", reveal);
+    </script>
 </body>
 </html>
