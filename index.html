@@ -70,7 +70,8 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
         /* تعريف ميزة التصفح السلس لكل العناصر */
-        .reveal, .product-section, .service-card, .hero h2, .hero p { 
+        /* تعديل هنا: استثناء عناصر الـ hero من الاختفاء الابتدائي لضمان ثباتها */
+        .reveal, .product-section, .service-card, .whatsapp-cta { 
             opacity: 0; 
             transform: translateY(30px); 
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
@@ -141,8 +142,8 @@
 
     <div id="main-page" class="page" style="display: block;">
         <section class="hero">
-            <h2>نصمم الفخامة لذوقكم</h2>
-            <p>خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
+            <h2 class="active-reveal">نصمم الفخامة لذوقكم</h2>
+            <p class="active-reveal">خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
         </section>
         <section class="services">
             <div class="service-card" onclick="showPage('stone-gallery')">
@@ -218,9 +219,8 @@
     <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
     <script>
-        // نظام مراقبة العناصر للظهور الناعم
         const observerOptions = {
-            threshold: 0.15 // يظهر العنصر عندما يظهر 15% منه على الشاشة
+            threshold: 0.15 
         };
 
         const observer = new IntersectionObserver((entries) => {
@@ -228,15 +228,14 @@
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active-reveal');
                 } else {
-                    // السطر التالي يضمن إعادة التأثير عند العودة للأعلى
                     entry.target.classList.remove('active-reveal');
                 }
             });
         }, observerOptions);
 
         function applyReveal() {
-            // استهداف كل العناصر المطلوب تحريكها في كل الصفحات
-            const targets = document.querySelectorAll('.product-section, .service-card, .reveal, .hero h2, .hero p, .whatsapp-cta');
+            // استبعاد h2 و p الخاصة بالهيرو من المراقب لكي لا تختفي
+            const targets = document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta');
             targets.forEach(target => observer.observe(target));
         }
 
@@ -256,7 +255,6 @@
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            // إعادة تطبيق المراقب عند تبديل الصفحات لضمان عمله في الكتالوجات
             setTimeout(applyReveal, 100);
         }
 
@@ -267,7 +265,6 @@
             v.play();
         }
 
-        // شريط التقدم العلوي
         window.addEventListener("scroll", function() {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -275,7 +272,6 @@
             document.getElementById("myBar").style.width = scrolled + "%";
         });
 
-        // تشغيل المراقب عند تحميل الصفحة لأول مرة
         window.addEventListener("load", applyReveal);
     </script>
 </body>
