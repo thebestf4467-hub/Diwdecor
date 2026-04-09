@@ -75,11 +75,11 @@
             display: inline-block;
         }
 
-        /* --- تأثير السوفت المطور (يتحرك صعوداً ونزولاً) --- */
+        /* --- تأثير السوفت المطور --- */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); /* حركة أكثر انسيابية */
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: transform, opacity;
         }
 
@@ -103,6 +103,43 @@
             border: 1px solid rgba(212, 175, 55, 0.1);
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* --- تنسيق حقل الفيديو (تم جعله أرفع) --- */
+        .video-preview-container {
+            margin: 20px 15px;
+            cursor: pointer;
+        }
+
+        .preview-box {
+            background: linear-gradient(45deg, #111, #1a1a1a);
+            border: 1.5px dashed var(--gold);
+            border-radius: 10px;
+            padding: 15px 20px; /* تقليل الحشو لجعله أرفع */
+            display: flex; /* ترتيب الأيقونة والنص بجانب بعضهما */
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .preview-box i {
+            font-size: 1.8rem; /* تصغير الأيقونة */
+            color: var(--gold);
+        }
+
+        .preview-box h3 {
+            color: #fff;
+            font-size: 1.1rem; /* تصغير الخط قليلاً */
+            margin: 0;
+        }
+
+        #main-video {
+            display: none;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .catalog-title {
@@ -181,6 +218,18 @@
         </div>
     </section>
 
+    <section class="video-preview-container reveal">
+        <div class="preview-box" id="previewPlaceholder" onclick="playVideo()">
+            <i class="fas fa-play-circle"></i>
+            <h3>معاينة سريعة للكتلوك</h3>
+        </div>
+        
+        <video id="main-video" controls>
+            <source src="video.mp4" type="video/mp4">
+            عذراً، متصفحك لا يدعم تشغيل الفيديو.
+        </video>
+    </section>
+
     <h2 class="catalog-title">كتلوك 2026</h2>
 
     <div class="product-section reveal"><img src="p01.webp" alt="1"><div class="model-tag">تصميم ملكي فاخر</div></div>
@@ -207,6 +256,14 @@
     </div>
 
     <script>
+        function playVideo() {
+            var placeholder = document.getElementById("previewPlaceholder");
+            var video = document.getElementById("main-video");
+            placeholder.style.display = "none";
+            video.style.display = "block";
+            video.play();
+        }
+
         function updateProgress() {
             var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -214,7 +271,6 @@
             document.getElementById("myBar").style.width = scrolled + "%";
         }
 
-        // --- تعديل ميزة الظهور لتشمل الصعود والأعلى ---
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");
             var windowHeight = window.innerHeight;
@@ -224,11 +280,9 @@
                 var elementBottom = el.getBoundingClientRect().bottom;
                 var elementVisible = 100;
 
-                // إذا كان العنصر دخل مجال الرؤية (من الأسفل أو الأعلى)
                 if (elementTop < windowHeight - elementVisible && elementBottom > 0) {
                     el.classList.add("active");
                 } else {
-                    // إزالة الفئة active عند الخروج من مجال الرؤية لكي يتكرر التأثير
                     el.classList.remove("active");
                 }
             });
