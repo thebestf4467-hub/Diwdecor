@@ -10,6 +10,9 @@
     <style>
         :root { --gold: #d4af37; --dark-bg: #0a0a0a; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+
         body { background-color: #000; color: #fff; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
 
         /* القائمة الجانبية */
@@ -62,12 +65,23 @@
 
         .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--gold); z-index: 3000; width: 0%; }
         
-        /* التنسيقات العامة */
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* تأثير الظهور الناعم الأساسي */
+        .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        /* تعريف ميزة التصفح السلس لكل العناصر */
+        .reveal, .product-section, .service-card, .hero h2, .hero p { 
+            opacity: 0; 
+            transform: translateY(30px); 
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
+            will-change: transform, opacity;
+        }
+
+        /* الفئة التي يتم إضافتها عند الظهور */
+        .active-reveal { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
 
         .back-btn-container { position: sticky; top: 60px; z-index: 2000; padding: 10px; background: rgba(0,0,0,0.8); display: flex; justify-content: center; }
         .back-btn { background: var(--gold); color: #000; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
@@ -76,28 +90,20 @@
         .hero h2 { font-size: 1.8rem; color: var(--gold); font-weight: 900; }
 
         .services { padding: 20px; display: grid; gap: 15px; }
-        .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 15px; background: #111; cursor: pointer; transition: 0.3s; }
+        .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 15px; background: #111; cursor: pointer; }
         .service-card i { font-size: 2.5rem; color: var(--gold); margin-bottom: 10px; }
-        
-        /* ميزة الهنت (اضغط للعرض) */
-        .click-hint { 
-            display: block; 
-            font-size: 0.75rem; 
-            color: var(--gold); 
-            margin-top: 8px; 
-            font-weight: bold;
-            opacity: 0.8;
-        }
+        .click-hint { display: block; font-size: 0.75rem; color: var(--gold); margin-top: 8px; font-weight: bold; opacity: 0.8; }
 
         .video-box { margin: 15px; border: 1px dashed var(--gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; }
         #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--gold); margin-top: 10px; }
 
-        .product-section { width: 100%; margin-bottom: 25px; background: #111; }
-        .product-section img { width: 100%; display: block; height: auto; }
+        .product-section { width: 100%; margin-bottom: 25px; background: #111; overflow: hidden; }
+        .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; }
+        .product-section:hover img { transform: scale(1.03); }
         .model-tag { background: #000; padding: 15px; border-top: 2px solid var(--gold); text-align: center; color: var(--gold); font-weight: bold; }
 
         .whatsapp-cta { padding: 40px 20px; text-align: center; background: #000; border-top: 1px solid rgba(212, 175, 55, 0.3); }
-        .whatsapp-link { color: var(--gold); text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 25px; border: 1px solid var(--gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; }
+        .whatsapp-link { color: var(--gold); text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; border: 1px solid var(--gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
 
         footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #222; color: #666; }
     </style>
@@ -135,23 +141,23 @@
 
     <div id="main-page" class="page" style="display: block;">
         <section class="hero">
-            <h2 class="reveal">نصمم الفخامة لذوقكم</h2>
-            <p class="reveal">خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
+            <h2>نصمم الفخامة لذوقكم</h2>
+            <p>خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
         </section>
         <section class="services">
-            <div class="service-card reveal" onclick="showPage('stone-gallery')">
+            <div class="service-card" onclick="showPage('stone-gallery')">
                 <i class="fas fa-hammer"></i>
                 <h3>واجهات حجرية</h3>
                 <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
                 <span class="click-hint">اضغط للعرض</span>
             </div>
-            <div class="service-card reveal" onclick="showPage('interior-gallery')">
+            <div class="service-card" onclick="showPage('interior-gallery')">
                 <i class="fas fa-paint-roller"></i>
                 <h3>ديكور داخلي</h3>
                 <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
                 <span class="click-hint">اضغط للعرض</span>
             </div>
-            <div class="service-card reveal" onclick="window.location.href='https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1'">
+            <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1'">
                 <i class="fas fa-comment-dots"></i>
                 <h3>استشارات فنية</h3>
                 <p>تواصل معنا عبر واتساب</p>
@@ -162,49 +168,48 @@
 
     <div id="stone-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-        
         <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()">
             <i class="fas fa-play-circle" style="color:var(--gold); font-size: 2rem;"></i>
             <p>مشاهدة فيديو الكتلوك</p>
         </div>
         <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
 
-        <div class="product-section reveal"><img src="p01.webp"><div class="model-tag">تصميم ملكي فاخر</div></div>
-        <div class="product-section reveal"><img src="p02.webp"><div class="model-tag">واجهات حجرية مميزة</div></div>
-        <div class="product-section reveal"><img src="p03.webp"><div class="model-tag">إبداع التصميم الخارجي</div></div>
-        <div class="product-section reveal"><img src="p04.webp"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
-        <div class="product-section reveal"><img src="p05.webp"><div class="model-tag">لمسات فنية عصرية</div></div>
-        <div class="product-section reveal"><img src="p06.webp"><div class="model-tag">ديكورات خارجية راقية</div></div>
-        <div class="product-section reveal"><img src="p07.webp"><div class="model-tag">نقوش حجرية يدوية</div></div>
-        <div class="product-section reveal"><img src="p08.webp"><div class="model-tag">هندسة الحجر والجمال</div></div>
-        <div class="product-section reveal"><img src="p09.webp"><div class="model-tag">تصاميم كلاسيكية</div></div>
-        <div class="product-section reveal"><img src="p10.webp"><div class="model-tag">واجهات مودرن 2026</div></div>
-        <div class="product-section reveal"><img src="p11.webp"><div class="model-tag">تناسق الألوان والخامات</div></div>
-        <div class="product-section reveal"><img src="p12.webp"><div class="model-tag">أناقة المداخل</div></div>
-        <div class="product-section reveal"><img src="p13.webp"><div class="model-tag">تميز الواجهات</div></div>
+        <div class="product-section"><img src="p01.webp"><div class="model-tag">تصميم ملكي فاخر</div></div>
+        <div class="product-section"><img src="p02.webp"><div class="model-tag">واجهات حجرية مميزة</div></div>
+        <div class="product-section"><img src="p03.webp"><div class="model-tag">إبداع التصميم الخارجي</div></div>
+        <div class="product-section"><img src="p04.webp"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
+        <div class="product-section"><img src="p05.webp"><div class="model-tag">لمسات فنية عصرية</div></div>
+        <div class="product-section"><img src="p06.webp"><div class="model-tag">ديكورات خارجية راقية</div></div>
+        <div class="product-section"><img src="p07.webp"><div class="model-tag">نقوش حجرية يدوية</div></div>
+        <div class="product-section"><img src="p08.webp"><div class="model-tag">هندسة الحجر والجمال</div></div>
+        <div class="product-section"><img src="p09.webp"><div class="model-tag">تصاميم كلاسيكية</div></div>
+        <div class="product-section"><img src="p10.webp"><div class="model-tag">واجهات مودرن 2026</div></div>
+        <div class="product-section"><img src="p11.webp"><div class="model-tag">تناسق الألوان والخامات</div></div>
+        <div class="product-section"><img src="p12.webp"><div class="model-tag">أناقة المداخل</div></div>
+        <div class="product-section"><img src="p13.webp"><div class="model-tag">تميز الواجهات</div></div>
     </div>
 
     <div id="interior-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
         
-        <div class="product-section reveal"><img src="in01.webp"><div class="model-tag">إبداع عصري متجدد</div></div>
-        <div class="product-section reveal"><img src="in02.webp"><div class="model-tag">فخامة الاستقبال</div></div>
-        <div class="product-section reveal"><img src="in03.webp"><div class="model-tag">لمسات كلاسيكية راقية</div></div>
-        <div class="product-section reveal"><img src="in04.webp"><div class="model-tag">ركن الترفيه الذكي</div></div>
-        <div class="product-section reveal"><img src="in05.webp"><div class="model-tag">سحر الإضاءة الهادئة</div></div>
-        <div class="product-section reveal"><img src="in06.webp"><div class="model-tag">تناغم الألوان</div></div>
-        <div class="product-section reveal"><img src="in07.webp"><div class="model-tag">أناقة الهدوء</div></div>
-        <div class="product-section reveal"><img src="in08.webp"><div class="model-tag">تنسيق فني مميز</div></div>
-        <div class="product-section reveal"><img src="in09.webp"><div class="model-tag">جمالية الممرات</div></div>
-        <div class="product-section reveal"><img src="in10.webp"><div class="model-tag">زوايا الراحة</div></div>
-        <div class="product-section reveal"><img src="in11.webp"><div class="model-tag">بريق الفخامة</div></div>
-        <div class="product-section reveal"><img src="in12.webp"><div class="model-tag">هندسة الجمال الداخلي</div></div>
-        <div class="product-section reveal"><img src="in13.webp"><div class="model-tag">تكامل التصميم</div></div>
-        <div class="product-section reveal"><img src="in14.webp"><div class="model-tag">واجهة داخلية ساحرة</div></div>
-        <div class="product-section reveal"><img src="in15.webp"><div class="model-tag">رؤية عصرية 2026</div></div>
+        <div class="product-section"><img src="in01.webp"><div class="model-tag">إبداع عصري متجدد</div></div>
+        <div class="product-section"><img src="in02.webp"><div class="model-tag">فخامة الاستقبال</div></div>
+        <div class="product-section"><img src="in03.webp"><div class="model-tag">لمسات كلاسيكية راقية</div></div>
+        <div class="product-section"><img src="in04.webp"><div class="model-tag">ركن الترفيه الذكي</div></div>
+        <div class="product-section"><img src="in05.webp"><div class="model-tag">سحر الإضاءة الهادئة</div></div>
+        <div class="product-section"><img src="in06.webp"><div class="model-tag">تناغم الألوان</div></div>
+        <div class="product-section"><img src="in07.webp"><div class="model-tag">أناقة الهدوء</div></div>
+        <div class="product-section"><img src="in08.webp"><div class="model-tag">تنسيق فني مميز</div></div>
+        <div class="product-section"><img src="in09.webp"><div class="model-tag">جمالية الممرات</div></div>
+        <div class="product-section"><img src="in10.webp"><div class="model-tag">زوايا الراحة</div></div>
+        <div class="product-section"><img src="in11.webp"><div class="model-tag">بريق الفخامة</div></div>
+        <div class="product-section"><img src="in12.webp"><div class="model-tag">هندسة الجمال الداخلي</div></div>
+        <div class="product-section"><img src="in13.webp"><div class="model-tag">تكامل التصميم</div></div>
+        <div class="product-section"><img src="in14.webp"><div class="model-tag">واجهة داخلية ساحرة</div></div>
+        <div class="product-section"><img src="in15.webp"><div class="model-tag">رؤية عصرية 2026</div></div>
 
-        <div class="whatsapp-cta reveal">
-            <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%8من%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link">
+        <div class="whatsapp-cta">
+            <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%85%D9%86%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link">
                 <i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب
             </a>
         </div>
@@ -213,25 +218,46 @@
     <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
     <script>
+        // نظام مراقبة العناصر للظهور الناعم
+        const observerOptions = {
+            threshold: 0.15 // يظهر العنصر عندما يظهر 15% منه على الشاشة
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active-reveal');
+                } else {
+                    // السطر التالي يضمن إعادة التأثير عند العودة للأعلى
+                    entry.target.classList.remove('active-reveal');
+                }
+            });
+        }, observerOptions);
+
+        function applyReveal() {
+            // استهداف كل العناصر المطلوب تحريكها في كل الصفحات
+            const targets = document.querySelectorAll('.product-section, .service-card, .reveal, .hero h2, .hero p, .whatsapp-cta');
+            targets.forEach(target => observer.observe(target));
+        }
+
         function toggleMenu() {
             const menu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
-            if (menu.classList.contains('open')) {
-                menu.classList.remove('open');
-                overlay.style.display = 'none';
-            } else {
-                menu.classList.add('open');
-                overlay.style.display = 'block';
-            }
+            menu.classList.toggle('open');
+            overlay.style.display = menu.classList.contains('open') ? 'block' : 'none';
         }
 
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById(pageId).style.display = 'block';
-            const menu = document.getElementById('sideMenu');
-            if(menu.classList.contains('open')) toggleMenu();
-            window.scrollTo(0,0);
-            setTimeout(reveal, 100);
+            const targetPage = document.getElementById(pageId);
+            targetPage.style.display = 'block';
+            
+            if(document.getElementById('sideMenu').classList.contains('open')) toggleMenu();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // إعادة تطبيق المراقب عند تبديل الصفحات لضمان عمله في الكتالوجات
+            setTimeout(applyReveal, 100);
         }
 
         function playVideo() {
@@ -241,24 +267,16 @@
             v.play();
         }
 
-        function reveal() {
-            const reveals = document.querySelectorAll(".reveal");
-            reveals.forEach(el => {
-                const windowHeight = window.innerHeight;
-                const elementTop = el.getBoundingClientRect().top;
-                if (elementTop < windowHeight - 50) el.classList.add("active");
-            });
-        }
-
+        // شريط التقدم العلوي
         window.addEventListener("scroll", function() {
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (winScroll / height) * 100;
             document.getElementById("myBar").style.width = scrolled + "%";
-            reveal();
         });
 
-        window.addEventListener("load", reveal);
+        // تشغيل المراقب عند تحميل الصفحة لأول مرة
+        window.addEventListener("load", applyReveal);
     </script>
 </body>
 </html>
