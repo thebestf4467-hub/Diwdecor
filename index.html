@@ -4,12 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محمد البعاج للديكور 2026</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="app-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         :root { 
-            /* باليت ألوان الفانيلا لاتيه مطورة */
             --latte-gold: #c8a165; 
             --vanilla-light: #f9f1d8; 
             --bg-gradient: linear-gradient(135deg, #fffcf7 0%, #f3e5ab 100%); 
@@ -17,7 +21,6 @@
             --creamy-white: #fffcf9; 
         }
         
-        /* إعدادات الوضع الليلي */
         body.dark-mode {
             --bg-gradient: linear-gradient(135deg, #1a1614 0%, #2d241f 100%);
             --dark-latte: #f9f1d8;
@@ -28,7 +31,6 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         html { scroll-behavior: smooth; }
 
         body { 
@@ -39,7 +41,7 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* القائمة الجانبية */
+        /* --- القائمة الجانبية --- */
         .side-menu {
             position: fixed;
             top: 0;
@@ -75,7 +77,7 @@
         .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
         .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
 
-        /* الهيدر المعدل */
+        /* --- الهيدر وتغيير المود --- */
         .sticky-header { 
             position: sticky; top: 0; z-index: 1000; 
             background: rgba(255, 252, 249, 0.92); padding: 12px 20px; 
@@ -91,7 +93,7 @@
         .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; }
         .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
 
-        /* زر الوضع الليلي في الهيدر */
+        /* ميزة انقلاب الأيقونة */
         .theme-toggle-header {
             color: var(--latte-gold);
             font-size: 1.3rem;
@@ -100,9 +102,11 @@
             width: 30px;
             text-align: left;
         }
+        .theme-toggle-header:active { transform: rotate(360deg); }
 
         .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--latte-gold); z-index: 3000; width: 0%; }
         
+        /* --- الصفحات والعناصر --- */
         .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
@@ -113,10 +117,7 @@
             will-change: transform, opacity;
         }
 
-        .active-reveal { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
+        .active-reveal { opacity: 1; transform: translateY(0); }
 
         .back-btn-container { position: sticky; top: 60px; z-index: 2000; padding: 10px; background: rgba(255, 252, 249, 0.8); display: flex; justify-content: center; }
         body.dark-mode .back-btn-container { background: rgba(37, 31, 28, 0.8); }
@@ -125,7 +126,6 @@
         .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(255, 252, 249, 0.6), rgba(255, 252, 249, 0.6)), url('p13.webp') center/cover; padding: 40px 20px; }
         body.dark-mode .hero { background: linear-gradient(rgba(26, 22, 20, 0.8), rgba(26, 22, 20, 0.8)), url('p13.webp') center/cover; }
         .hero h2 { font-size: 1.8rem; color: var(--dark-latte); font-weight: 900; }
-        .hero p { color: var(--dark-latte); }
 
         .services { padding: 20px; display: grid; gap: 15px; }
         .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(200, 161, 101, 0.15); border-radius: 15px; background: var(--creamy-white); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
@@ -159,14 +159,14 @@
         <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
         <div class="menu-section">
             <h3>من نحن</h3>
-            <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
+            <h3>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
         </div>
         <div class="menu-section">
             <h3>تواصل معنا</h3>
             <div class="social-links">
-                <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
+                <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%20%D8%A3%D8%B3%D8%AA%D8%A7%D8%B0%20%D9%85%D8%AD%D9%85%D8%AF%20%D8%A7%D9%84%D8%A8%D8%B9%D8%A7%D8%AC%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%82%20%D8%AF%D9%8A%D9%83%D9%88%D8%B1%D8%A7%D8%AA" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
                 <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام </a>
-                <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
+                <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج(المالك)</a>
             </div>
         </div>
     </div>
@@ -211,12 +211,8 @@
 
     <div id="stone-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-        <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()">
-            <i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i>
-            <p>مشاهدة فيديو الكتلوك</p>
-        </div>
+        <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
         <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
-
         <div class="product-section"><img src="p01.webp"><div class="model-tag">تصميم ملكي فاخر</div></div>
         <div class="product-section"><img src="p02.webp"><div class="model-tag">واجهات حجرية مميزة</div></div>
         <div class="product-section"><img src="p03.webp"><div class="model-tag">إبداع التصميم الخارجي</div></div>
@@ -234,7 +230,6 @@
 
     <div id="interior-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-        
         <div class="product-section"><img src="in01.webp"><div class="model-tag">إبداع عصري متجدد</div></div>
         <div class="product-section"><img src="in02.webp"><div class="model-tag">فخامة الاستقبال</div></div>
         <div class="product-section"><img src="in03.webp"><div class="model-tag">لمسات كلاسيكية راقية</div></div>
@@ -250,34 +245,27 @@
         <div class="product-section"><img src="in13.webp"><div class="model-tag">تكامل التصميم</div></div>
         <div class="product-section"><img src="in14.webp"><div class="model-tag">واجهة داخلية ساحرة</div></div>
         <div class="product-section"><img src="in15.webp"><div class="model-tag">رؤية عصرية 2026</div></div>
-
         <div class="whatsapp-cta">
-            <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%85%D9%86%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link">
-                <i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب
-            </a>
+            <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%85%D9%86%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
         </div>
     </div>
 
     <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
     <script>
-        const observerOptions = {
-            threshold: 0.15 
-        };
-
+        const observerOptions = { threshold: 0.10 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active-reveal');
                 } else {
-                    entry.target.classList.remove('active-reveal');
+                    entry.target.classList.remove('active-reveal'); // ميزة السوفت رولنك عند الصعود
                 }
             });
         }, observerOptions);
 
         function applyReveal() {
-            const targets = document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta');
-            targets.forEach(target => observer.observe(target));
+            document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta').forEach(t => observer.observe(t));
         }
 
         function toggleMenu() {
@@ -289,13 +277,9 @@
 
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            const targetPage = document.getElementById(pageId);
-            targetPage.style.display = 'block';
-            
+            document.getElementById(pageId).style.display = 'block';
             if(document.getElementById('sideMenu').classList.contains('open')) toggleMenu();
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            
             setTimeout(applyReveal, 100);
         }
 
@@ -306,26 +290,17 @@
             v.play();
         }
 
-        window.addEventListener("scroll", function() {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            document.getElementById("myBar").style.width = scrolled + "%";
-        });
-
-        // ميزة الوضع الليلي المعدلة للهيدر
-        let rotation = 0;
         function toggleTheme() {
-            const body = document.body;
             const icon = document.getElementById('themeIcon');
-            const btn = document.getElementById('themeToggle');
+            const headerToggle = document.getElementById('themeToggle');
             
-            rotation += 360;
-            btn.style.transform = `rotate(${rotation}deg)`;
+            // إضافة ميزة الانقلاب (الدوران)
+            headerToggle.style.transform = "rotate(360deg)";
+            setTimeout(() => { headerToggle.style.transform = "rotate(0deg)"; }, 600);
+
+            document.body.classList.toggle('dark-mode');
             
-            body.classList.toggle('dark-mode');
-            
-            if(body.classList.contains('dark-mode')) {
+            if(document.body.classList.contains('dark-mode')) {
                 icon.classList.replace('fa-moon', 'fa-sun');
                 localStorage.setItem('theme', 'dark');
             } else {
@@ -333,6 +308,13 @@
                 localStorage.setItem('theme', 'light');
             }
         }
+
+        window.addEventListener("scroll", function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+        });
 
         window.addEventListener("load", () => {
             applyReveal();
