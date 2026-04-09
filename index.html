@@ -65,12 +65,9 @@
 
         .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--gold); z-index: 3000; width: 0%; }
         
-        /* تأثير الظهور الناعم الأساسي */
         .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
 
-        /* تعريف ميزة التصفح السلس لكل العناصر */
-        /* تعديل هنا: استثناء عناصر الـ hero من الاختفاء الابتدائي لضمان ثباتها */
         .reveal, .product-section, .service-card, .whatsapp-cta { 
             opacity: 0; 
             transform: translateY(30px); 
@@ -78,7 +75,6 @@
             will-change: transform, opacity;
         }
 
-        /* الفئة التي يتم إضافتها عند الظهور */
         .active-reveal { 
             opacity: 1; 
             transform: translateY(0); 
@@ -118,15 +114,14 @@
         <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
         <div class="menu-section">
             <h3>من نحن</h3>
-            <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2016 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
+            <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
         </div>
         <div class="menu-section">
             <h3>تواصل معنا</h3>
             <div class="social-links">
                 <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
-                <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
-                <a href="https://www.facebook.com/share/1EBsLP5DqX/?mibextid=wwXIfr" target="_blank"><i class="fab fa-facebook-f"></i> فيسبوك</a>
-                <a href="https://www.tiktok.com/@diwdecor?_r=1&_t=ZS-95OfKU0QyTX" target="_blank"><i class="fab fa-tiktok"></i> تيك توك</a>
+                <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام </a>
+                <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
             </div>
         </div>
     </div>
@@ -146,16 +141,16 @@
             <p class="active-reveal">خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
         </section>
         <section class="services">
-            <div class="service-card" onclick="showPage('stone-gallery')">
-                <i class="fas fa-hammer"></i>
-                <h3>واجهات حجرية</h3>
-                <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
-                <span class="click-hint">اضغط للعرض</span>
-            </div>
             <div class="service-card" onclick="showPage('interior-gallery')">
                 <i class="fas fa-paint-roller"></i>
                 <h3>ديكور داخلي</h3>
                 <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
+                <span class="click-hint">اضغط للعرض</span>
+            </div>
+            <div class="service-card" onclick="showPage('stone-gallery')">
+                <i class="fas fa-hammer"></i>
+                <h3>واجهات حجرية</h3>
+                <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
                 <span class="click-hint">اضغط للعرض</span>
             </div>
             <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1'">
@@ -234,7 +229,6 @@
         }, observerOptions);
 
         function applyReveal() {
-            // استبعاد h2 و p الخاصة بالهيرو من المراقب لكي لا تختفي
             const targets = document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta');
             targets.forEach(target => observer.observe(target));
         }
