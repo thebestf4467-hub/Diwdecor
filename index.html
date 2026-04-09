@@ -12,104 +12,132 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #000; color: #fff; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
 
-        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--gold); z-index: 3000; width: 0%; }
-        .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(10, 10, 10, 0.95); padding: 8px 0; border-bottom: 1px solid var(--gold); text-align: center; backdrop-filter: blur(10px); }
-        .logo { color: var(--gold); font-size: 1.6rem; font-weight: 900; }
-        .brand-name { color: var(--gold); font-size: 0.6rem; letter-spacing: 2px; }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform, opacity;
+        /* القائمة الجانبية */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: rgba(15, 15, 15, 0.98);
+            z-index: 5000;
+            transition: 0.4s ease;
+            border-left: 1px solid var(--gold);
+            padding: 25px 20px;
         }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        .side-menu.open { right: 0; }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            z-index: 4500;
+        }
 
+        .close-menu { color: var(--gold); font-size: 1.6rem; cursor: pointer; margin-bottom: 30px; display: block; }
+        .menu-section { margin-bottom: 35px; }
+        .menu-section h3 { color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 8px; margin-bottom: 15px; font-size: 1.1rem; }
+        .menu-section p { font-size: 0.9rem; line-height: 1.8; color: #ccc; text-align: justify; }
+        
+        .social-links { display: flex; flex-direction: column; gap: 18px; }
+        .social-links a { color: #fff; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
+        .social-links a i { color: var(--gold); font-size: 1.3rem; width: 25px; text-align: center; }
+
+        /* الهيدر */
+        .sticky-header { 
+            position: sticky; top: 0; z-index: 1000; 
+            background: rgba(10, 10, 10, 0.95); padding: 12px 20px; 
+            border-bottom: 1px solid var(--gold); 
+            display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(10px); 
+        }
+        .menu-trigger { color: var(--gold); font-size: 1.5rem; cursor: pointer; }
+        .logo-container { text-align: center; flex-grow: 1; }
+        .logo { color: var(--gold); font-size: 1.5rem; font-weight: 900; }
+        .brand-name { color: var(--gold); font-size: 0.55rem; letter-spacing: 2px; }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--gold); z-index: 3000; width: 0%; }
+        
+        /* التنسيقات العامة */
         .page { display: none; animation: fadeIn 0.4s ease; }
-        #main-page { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .back-btn-container {
-            position: sticky;
-            top: 55px; 
-            z-index: 2000;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-        }
-        .back-btn { 
-            background: var(--gold); 
-            color: #000; 
-            border: none; 
-            padding: 8px 25px; 
-            border-radius: 20px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
-        }
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
-        .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('p13.webp') center/cover no-repeat; padding: 40px 20px; }
+        .back-btn-container { position: sticky; top: 60px; z-index: 2000; padding: 10px; background: rgba(0,0,0,0.8); display: flex; justify-content: center; }
+        .back-btn { background: var(--gold); color: #000; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+
+        .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('p13.webp') center/cover; padding: 40px 20px; }
         .hero h2 { font-size: 1.8rem; color: var(--gold); font-weight: 900; }
 
         .services { padding: 20px; display: grid; gap: 15px; }
         .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 15px; background: #111; cursor: pointer; transition: 0.3s; }
         .service-card i { font-size: 2.5rem; color: var(--gold); margin-bottom: 10px; }
-        .service-card p { font-size: 0.9rem; color: #ccc; }
-        .click-hint { font-size: 0.75rem; color: var(--gold); margin-top: 5px; display: block; }
+        
+        /* ميزة الهنت (اضغط للعرض) */
+        .click-hint { 
+            display: block; 
+            font-size: 0.75rem; 
+            color: var(--gold); 
+            margin-top: 8px; 
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .video-box { margin: 15px; border: 1px dashed var(--gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; }
+        #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--gold); margin-top: 10px; }
 
         .product-section { width: 100%; margin-bottom: 25px; background: #111; }
-        .product-section img { width: 100%; height: auto; display: block; }
+        .product-section img { width: 100%; display: block; height: auto; }
         .model-tag { background: #000; padding: 15px; border-top: 2px solid var(--gold); text-align: center; color: var(--gold); font-weight: bold; }
 
-        .video-preview-container { margin: 15px 15px 30px 15px; }
-        .preview-box { background: #111; border: 1.5px dashed var(--gold); border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--gold); margin-top: 10px; outline: none; }
-        
-        .more-designs-cta {
-            padding: 40px 20px;
-            text-align: center;
-            background: linear-gradient(to bottom, #111, #000);
-            border-top: 1px solid rgba(212, 175, 55, 0.3);
-            margin-top: 20px;
-        }
-        .whatsapp-link {
-            color: var(--gold);
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 15px 25px;
-            border: 1px solid var(--gold);
-            border-radius: 50px;
-            transition: 0.3s;
-            background: rgba(212, 175, 55, 0.05);
-        }
+        .whatsapp-cta { padding: 40px 20px; text-align: center; background: #000; border-top: 1px solid rgba(212, 175, 55, 0.3); }
+        .whatsapp-link { color: var(--gold); text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 25px; border: 1px solid var(--gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; }
 
-        footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #222; margin-top: 20px; }
+        footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #222; color: #666; }
     </style>
 </head>
 <body>
 
     <div class="progress-bar" id="myBar"></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="side-menu" id="sideMenu">
+        <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
+        <div class="menu-section">
+            <h3>من نحن</h3>
+            <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2016 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
+        </div>
+        <div class="menu-section">
+            <h3>تواصل معنا</h3>
+            <div class="social-links">
+                <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
+                <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
+                <a href="https://www.facebook.com/share/1EBsLP5DqX/?mibextid=wwXIfr" target="_blank"><i class="fab fa-facebook-f"></i> فيسبوك</a>
+                <a href="https://www.tiktok.com/@diwdecor?_r=1&_t=ZS-95OfKU0QyTX" target="_blank"><i class="fab fa-tiktok"></i> تيك توك</a>
+            </div>
+        </div>
+    </div>
 
     <header class="sticky-header">
-        <div class="logo">MD</div>
-        <div class="brand-name">MOHAMMAD AL-BAAJ</div>
+        <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+        <div class="logo-container">
+            <div class="logo">MD</div>
+            <div class="brand-name">MOHAMMAD AL-BAAJ</div>
+        </div>
+        <div style="width: 24px;"></div>
     </header>
 
-    <div id="main-page" class="page">
+    <div id="main-page" class="page" style="display: block;">
         <section class="hero">
             <h2 class="reveal">نصمم الفخامة لذوقكم</h2>
             <p class="reveal">خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
         </section>
-
         <section class="services">
             <div class="service-card reveal" onclick="showPage('stone-gallery')">
                 <i class="fas fa-hammer"></i>
@@ -117,42 +145,30 @@
                 <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
                 <span class="click-hint">اضغط للعرض</span>
             </div>
-
             <div class="service-card reveal" onclick="showPage('interior-gallery')">
                 <i class="fas fa-paint-roller"></i>
                 <h3>ديكور داخلي</h3>
                 <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
                 <span class="click-hint">اضغط للعرض</span>
             </div>
-
             <div class="service-card reveal" onclick="window.location.href='https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1'">
                 <i class="fas fa-comment-dots"></i>
                 <h3>استشارات فنية</h3>
-                <p>نساعدك في اختيار التصميم الأنسب لمساحتك وميزانيتك.</p>
+                <p>تواصل معنا عبر واتساب</p>
                 <span class="click-hint">اضغط للمراسلة</span>
             </div>
         </section>
     </div>
 
     <div id="stone-gallery" class="page">
-        <div class="back-btn-container">
-            <button class="back-btn" onclick="showPage('main-page')">
-                <i class="fas fa-arrow-right"></i> الرجوع للرئيسية
-            </button>
-        </div>
-
-        <section class="video-preview-container reveal">
-            <div class="preview-box" id="previewPlaceholder" onclick="playVideo()">
-                <i class="fas fa-play-circle" style="color: var(--gold); font-size: 1.5rem;"></i>
-                <h3 style="font-size: 1rem;">معاينة سريعة للكتلوك</h3>
-            </div>
-            <video id="main-video" controls playsinline webkit-playsinline x5-playsinline muted>
-                <source src="video.mp4" type="video/mp4">
-            </video>
-        </section>
-
-        <h2 style="text-align: center; color: var(--gold); margin: 20px 0;" class="reveal">كتلوك الواجهات الحجرية</h2>
+        <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
         
+        <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()">
+            <i class="fas fa-play-circle" style="color:var(--gold); font-size: 2rem;"></i>
+            <p>مشاهدة فيديو الكتلوك</p>
+        </div>
+        <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
+
         <div class="product-section reveal"><img src="p01.webp"><div class="model-tag">تصميم ملكي فاخر</div></div>
         <div class="product-section reveal"><img src="p02.webp"><div class="model-tag">واجهات حجرية مميزة</div></div>
         <div class="product-section reveal"><img src="p03.webp"><div class="model-tag">إبداع التصميم الخارجي</div></div>
@@ -164,16 +180,12 @@
         <div class="product-section reveal"><img src="p09.webp"><div class="model-tag">تصاميم كلاسيكية</div></div>
         <div class="product-section reveal"><img src="p10.webp"><div class="model-tag">واجهات مودرن 2026</div></div>
         <div class="product-section reveal"><img src="p11.webp"><div class="model-tag">تناسق الألوان والخامات</div></div>
-        <div class="product-section reveal"><img src="p12.webp"><div class="model-tag">أناقة المدخل</div></div>
+        <div class="product-section reveal"><img src="p12.webp"><div class="model-tag">أناقة المداخل</div></div>
+        <div class="product-section reveal"><img src="p13.webp"><div class="model-tag">تميز الواجهات</div></div>
     </div>
 
     <div id="interior-gallery" class="page">
-        <div class="back-btn-container">
-            <button class="back-btn" onclick="showPage('main-page')">
-                <i class="fas fa-arrow-right"></i> الرجوع للرئيسية
-            </button>
-        </div>
-        <h2 style="text-align: center; color: var(--gold); margin: 20px 0;" class="reveal">تصاميم الديكور الداخلي</h2>
+        <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
         
         <div class="product-section reveal"><img src="in01.webp"><div class="model-tag">إبداع عصري متجدد</div></div>
         <div class="product-section reveal"><img src="in02.webp"><div class="model-tag">فخامة الاستقبال</div></div>
@@ -191,53 +203,57 @@
         <div class="product-section reveal"><img src="in14.webp"><div class="model-tag">واجهة داخلية ساحرة</div></div>
         <div class="product-section reveal"><img src="in15.webp"><div class="model-tag">رؤية عصرية 2026</div></div>
 
-        <section class="more-designs-cta reveal">
-            <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%85%D9%86%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85%20%D8%A7%D9%84%D8%AA%D9%8A%20%D8%AA%D8%AE%D8%B5%20(%20...%20)" class="whatsapp-link">
-                <i class="fab fa-whatsapp"></i>
-                للمزيد من التصاميم تواصل عبر واتساب
+        <div class="whatsapp-cta reveal">
+            <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%8من%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link">
+                <i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب
             </a>
-        </section>
+        </div>
     </div>
 
-    <footer class="reveal">
-        <p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p>
-    </footer>
+    <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
     <script>
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            if (menu.classList.contains('open')) {
+                menu.classList.remove('open');
+                overlay.style.display = 'none';
+            } else {
+                menu.classList.add('open');
+                overlay.style.display = 'block';
+            }
+        }
+
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
             document.getElementById(pageId).style.display = 'block';
+            const menu = document.getElementById('sideMenu');
+            if(menu.classList.contains('open')) toggleMenu();
             window.scrollTo(0,0);
             setTimeout(reveal, 100);
         }
 
+        function playVideo() {
+            document.getElementById('vidPlaceholder').style.display = 'none';
+            const v = document.getElementById('main-video');
+            v.style.display = 'block';
+            v.play();
+        }
+
         function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            var windowHeight = window.innerHeight;
+            const reveals = document.querySelectorAll(".reveal");
             reveals.forEach(el => {
-                var elementTop = el.getBoundingClientRect().top;
-                var elementBottom = el.getBoundingClientRect().bottom;
-                if (elementTop < windowHeight - 80 && elementBottom > 0) {
-                    el.classList.add("active");
-                } else {
-                    el.classList.remove("active");
-                }
+                const windowHeight = window.innerHeight;
+                const elementTop = el.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 50) el.classList.add("active");
             });
         }
 
-        function playVideo() {
-            var placeholder = document.getElementById("previewPlaceholder");
-            var video = document.getElementById("main-video");
-            placeholder.style.display = "none";
-            video.style.display = "block";
-            video.addEventListener('webkitbeginfullscreen', function(e) { e.preventDefault(); }, false);
-            video.play();
-        }
-
         window.addEventListener("scroll", function() {
-            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            var scrolled = (winScroll / height) * 100;
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
             document.getElementById("myBar").style.width = scrolled + "%";
             reveal();
         });
