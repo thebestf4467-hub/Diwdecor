@@ -148,6 +148,9 @@
 
         footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
         body.dark-mode footer { border-color: #3d302a; }
+        
+        /* تنسيق العداد */
+        .visitor-counter { margin-top: 10px; font-size: 0.9rem; color: var(--latte-gold); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -159,7 +162,7 @@
         <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
         <div class="menu-section">
             <h3>من نحن</h3>
-            <h3>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
+            <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
         </div>
         <div class="menu-section">
             <h3>تواصل معنا</h3>
@@ -200,7 +203,7 @@
                 <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
                 <span class="click-hint">اضغط للعرض</span>
             </div>
-            <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1'">
+            <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%20%D8%AF%D9%8A%D9%83%D9%88%D8%B1%D8%A7%D8%AA'">
                 <i class="fas fa-comment-dots"></i>
                 <h3>استشارات فنية</h3>
                 <p>تواصل معنا عبر واتساب</p>
@@ -250,16 +253,33 @@
         </div>
     </div>
 
-    <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+    <footer>
+        <p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p>
+        <div class="visitor-counter">
+            <i class="fas fa-users"></i> زوار الموقع: <span id="count">...</span>
+        </div>
+    </footer>
 
     <script>
+        // كود عداد الزوار الحقيقي
+        function updateCounter() {
+            fetch('https://api.countapi.xyz/hit/iraqdecor.com/visits')
+                .then(res => res.json())
+                .then(res => {
+                    document.getElementById('count').innerHTML = res.value;
+                })
+                .catch(err => {
+                    document.getElementById('count').innerHTML = "جاري التحميل";
+                });
+        }
+
         const observerOptions = { threshold: 0.10 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active-reveal');
                 } else {
-                    entry.target.classList.remove('active-reveal'); // ميزة السوفت رولنك عند الصعود
+                    entry.target.classList.remove('active-reveal'); 
                 }
             });
         }, observerOptions);
@@ -293,13 +313,9 @@
         function toggleTheme() {
             const icon = document.getElementById('themeIcon');
             const headerToggle = document.getElementById('themeToggle');
-            
-            // إضافة ميزة الانقلاب (الدوران)
             headerToggle.style.transform = "rotate(360deg)";
             setTimeout(() => { headerToggle.style.transform = "rotate(0deg)"; }, 600);
-
             document.body.classList.toggle('dark-mode');
-            
             if(document.body.classList.contains('dark-mode')) {
                 icon.classList.replace('fa-moon', 'fa-sun');
                 localStorage.setItem('theme', 'dark');
@@ -318,6 +334,7 @@
 
         window.addEventListener("load", () => {
             applyReveal();
+            updateCounter(); // استدعاء العداد عند التحميل
             if(localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
