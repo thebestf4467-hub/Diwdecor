@@ -8,12 +8,36 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root { --gold: #d4af37; --dark-bg: #0a0a0a; }
+        :root { 
+            /* باليت ألوان الفانيلا لاتيه مطورة */
+            --latte-gold: #c8a165; 
+            --vanilla-light: #f9f1d8; 
+            --bg-gradient: linear-gradient(135deg, #fffcf7 0%, #f3e5ab 100%); 
+            --dark-latte: #4b3832; 
+            --creamy-white: #fffcf9; 
+        }
+        
+        /* إعدادات الوضع الليلي */
+        body.dark-mode {
+            --bg-gradient: linear-gradient(135deg, #1a1614 0%, #2d241f 100%);
+            --dark-latte: #f9f1d8;
+            --creamy-white: #251f1c;
+            --vanilla-light: #3d302a;
+            background: var(--bg-gradient);
+            color: var(--dark-latte);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         html { scroll-behavior: smooth; }
 
-        body { background-color: #000; color: #fff; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
+        body { 
+            background: var(--bg-gradient); 
+            color: var(--dark-latte); 
+            font-family: 'Cairo', sans-serif; 
+            overflow-x: hidden; 
+            transition: background 0.3s ease, color 0.3s ease;
+        }
 
         /* القائمة الجانبية */
         .side-menu {
@@ -22,12 +46,13 @@
             right: -300px;
             width: 300px;
             height: 100%;
-            background: rgba(15, 15, 15, 0.98);
+            background: rgba(255, 252, 249, 0.98);
             z-index: 5000;
             transition: 0.4s ease;
-            border-left: 1px solid var(--gold);
+            border-left: 1px solid var(--latte-gold);
             padding: 25px 20px;
         }
+        body.dark-mode .side-menu { background: rgba(37, 31, 28, 0.98); }
         .side-menu.open { right: 0; }
         
         .overlay {
@@ -36,34 +61,47 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(75, 56, 50, 0.3);
             display: none;
             z-index: 4500;
         }
 
-        .close-menu { color: var(--gold); font-size: 1.6rem; cursor: pointer; margin-bottom: 30px; display: block; }
+        .close-menu { color: var(--latte-gold); font-size: 1.6rem; cursor: pointer; margin-bottom: 30px; display: block; }
         .menu-section { margin-bottom: 35px; }
-        .menu-section h3 { color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 8px; margin-bottom: 15px; font-size: 1.1rem; }
-        .menu-section p { font-size: 0.9rem; line-height: 1.8; color: #ccc; text-align: justify; }
+        .menu-section h3 { color: var(--latte-gold); border-bottom: 1px solid var(--latte-gold); padding-bottom: 8px; margin-bottom: 15px; font-size: 1.1rem; }
+        .menu-section p { font-size: 0.9rem; line-height: 1.8; color: var(--dark-latte); text-align: justify; }
         
         .social-links { display: flex; flex-direction: column; gap: 18px; }
-        .social-links a { color: #fff; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
-        .social-links a i { color: var(--gold); font-size: 1.3rem; width: 25px; text-align: center; }
+        .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
+        .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
 
-        /* الهيدر */
+        /* الهيدر المعدل */
         .sticky-header { 
             position: sticky; top: 0; z-index: 1000; 
-            background: rgba(10, 10, 10, 0.95); padding: 12px 20px; 
-            border-bottom: 1px solid var(--gold); 
+            background: rgba(255, 252, 249, 0.92); padding: 12px 20px; 
+            border-bottom: 1px solid var(--latte-gold); 
             display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(10px); 
         }
-        .menu-trigger { color: var(--gold); font-size: 1.5rem; cursor: pointer; }
+        body.dark-mode .sticky-header { background: rgba(37, 31, 28, 0.92); }
+        
+        .menu-trigger { color: var(--latte-gold); font-size: 1.5rem; cursor: pointer; }
+        
         .logo-container { text-align: center; flex-grow: 1; }
-        .logo { color: var(--gold); font-size: 1.5rem; font-weight: 900; }
-        .brand-name { color: var(--gold); font-size: 0.55rem; letter-spacing: 2px; }
+        .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; }
+        .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
 
-        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--gold); z-index: 3000; width: 0%; }
+        /* زر الوضع الليلي في الهيدر */
+        .theme-toggle-header {
+            color: var(--latte-gold);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 30px;
+            text-align: left;
+        }
+
+        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--latte-gold); z-index: 3000; width: 0%; }
         
         .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
@@ -80,29 +118,36 @@
             transform: translateY(0); 
         }
 
-        .back-btn-container { position: sticky; top: 60px; z-index: 2000; padding: 10px; background: rgba(0,0,0,0.8); display: flex; justify-content: center; }
-        .back-btn { background: var(--gold); color: #000; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .back-btn-container { position: sticky; top: 60px; z-index: 2000; padding: 10px; background: rgba(255, 252, 249, 0.8); display: flex; justify-content: center; }
+        body.dark-mode .back-btn-container { background: rgba(37, 31, 28, 0.8); }
+        .back-btn { background: var(--latte-gold); color: #fff; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
 
-        .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('p13.webp') center/cover; padding: 40px 20px; }
-        .hero h2 { font-size: 1.8rem; color: var(--gold); font-weight: 900; }
+        .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(255, 252, 249, 0.6), rgba(255, 252, 249, 0.6)), url('p13.webp') center/cover; padding: 40px 20px; }
+        body.dark-mode .hero { background: linear-gradient(rgba(26, 22, 20, 0.8), rgba(26, 22, 20, 0.8)), url('p13.webp') center/cover; }
+        .hero h2 { font-size: 1.8rem; color: var(--dark-latte); font-weight: 900; }
+        .hero p { color: var(--dark-latte); }
 
         .services { padding: 20px; display: grid; gap: 15px; }
-        .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(212, 175, 55, 0.2); border-radius: 15px; background: #111; cursor: pointer; }
-        .service-card i { font-size: 2.5rem; color: var(--gold); margin-bottom: 10px; }
-        .click-hint { display: block; font-size: 0.75rem; color: var(--gold); margin-top: 8px; font-weight: bold; opacity: 0.8; }
+        .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(200, 161, 101, 0.15); border-radius: 15px; background: var(--creamy-white); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .service-card i { font-size: 2.5rem; color: var(--latte-gold); margin-bottom: 10px; }
+        .service-card h3 { color: var(--dark-latte); }
+        .service-card p { color: #7a6a67; }
+        body.dark-mode .service-card p { color: #ccc; }
+        .click-hint { display: block; font-size: 0.75rem; color: var(--latte-gold); margin-top: 8px; font-weight: bold; opacity: 0.8; }
 
-        .video-box { margin: 15px; border: 1px dashed var(--gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; }
-        #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--gold); margin-top: 10px; }
+        .video-box { margin: 15px; border: 1px dashed var(--latte-gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--creamy-white); }
+        #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--latte-gold); margin-top: 10px; }
 
-        .product-section { width: 100%; margin-bottom: 25px; background: #111; overflow: hidden; }
+        .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
         .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; }
         .product-section:hover img { transform: scale(1.03); }
-        .model-tag { background: #000; padding: 15px; border-top: 2px solid var(--gold); text-align: center; color: var(--gold); font-weight: bold; }
+        .model-tag { background: var(--vanilla-light); padding: 15px; border-top: 2px solid var(--latte-gold); text-align: center; color: var(--dark-latte); font-weight: bold; }
 
-        .whatsapp-cta { padding: 40px 20px; text-align: center; background: #000; border-top: 1px solid rgba(212, 175, 55, 0.3); }
-        .whatsapp-link { color: var(--gold); text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; border: 1px solid var(--gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; }
+        .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200, 161, 101, 0.1); }
+        .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200, 161, 101, 0.3); }
 
-        footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #222; color: #666; }
+        footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
+        body.dark-mode footer { border-color: #3d302a; }
     </style>
 </head>
 <body>
@@ -132,7 +177,9 @@
             <div class="logo">MD</div>
             <div class="brand-name">MOHAMMAD AL-BAAJ</div>
         </div>
-        <div style="width: 24px;"></div>
+        <div class="theme-toggle-header" id="themeToggle" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </div>
     </header>
 
     <div id="main-page" class="page" style="display: block;">
@@ -165,7 +212,7 @@
     <div id="stone-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
         <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()">
-            <i class="fas fa-play-circle" style="color:var(--gold); font-size: 2rem;"></i>
+            <i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i>
             <p>مشاهدة فيديو الكتلوك</p>
         </div>
         <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
@@ -266,7 +313,34 @@
             document.getElementById("myBar").style.width = scrolled + "%";
         });
 
-        window.addEventListener("load", applyReveal);
+        // ميزة الوضع الليلي المعدلة للهيدر
+        let rotation = 0;
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            const btn = document.getElementById('themeToggle');
+            
+            rotation += 360;
+            btn.style.transform = `rotate(${rotation}deg)`;
+            
+            body.classList.toggle('dark-mode');
+            
+            if(body.classList.contains('dark-mode')) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        window.addEventListener("load", () => {
+            applyReveal();
+            if(localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+            }
+        });
     </script>
 </body>
 </html>
