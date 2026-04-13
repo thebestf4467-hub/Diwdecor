@@ -298,7 +298,7 @@
 
     <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
-      <script type="module">
+            <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, doc, updateDoc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -316,10 +316,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // دالة النقر المزدوج (القلب الطائر)
+    // دالة النقر المزدوج - قلوب طائرة لا نهائية للجمالية
     window.handleDoubleTap = (id) => {
         const btn = document.getElementById('btn-' + id);
-        if (!btn || localStorage.getItem('liked_' + id)) return;
+        if (!btn) return;
 
         const container = btn.closest('.product-section');
         const heart = document.createElement('i');
@@ -343,37 +343,49 @@
             }, 600);
         });
 
-        setTimeout(() => {
-            heart.remove();
-            btn.classList.add('btn-pulse');
-            setTimeout(() => btn.classList.remove('btn-pulse'), 400);
-            window.handleLike(id);
-        }, 1500); 
-    };
+        setTimeout(() => { heart.remove(); }, 1500);
 
-    // دالة الإعجاب المضمونة (التي سألت عنها)
-    window.handleLike = async (id) => {
-        if (localStorage.getItem('liked_' + id)) return;
-        
-        const photoRef = doc(db, "photos", id);
-        try {
-            const docSnap = await getDoc(photoRef);
-            
-            if (docSnap.exists()) {
-                await updateDoc(photoRef, { likesCount: increment(1) });
-            } else {
-                // إنشاء الوثيقة إذا لم تكن موجودة مسبقاً في الداتابيز
-                await setDoc(photoRef, { likesCount: 1 });
-            }
-            
-            localStorage.setItem('liked_' + id, 'true');
-            refreshUI(id);
-        } catch (e) { 
-            console.error("Firebase Error:", e);
+        btn.classList.add('btn-pulse');
+        setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+
+        // إذا لم يكن قد وضع لايك، نقوم بوضعه الآن
+        if (!localStorage.getItem('liked_' + id)) {
+            window.handleLike(id);
         }
     };
 
-    // تحديث الواجهة عند تحميل الصفحة أو بعد اللايك
+    let isProcessing = false; 
+
+    window.handleLike = async (id) => {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        const photoRef = doc(db, "photos", id);
+        const hasLiked = localStorage.getItem('liked_' + id);
+
+        try {
+            if (hasLiked) {
+                // ميزة حذف الإعجاب
+                await updateDoc(photoRef, { likesCount: increment(-1) });
+                localStorage.removeItem('liked_' + id);
+            } else {
+                // ميزة إضافة إعجاب
+                const docSnap = await getDoc(photoRef);
+                if (docSnap.exists()) {
+                    await updateDoc(photoRef, { likesCount: increment(1) });
+                } else {
+                    await setDoc(photoRef, { likesCount: 1 });
+                }
+                localStorage.setItem('liked_' + id, 'true');
+            }
+            refreshUI(id);
+        } catch (e) { 
+            console.error("Firebase Error:", e);
+        } finally {
+            isProcessing = false;
+        }
+    };
+
     async function refreshUI(id) {
         const docRef = doc(db, "photos", id);
         try {
@@ -382,11 +394,16 @@
             const btnElement = document.getElementById('btn-' + id);
 
             if (docSnap.exists() && countElement) {
-                countElement.innerText = docSnap.data().likesCount;
+                const count = docSnap.data().likesCount;
+                countElement.innerText = count < 0 ? 0 : count; // لمنع الأرقام السالبة
             }
-            if (localStorage.getItem('liked_' + id) && btnElement) {
-                btnElement.classList.add('liked');
-                btnElement.style.pointerEvents = 'none'; // منع النقر المتكرر
+            
+            if (btnElement) {
+                if (localStorage.getItem('liked_' + id)) {
+                    btnElement.classList.add('liked');
+                } else {
+                    btnElement.classList.remove('liked');
+                }
             }
         } catch (e) { console.error("UI Refresh Error:", e); }
     }
@@ -400,6 +417,8 @@
         allPhotos.forEach(id => refreshUI(id));
     });
 </script>
+
+
 
 
 
