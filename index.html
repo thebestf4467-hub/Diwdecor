@@ -299,104 +299,98 @@
     <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        // إضافة مكتبة الحماية
-        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, updateDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
-            authDomain: "diwd-a7709.firebaseapp.com",
-            databaseURL: "https://diwd-a7709-default-rtdb.firebaseio.com",
-            projectId: "diwd-a7709",
-            storageBucket: "diwd-a7709.firebasestorage.app",
-            messagingSenderId: "190314181686",
-            appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
-            measurementId: "G-VSGFFD435W"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
+        authDomain: "diwd-a7709.firebaseapp.com",
+        databaseURL: "https://diwd-a7709-default-rtdb.firebaseio.com",
+        projectId: "diwd-a7709",
+        storageBucket: "diwd-a7709.firebasestorage.app",
+        messagingSenderId: "190314181686",
+        appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
+        measurementId: "G-VSGFFD435W"
+    };
 
-        // تشغيل فايربيس
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        // تفعيل الحماية باستخدام الرمز الأول (Site Key)
-        const appCheck = initializeAppCheck(app, {
-            provider: new ReCaptchaV3Provider('6Le8frUsAAAAAOesAFFZrNQu444SjXppQXc-zqbV'),
-            isTokenAutoRefreshEnabled: true
-        });
+    // تفعيل الحماية
+    const appCheck = initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider('6Le8frUsAAAAAOesAFFZrNQu444SjXppQXc-zqbV'),
+        isTokenAutoRefreshEnabled: true
+    });
 
-        window.handleDoubleTap = (id) => {
-            const btn = document.getElementById('btn-' + id);
-            const container = btn.closest('.product-section');
-            
-            const heart = document.createElement('i');
-            heart.className = 'fas fa-heart flying-heart';
-            container.appendChild(heart);
-            
-            const btnRect = btn.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            
-            // حساب الإحداثيات للتطابق مع قلب الزر السفلي
-            const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
-            const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
-
-            requestAnimationFrame(() => {
-                heart.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease";
-                heart.style.opacity = '0.6'; 
-                heart.style.transform = `translate(-50%, -50%) scale(1.6)`; 
-                
-                setTimeout(() => {
-                    heart.style.transition = "transform 1.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in"; 
-                    heart.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0.25)`;
-                    
-                    setTimeout(() => {
-                        heart.style.opacity = '0';
-                    }, 600); 
-
-                }, 800);
-            });
-
-            setTimeout(() => {
-                heart.remove();
-                btn.classList.add('btn-pulse');
-                setTimeout(() => btn.classList.remove('btn-pulse'), 400);
-                window.handleLike(id);
-            }, 2000); 
-        };
-
-        window.handleLike = async (id) => {
-            if (localStorage.getItem('liked_' + id)) return;
-            const photoRef = doc(db, "photos", id);
-            try {
-                await updateDoc(photoRef, { likesCount: increment(1) });
-                localStorage.setItem('liked_' + id, 'true');
-                refreshUI(id);
-            } catch (e) { console.error("Firebase Error:", e); }
-        };
-
-        async function refreshUI(id) {
-            const docRef = doc(db, "photos", id);
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const countVal = docSnap.data().likesCount;
-                    document.getElementById('count-' + id).innerText = countVal;
-                    if (localStorage.getItem('liked_' + id)) {
-                        document.getElementById('btn-' + id).classList.add('liked');
-                    }
-                }
-            } catch (e) { console.error("UI Refresh Error:", e); }
-        }
-
-        const allPhotos = [
-            'p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13',
-            'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'
-        ];
+    window.handleDoubleTap = (id) => {
+        const btn = document.getElementById('btn-' + id);
+        const container = btn.closest('.product-section');
+        const heart = document.createElement('i');
+        heart.className = 'fas fa-heart flying-heart';
+        container.appendChild(heart);
         
-        window.addEventListener('DOMContentLoaded', () => {
-            allPhotos.forEach(id => refreshUI(id));
+        const btnRect = btn.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
+        const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
+
+        requestAnimationFrame(() => {
+            heart.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease";
+            heart.style.opacity = '0.7'; 
+            heart.style.transform = `translate(-50%, -50%) scale(1.6)`; 
+            
+            setTimeout(() => {
+                heart.style.transition = "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in"; 
+                heart.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0.25)`;
+                setTimeout(() => { heart.style.opacity = '0'; }, 500);
+            }, 600);
         });
-    </script>
+
+        setTimeout(() => {
+            heart.remove();
+            btn.classList.add('btn-pulse');
+            setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+            window.handleLike(id);
+        }, 1500); 
+    };
+
+    window.handleLike = async (id) => {
+        if (localStorage.getItem('liked_' + id)) return;
+        const photoRef = doc(db, "photos", id);
+        try {
+            await updateDoc(photoRef, { likesCount: increment(1) });
+            localStorage.setItem('liked_' + id, 'true');
+            refreshUI(id);
+        } catch (e) { 
+            console.error("Firebase Error: قد يكون نظام الحماية يرفض الطلب حالياً.", e); 
+        }
+    };
+
+    async function refreshUI(id) {
+        const docRef = doc(db, "photos", id);
+        try {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const countVal = docSnap.data().likesCount;
+                document.getElementById('count-' + id).innerText = countVal;
+                if (localStorage.getItem('liked_' + id)) {
+                    document.getElementById('btn-' + id).classList.add('liked');
+                }
+            }
+        } catch (e) { console.error("UI Refresh Error:", e); }
+    }
+
+    const allPhotos = [
+        'p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13',
+        'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'
+    ];
+    
+    window.addEventListener('DOMContentLoaded', () => {
+        allPhotos.forEach(id => refreshUI(id));
+    });
+</script>
+
 
 
     <script>
