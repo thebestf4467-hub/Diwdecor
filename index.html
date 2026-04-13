@@ -19,6 +19,7 @@
             --bg-gradient: linear-gradient(135deg, #fffcf7 0%, #f3e5ab 100%); 
             --dark-latte: #4b3832; 
             --creamy-white: #fffcf9; 
+            --heart-color: #c8a165; /* لون القلب في الوضع الفاتح */
         }
         
         body.dark-mode {
@@ -26,6 +27,7 @@
             --dark-latte: #f9f1d8;
             --creamy-white: #251f1c;
             --vanilla-light: #3d302a;
+            --heart-color: #f3e5ab; /* لون القلب في الدارك مود (ذهبي فاتح سينمائي) */
             background: var(--bg-gradient);
             color: var(--dark-latte);
         }
@@ -93,7 +95,6 @@
         .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; }
         .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
 
-        /* ميزة انقلاب الأيقونة */
         .theme-toggle-header {
             color: var(--latte-gold);
             font-size: 1.3rem;
@@ -138,10 +139,53 @@
         .video-box { margin: 15px; border: 1px dashed var(--latte-gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--creamy-white); }
         #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--latte-gold); margin-top: 10px; }
 
-        .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); }
-        .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; }
+        .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); position: relative; }
+        .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; cursor: pointer; }
         .product-section:hover img { transform: scale(1.03); }
-        .model-tag { background: var(--vanilla-light); padding: 15px; border-top: 2px solid var(--latte-gold); text-align: center; color: var(--dark-latte); font-weight: bold; }
+        .model-tag { background: var(--vanilla-light); padding: 15px; border-top: 2px solid var(--latte-gold); text-align: center; color: var(--dark-latte); font-weight: bold; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: relative; z-index: 10; }
+
+        .like-btn {
+            background: transparent;
+            border: none;
+            color: var(--latte-gold);
+            padding: 5px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.8rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+        }
+        .like-btn i { font-size: 0.9rem; transition: transform 0.3s; }
+        .like-btn.liked { color: var(--latte-gold); }
+        
+        @keyframes buttonPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .btn-pulse { animation: buttonPulse 0.4s ease-out; }
+
+        /* --- تعديل القلب: إطار ذهبي، تبطئة الظهور، وتغيير اللون --- */
+        .flying-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0); /* يبدأ من حجم صفر */
+            color: var(--heart-color); /* يتغير اللون حسب المود */
+            font-size: 3.5rem;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            /* إضافة إطار ذهبي للقلب */
+            -webkit-text-stroke: 1.5px var(--latte-gold);
+            text-shadow: 0 0 25px rgba(200, 161, 101, 0.4);
+            /* تبطئة الظهور والحركة لـ 2.5 ثانية */
+            transition: transform 2.5s cubic-bezier(0.2, 0, 0.2, 1), 
+                        opacity 1.5s ease-in-out; 
+        }
 
         .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200, 161, 101, 0.1); }
         .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200, 161, 101, 0.3); }
@@ -170,7 +214,6 @@
             </div>
         </div>
     </div>
-
 
     <header class="sticky-header">
         <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
@@ -214,44 +257,148 @@
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
         <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
         <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
-        <div class="product-section"><img src="p01.webp"><div class="model-tag">تصميم ملكي فاخر</div></div>
-        <div class="product-section"><img src="p02.webp"><div class="model-tag">واجهات حجرية مميزة</div></div>
-        <div class="product-section"><img src="p03.webp"><div class="model-tag">إبداع التصميم الخارجي</div></div>
-        <div class="product-section"><img src="p04.webp"><div class="model-tag">فخامة الحجر الطبيعي</div></div>
-        <div class="product-section"><img src="p05.webp"><div class="model-tag">لمسات فنية عصرية</div></div>
-        <div class="product-section"><img src="p06.webp"><div class="model-tag">ديكورات خارجية راقية</div></div>
-        <div class="product-section"><img src="p07.webp"><div class="model-tag">نقوش حجرية يدوية</div></div>
-        <div class="product-section"><img src="p08.webp"><div class="model-tag">هندسة الحجر والجمال</div></div>
-        <div class="product-section"><img src="p09.webp"><div class="model-tag">تصاميم كلاسيكية</div></div>
-        <div class="product-section"><img src="p10.webp"><div class="model-tag">واجهات مودرن 2026</div></div>
-        <div class="product-section"><img src="p11.webp"><div class="model-tag">تناسق الألوان والخامات</div></div>
-        <div class="product-section"><img src="p12.webp"><div class="model-tag">أناقة المداخل</div></div>
-        <div class="product-section"><img src="p13.webp"><div class="model-tag">تميز الواجهات</div></div>
+        
+        <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div>
+        <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div>
+        <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div>
+        <div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i> <span id="count-p04">0</span></button></div></div>
+        <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div>
+        <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div>
+        <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div>
+        <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div>
+        <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div>
+        <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div>
+        <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div>
+        <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div>
+        <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div>
     </div>
 
     <div id="interior-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-        <div class="product-section"><img src="in01.webp"><div class="model-tag">إبداع عصري متجدد</div></div>
-        <div class="product-section"><img src="in02.webp"><div class="model-tag">فخامة الاستقبال</div></div>
-        <div class="product-section"><img src="in03.webp"><div class="model-tag">لمسات كلاسيكية راقية</div></div>
-        <div class="product-section"><img src="in04.webp"><div class="model-tag">ركن الترفيه الذكي</div></div>
-        <div class="product-section"><img src="in05.webp"><div class="model-tag">سحر الإضاءة الهادئة</div></div>
-        <div class="product-section"><img src="in06.webp"><div class="model-tag">تناغم الألوان</div></div>
-        <div class="product-section"><img src="in07.webp"><div class="model-tag">أناقة الهدوء</div></div>
-        <div class="product-section"><img src="in08.webp"><div class="model-tag">تنسيق فني مميز</div></div>
-        <div class="product-section"><img src="in09.webp"><div class="model-tag">جمالية الممرات</div></div>
-        <div class="product-section"><img src="in10.webp"><div class="model-tag">زوايا الراحة</div></div>
-        <div class="product-section"><img src="in11.webp"><div class="model-tag">بريق الفخامة</div></div>
-        <div class="product-section"><img src="in12.webp"><div class="model-tag">هندسة الجمال الداخلي</div></div>
-        <div class="product-section"><img src="in13.webp"><div class="model-tag">تكامل التصميم</div></div>
-        <div class="product-section"><img src="in14.webp"><div class="model-tag">واجهة داخلية ساحرة</div></div>
-        <div class="product-section"><img src="in15.webp"><div class="model-tag">رؤية عصرية 2026</div></div>
+        <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div>
+        <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div>
+        <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div>
+        <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div>
+        <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div>
+        <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div>
+        <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div>
+        <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div>
+        <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div>
+        <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div>
+        <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div>
+        <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div>
+        <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div>
+        <div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div>
+        <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div>
+        
         <div class="whatsapp-cta">
             <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%85%D9%86%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
         </div>
     </div>
 
     <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, updateDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
+            authDomain: "diwd-a7709.firebaseapp.com",
+            databaseURL: "https://diwd-a7709-default-rtdb.firebaseio.com",
+            projectId: "diwd-a7709",
+            storageBucket: "diwd-a7709.firebasestorage.app",
+            messagingSenderId: "190314181686",
+            appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
+            measurementId: "G-VSGFFD435W"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.handleDoubleTap = (id) => {
+    const btn = document.getElementById('btn-' + id);
+    const container = btn.closest('.product-section');
+    
+    const heart = document.createElement('i');
+    heart.className = 'fas fa-heart flying-heart';
+    container.appendChild(heart);
+    
+    const btnRect = btn.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    
+    // حساب المركز الأفقي للزر ثم إزاحته لليسار قليلاً (بمقدار 38 بكسل) ليقع فوق القلب الثابت تماماً
+    const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
+    // حساب المركز العمودي للزر
+    const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
+
+    requestAnimationFrame(() => {
+        // ظهور سريع وخاطف في الوسط
+        heart.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease";
+        heart.style.opacity = '0.6'; 
+        heart.style.transform = `translate(-50%, -50%) scale(1.6)`; 
+        
+        // استقرار ثم انطلاق نحو الهدف
+        setTimeout(() => {
+            // سرعة متوسطة لضمان دقة الملاحظة والالتصاق
+            heart.style.transition = "transform 1.0s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease-in"; 
+            
+            // تصغير الحجم ليتطابق مع القلب الصغير بالأسفل
+            heart.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0.25)`;
+            
+            // يبدأ الاختفاء عند ملامسة الهدف
+            setTimeout(() => {
+                heart.style.opacity = '0';
+            }, 600); 
+
+        }, 800); // تقليل وقت الثبات لجعل الحركة أرشق
+    });
+
+    // إزالة العنصر وتفعيل النبضة
+    setTimeout(() => {
+        heart.remove();
+        btn.classList.add('btn-pulse');
+        setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+        window.handleLike(id);
+    }, 2000); 
+};
+
+
+
+
+
+
+
+        window.handleLike = async (id) => {
+            if (localStorage.getItem('liked_' + id)) return;
+            const photoRef = doc(db, "photos", id);
+            try {
+                await updateDoc(photoRef, { likesCount: increment(1) });
+                localStorage.setItem('liked_' + id, 'true');
+                refreshUI(id);
+            } catch (e) { console.error(e); }
+        };
+
+        async function refreshUI(id) {
+            const docSnap = await getDoc(doc(db, "photos", id));
+            if (docSnap.exists()) {
+                const countVal = docSnap.data().likesCount;
+                document.getElementById('count-' + id).innerText = countVal;
+                if (localStorage.getItem('liked_' + id)) {
+                    document.getElementById('btn-' + id).classList.add('liked');
+                }
+            }
+        }
+
+        const allPhotos = [
+            'p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13',
+            'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'
+        ];
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            allPhotos.forEach(id => refreshUI(id));
+        });
+    </script>
 
     <script>
         const observerOptions = { threshold: 0.10 };
@@ -260,7 +407,7 @@
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active-reveal');
                 } else {
-                    entry.target.classList.remove('active-reveal'); // ميزة السوفت رولنك عند الصعود
+                    entry.target.classList.remove('active-reveal'); 
                 }
             });
         }, observerOptions);
@@ -294,13 +441,9 @@
         function toggleTheme() {
             const icon = document.getElementById('themeIcon');
             const headerToggle = document.getElementById('themeToggle');
-            
-            // إضافة ميزة الانقلاب (الدوران)
             headerToggle.style.transform = "rotate(360deg)";
             setTimeout(() => { headerToggle.style.transform = "rotate(0deg)"; }, 600);
-
             document.body.classList.toggle('dark-mode');
-            
             if(document.body.classList.contains('dark-mode')) {
                 icon.classList.replace('fa-moon', 'fa-sun');
                 localStorage.setItem('theme', 'dark');
