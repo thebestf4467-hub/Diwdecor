@@ -13,13 +13,28 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
+        /* --- تنسيق البوابة الجديدة --- */
+        .comment-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .comment-modal.active { display: flex; }
+        .comment-content {
+            background: var(--creamy-white);
+            border: 1px solid var(--latte-gold);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 90%; max-width: 400px;
+        }
+
         :root { 
             --latte-gold: #c8a165; 
             --vanilla-light: #f9f1d8; 
             --bg-gradient: linear-gradient(135deg, #fffcf7 0%, #f3e5ab 100%); 
             --dark-latte: #4b3832; 
             --creamy-white: #fffcf9; 
-            --heart-color: #c8a165; /* لون القلب في الوضع الفاتح */
+            --heart-color: #c8a165; 
         }
         
         body.dark-mode {
@@ -27,7 +42,7 @@
             --dark-latte: #f9f1d8;
             --creamy-white: #251f1c;
             --vanilla-light: #3d302a;
-            --heart-color: #f3e5ab; /* لون القلب في الدارك مود (ذهبي فاتح سينمائي) */
+            --heart-color: #f3e5ab; 
             background: var(--bg-gradient);
             color: var(--dark-latte);
         }
@@ -82,10 +97,11 @@
         /* --- الهيدر وتغيير المود --- */
         .sticky-header { 
             position: sticky; top: 0; z-index: 1000; 
-            background: rgba(255, 252, 249, 0.92); padding: 12px 20px; 
+            background: rgba(255, 252, 249, 0.92); 
             border-bottom: 1px solid var(--latte-gold); 
             display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(10px); 
+            padding: 12px 20px;
         }
         body.dark-mode .sticky-header { background: rgba(37, 31, 28, 0.92); }
         
@@ -168,23 +184,19 @@
         }
         .btn-pulse { animation: buttonPulse 0.4s ease-out; }
 
-        /* --- تعديل القلب: إطار ذهبي، تبطئة الظهور، وتغيير اللون --- */
         .flying-heart {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0); /* يبدأ من حجم صفر */
-            color: var(--heart-color); /* يتغير اللون حسب المود */
+            transform: translate(-50%, -50%) scale(0); 
+            color: var(--heart-color); 
             font-size: 3.5rem;
             pointer-events: none;
             z-index: 100;
             opacity: 0;
-            /* إضافة إطار ذهبي للقلب */
             -webkit-text-stroke: 1.5px var(--latte-gold);
             text-shadow: 0 0 25px rgba(200, 161, 101, 0.4);
-            /* تبطئة الظهور والحركة لـ 2.5 ثانية */
-            transition: transform 2.5s cubic-bezier(0.2, 0, 0.2, 1), 
-                        opacity 1.5s ease-in-out; 
+            transition: transform 2.5s cubic-bezier(0.2, 0, 0.2, 1), opacity 1.5s ease-in-out; 
         }
 
         .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200, 161, 101, 0.1); }
@@ -192,9 +204,32 @@
 
         footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
         body.dark-mode footer { border-color: #3d302a; }
+
+        /* --- تنسيقات التعليقات المضافة --- */
+        #comments-list::-webkit-scrollbar { width: 4px; }
+        #comments-list::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
+        .comment-item { 
+            padding: 10px; background: var(--vanilla-light); 
+            border-radius: 12px; border-right: 3px solid var(--latte-gold);
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
+
+    <div id="welcome-gate" class="comment-modal active" style="z-index: 9999; background: var(--bg-gradient);">
+        <div class="comment-content" style="height: auto; text-align: center; padding: 40px 20px;">
+            <div class="logo" style="font-size: 3rem; margin-bottom: 10px;">MD</div>
+            <h2 style="color: var(--latte-gold); margin-bottom: 15px;">أهلاً بكم في عالم الفخامة</h2>
+            <p style="font-size: 0.9rem; margin-bottom: 30px;">سجل دخولك لتتمكن من التعليق وحفظ تصاميمك المفضلة، أو تصفح أعمالنا كضيف.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <button class="back-btn" onclick="openAuthModal()" style="width: 100%; padding: 15px; justify-content: center;">تسجيل الدخول / إنشاء حساب</button>
+                <button onclick="continueAsGuest()" style="background: transparent; border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 12px; border-radius: 20px; cursor: pointer; font-weight: bold;">المتابعة كضيف</button>
+            </div>
+        </div>
+    </div>
 
     <div class="progress-bar" id="myBar"></div>
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -211,6 +246,13 @@
                 <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%20%D8%A3%D8%B3%D8%AA%D8%A7%D8%B0%20%D9%85%D8%AD%D9%85%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1%D8%A7%D8%AA" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
                 <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام </a>
                 <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج(المالك)</a>
+<div class="menu-section">
+    <h3>الحساب</h3>
+    <button onclick="logoutUser()" 
+        style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer;">
+        تسجيل الخروج
+    </button>
+</div>
             </div>
         </div>
     </div>
@@ -253,43 +295,58 @@
         </section>
     </div>
 
+    <div id="comments-modal" class="comment-modal">
+        <div class="comment-content" style="display: flex; flex-direction: column; max-height: 80vh;">
+            <div style="padding: 15px; border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 1rem; color: var(--latte-gold);">التعليقات</h3>
+                <i class="fas fa-times" onclick="closeComments()" style="cursor: pointer;"></i>
+            </div>
+            <div id="comments-list" style="flex-grow: 1; overflow-y: auto; padding: 15px; min-height: 200px; display: flex; flex-direction: column; gap: 12px;">
+                </div>
+            <div style="padding: 15px; border-top: 1px solid var(--latte-gold); display: flex; gap: 8px;">
+                <input type="text" id="comment-input" placeholder="اكتب تعليقك..." style="flex-grow: 1; padding: 10px; border-radius: 20px; border: 1px solid var(--latte-gold); background: var(--vanilla-light); outline: none; color: var(--dark-latte);">
+                <button onclick="sendComment()" style="background: var(--latte-gold); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
     <div id="stone-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
         <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
         <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
         
-        <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div>
-        <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div>
-        <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div>
-        <div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i> <span id="count-p04">0</span></button></div></div>
-        <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div>
-        <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div>
-        <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div>
-        <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div>
-        <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div>
-        <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div>
-        <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div>
-        <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div>
-        <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div>
+        <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
+        <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
+        <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
+        <div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p04')"><i class="far fa-comment"></i></button><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i> <span id="count-p04">0</span></button></div></div></div>
+        <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div></div>
+        <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div></div>
+        <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div></div>
+        <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
+        <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div></div>
+        <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div></div>
+        <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
+        <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
+        <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
     </div>
 
     <div id="interior-gallery" class="page">
         <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-        <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div>
-        <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div>
-        <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div>
-        <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div>
-        <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div>
-        <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div>
-        <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div>
-        <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div>
-        <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div>
-        <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div>
-        <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div>
-        <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div>
-        <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div>
-        <div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div>
-        <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div>
+        <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
+        <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div></div>
+        <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
+        <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div></div>
+        <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div></div>
+        <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
+        <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
+        <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
+        <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
+        <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
+        <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div></div>
+        <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div></div>
+        <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
+        <div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in14')"><i class="far fa-comment"></i></button><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div></div>
+        <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
         
         <div class="whatsapp-cta">
             <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%85%D9%86%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
@@ -298,147 +355,277 @@
 
     <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
-            <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, updateDoc, getDoc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
-        authDomain: "diwd-a7709.firebaseapp.com",
-        databaseURL: "https://diwd-a7709-default-rtdb.firebaseio.com",
-        projectId: "diwd-a7709",
-        storageBucket: "diwd-a7709.firebasestorage.app",
-        messagingSenderId: "190314181686",
-        appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
-        measurementId: "G-VSGFFD435W"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // دالة النقر المزدوج - قلوب طائرة لا نهائية للجمالية
-    window.handleDoubleTap = (id) => {
-        const btn = document.getElementById('btn-' + id);
-        if (!btn) return;
-
-        const container = btn.closest('.product-section');
-        const heart = document.createElement('i');
-        heart.className = 'fas fa-heart flying-heart';
-        container.appendChild(heart);
+import {
+    getFirestore,
+    doc,
+    updateDoc,
+    getDoc,
+    setDoc,
+    increment,
+    collection,
+    addDoc,
+    query,
+    where,
+    onSnapshot,
+    orderBy,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+    getAuth,
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
+            authDomain: "diwd-a7709.firebaseapp.com",
+            databaseURL: "https://diwd-a7709-default-rtdb.firebaseio.com",
+            projectId: "diwd-a7709",
+            storageBucket: "diwd-a7709.firebasestorage.app",
+            messagingSenderId: "190314181686",
+            appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
+            measurementId: "G-VSGFFD435W"
         
-        const btnRect = btn.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
-        const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
+};
 
-        requestAnimationFrame(() => {
-            heart.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease";
-            heart.style.opacity = '0.7'; 
-            heart.style.transform = `translate(-50%, -50%) scale(1.6)`; 
-            
-            setTimeout(() => {
-                heart.style.transition = "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in"; 
-                heart.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0.25)`;
-                setTimeout(() => { heart.style.opacity = '0'; }, 500);
-            }, 600);
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+window.loginWithGoogle = async () => {
+    try {
+        const provider = new GoogleAuthProvider();
+
+        provider.setCustomParameters({
+            prompt: "select_account"
         });
 
-        setTimeout(() => { heart.remove(); }, 1500);
+        const result = await signInWithPopup(getAuth(), provider);
 
-        btn.classList.add('btn-pulse');
-        setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+        const user = result.user;
+        window.currentUser = user;
 
-        // إذا لم يكن قد وضع لايك، نقوم بوضعه الآن
-        if (!localStorage.getItem('liked_' + id)) {
-            window.handleLike(id);
-        }
-    };
+        console.log("Google user:", user);
 
-    let isProcessing = false; 
+        document.getElementById('welcome-gate').classList.remove('active');
+        document.getElementById('auth-modal').classList.remove('active');
 
-    window.handleLike = async (id) => {
-        if (isProcessing) return;
-        isProcessing = true;
+        alert("تم تسجيل الدخول بنجاح");
 
-        const photoRef = doc(db, "photos", id);
-        const hasLiked = localStorage.getItem('liked_' + id);
-
-        try {
-            if (hasLiked) {
-                // ميزة حذف الإعجاب
-                await updateDoc(photoRef, { likesCount: increment(-1) });
-                localStorage.removeItem('liked_' + id);
-            } else {
-                // ميزة إضافة إعجاب
-                const docSnap = await getDoc(photoRef);
-                if (docSnap.exists()) {
-                    await updateDoc(photoRef, { likesCount: increment(1) });
-                } else {
-                    await setDoc(photoRef, { likesCount: 1 });
-                }
-                localStorage.setItem('liked_' + id, 'true');
-            }
-            refreshUI(id);
-        } catch (e) { 
-            console.error("Firebase Error:", e);
-        } finally {
-            isProcessing = false;
-        }
-    };
-
-    async function refreshUI(id) {
-        const docRef = doc(db, "photos", id);
-        try {
-            const docSnap = await getDoc(docRef);
-            const countElement = document.getElementById('count-' + id);
-            const btnElement = document.getElementById('btn-' + id);
-
-            if (docSnap.exists() && countElement) {
-                const count = docSnap.data().likesCount;
-                countElement.innerText = count < 0 ? 0 : count; // لمنع الأرقام السالبة
-            }
-            
-            if (btnElement) {
-                if (localStorage.getItem('liked_' + id)) {
-                    btnElement.classList.add('liked');
-                } else {
-                    btnElement.classList.remove('liked');
-                }
-            }
-        } catch (e) { console.error("UI Refresh Error:", e); }
+    } catch (error) {
+        console.error("Google Login Error:", error.code, error.message);
+        alert(error.message);
     }
+};
+window.logoutUser = async () => {
+    try {
+        await signOut(auth);
 
-    const allPhotos = [
-        'p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13',
-        'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'
-    ];
-    
-    window.addEventListener('DOMContentLoaded', () => {
-        allPhotos.forEach(id => refreshUI(id));
-    });
-</script>
+        window.currentUser = null;
+
+        // إظهار شاشة الترحيب
+        document.getElementById('welcome-gate').classList.add('active');
+
+        // إغلاق النوافذ المفتوحة
+        document.getElementById('auth-modal').classList.remove('active');
+        document.getElementById('comments-modal').classList.remove('active');
+
+        alert("تم تسجيل الخروج بنجاح");
+    } catch (error) {
+        console.error(error);
+        alert("حدث خطأ أثناء تسجيل الخروج");
+    }
+};
+        // --- نظام الهوية (Auth) ---
+        window.openAuthModal = () => document.getElementById('auth-modal').classList.add('active');
+        window.closeAuthModal = () => document.getElementById('auth-modal').classList.remove('active');
+
+        // استبدل جزء الـ handleEmailAuth بهذا التنسيق المطور
+window.handleEmailAuth = async () => {
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const btn = document.getElementById('auth-submit-btn');
+
+    if (!email || !password) return alert("يرجى إدخال البيانات");
+
+    btn.innerText = "جاري التحميل..."; btn.disabled = true;
+
+    try {
+        // محاولة تسجيل الدخول
+        await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+        // إذا لم يكن الحساب موجوداً، نقوم بإنشائه
+        if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                alert("تم إنشاء حسابك بنجاح!");
+            } catch (regError) {
+                if (regError.code === 'auth/operation-not-allowed') {
+                    alert("يجب تفعيل 'Email/Password' من قائمة Add new provider في Firebase.");
+                } else {
+                    alert("خطأ: " + regError.message);
+                }
+            }
+        } else {
+            alert("حدث خطأ: " + error.message);
+        }
+    } finally {
+        btn.innerText = "دخول / اشتراك"; btn.disabled = false;
+    }
+};
 
 
+        window.continueAsGuest = () => {
+            document.getElementById('welcome-gate').style.opacity = '0';
+            setTimeout(() => document.getElementById('welcome-gate').classList.remove('active'), 400);
+        };
 
+        onAuthStateChanged(auth, (user) => {
+            window.currentUser = user;
+            if (user) {
+                document.getElementById('welcome-gate').classList.remove('active');
+                document.getElementById('auth-modal').classList.remove('active');
+            }
+        });
 
+        // --- نظام التعليقات (Comments) ---
+        let currentImageId = null;
+        let unsubscribeComments = null;
 
+        window.openComments = (id) => {
+            if (!window.currentUser) {
+                alert("يجب تسجيل الدخول للتعليق");
+                openAuthModal();
+                return;
+            }
+            currentImageId = id;
+            document.getElementById('comments-modal').classList.add('active');
+            const list = document.getElementById('comments-list');
+            list.innerHTML = '<p style="text-align:center; color:var(--latte-gold);">جاري تحميل التعليقات...</p>';
+
+            const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
+            unsubscribeComments = onSnapshot(q, (snapshot) => {
+                list.innerHTML = '';
+                if (snapshot.empty) list.innerHTML = '<p style="text-align:center; opacity:0.6;">لا توجد تعليقات بعد، كن أول من يعلق!</p>';
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    const name = d.userName || "مستخدم";
+                    list.innerHTML += `
+                        <div class="comment-item">
+                            <div style="font-size:0.7rem; font-weight:bold; color:var(--latte-gold); margin-bottom:3px;">${name}</div>
+                            <div style="font-size:0.9rem; color:var(--dark-latte);">${d.text}</div>
+                        </div>`;
+                });
+                list.scrollTop = list.scrollHeight;
+            });
+        };
+
+        window.closeComments = () => {
+            document.getElementById('comments-modal').classList.remove('active');
+            if (unsubscribeComments) unsubscribeComments();
+        };
+
+        window.sendComment = async () => {
+    const inp = document.getElementById('comment-input');
+    const text = inp.value.trim();
+    if (!text || !currentImageId) return;
+
+    try {
+        await addDoc(collection(db, "comments"), {
+            imageId: currentImageId,
+            userName: window.currentUser.email.split('@')[0],
+            text: text,
+            createdAt: serverTimestamp() // ✅ الإصلاح هنا
+        });
+
+        inp.value = '';
+    } catch (e) {
+        alert("حدث خطأ أثناء الإرسال");
+        console.error(e);
+    }
+};
+
+        // --- نظام اللايكات والقلب الطائر الخاص بك ---
+        window.handleDoubleTap = (id) => {
+            const btn = document.getElementById('btn-' + id);
+            if (!btn) return;
+            const container = btn.closest('.product-section');
+            const heart = document.createElement('i');
+            heart.className = 'fas fa-heart flying-heart';
+            container.appendChild(heart);
+            const btnRect = btn.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
+            const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
+            requestAnimationFrame(() => {
+                heart.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease";
+                heart.style.opacity = '0.7'; 
+                heart.style.transform = `translate(-50%, -50%) scale(1.6)`; 
+                setTimeout(() => {
+                    heart.style.transition = "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in"; 
+                    heart.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0.25)`;
+                    setTimeout(() => { heart.style.opacity = '0'; }, 500);
+                }, 600);
+            });
+            setTimeout(() => { heart.remove(); }, 1500);
+            btn.classList.add('btn-pulse');
+            setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+            if (!localStorage.getItem('liked_' + id)) window.handleLike(id);
+        };
+
+        let isProcessing = false; 
+        window.handleLike = async (id) => {
+            if (isProcessing) return;
+            isProcessing = true;
+            const photoRef = doc(db, "photos", id);
+            const hasLiked = localStorage.getItem('liked_' + id);
+            try {
+                if (hasLiked) {
+                    await updateDoc(photoRef, { likesCount: increment(-1) });
+                    localStorage.removeItem('liked_' + id);
+                } else {
+                    const docSnap = await getDoc(photoRef);
+                    if (docSnap.exists()) await updateDoc(photoRef, { likesCount: increment(1) });
+                    else await setDoc(photoRef, { likesCount: 1 });
+                    localStorage.setItem('liked_' + id, 'true');
+                }
+                refreshUI(id);
+            } catch (e) { console.error(e); } finally { isProcessing = false; }
+        };
+
+        async function refreshUI(id) {
+            const docRef = doc(db, "photos", id);
+            try {
+                const docSnap = await getDoc(docRef);
+                const countElement = document.getElementById('count-' + id);
+                const btnElement = document.getElementById('btn-' + id);
+                if (docSnap.exists() && countElement) countElement.innerText = docSnap.data().likesCount;
+                if (btnElement) localStorage.getItem('liked_' + id) ? btnElement.classList.add('liked') : btnElement.classList.remove('liked');
+            } catch (e) { console.error(e); }
+        }
+
+        const allPhotos = ['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13','in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
+        window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
+    </script>
 
     <script>
+        // الوظائف المساعدة وتغيير المود الأصلية
         const observerOptions = { threshold: 0.10 };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active-reveal');
-                } else {
-                    entry.target.classList.remove('active-reveal'); 
-                }
+                if (entry.isIntersecting) entry.target.classList.add('active-reveal');
+                else entry.target.classList.remove('active-reveal'); 
             });
         }, observerOptions);
 
-        function applyReveal() {
-            document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta').forEach(t => observer.observe(t));
-        }
-
+        function applyReveal() { document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta').forEach(t => observer.observe(t)); }
+        
         function toggleMenu() {
             const menu = document.getElementById('sideMenu');
             const overlay = document.getElementById('overlay');
@@ -480,16 +667,40 @@
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
             const scrolled = (winScroll / height) * 100;
-            document.getElementById("myBar").style.width = scrolled + "%";
+            if(document.getElementById("myBar")) document.getElementById("myBar").style.width = scrolled + "%";
         });
 
         window.addEventListener("load", () => {
             applyReveal();
             if(localStorage.getItem('theme') === 'dark') {
                 document.body.classList.add('dark-mode');
-                document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+                if(document.getElementById('themeIcon')) document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
             }
         });
     </script>
+
+    <div id="auth-modal" class="comment-modal">
+        <div class="comment-content" style="padding: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: var(--latte-gold);">تسجيل الدخول</h3>
+<button onclick="loginWithGoogle()" class="back-btn" style="width:100%; margin-top:10px; justify-content:center;">
+    <i class="fab fa-google"></i> تسجيل عبر Google
+</button>
+                <i class="fas fa-times" onclick="closeAuthModal()" style="cursor: pointer; color: var(--latte-gold);"></i>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <input type="email" id="auth-email" placeholder="البريد الإلكتروني" style="padding: 12px; border-radius: 10px; border: 1px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo';">
+                <input type="password" id="auth-password" placeholder="كلمة المرور" style="padding: 12px; border-radius: 10px; border: 1px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo';">
+                
+                <button onclick="handleEmailAuth()" id="auth-submit-btn" class="back-btn" style="width: 100%; border-radius: 10px; justify-content: center;">دخول / اشتراك</button>
+                
+                <div style="text-align: center; margin-top: 10px;">
+                    <p style="font-size: 0.8rem;">سيتم إنشاء حساب تلقائياً للمستخدمين الجدد</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
