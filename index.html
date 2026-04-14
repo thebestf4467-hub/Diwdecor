@@ -12,6 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          // ملاحظة: استبدل YOUR_PUBLIC_KEY_HERE بالمفتاح الخاص بك من موقع EmailJS
+          emailjs.init("erC7kBqB9EB-S6N1r");
+       })();
+    </script>
+
     <style>
         /* --- تنسيق البوابة الجديدة --- */
         .comment-modal {
@@ -397,6 +405,26 @@ import {
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+
+// وظيفة إرسال الإشعار للمالك (EmailJS)
+async function sendAdminNotification(name, email) {
+    const serviceID = "service_d6z689p"; 
+    const templateID = "template_7j8sc6u"; 
+    
+    const templateParams = {
+        user_name: name,
+        user_email: email,
+        date: new Date().toLocaleString('ar-IQ')
+    };
+
+    try {
+        await emailjs.send(serviceID, templateID, templateParams);
+        console.log("تم إرسال إشعار الدخول بنجاح ✅");
+    } catch (error) {
+        console.error("خطأ في إرسال الإشعار ❌:", error);
+    }
+}
+
 async function getUserName(uid) {
     const snap = await getDoc(doc(db, "users", uid));
     if (snap.exists()) {
@@ -414,6 +442,9 @@ async function askForUsername(uid, email) {
         email: email,
         createdAt: serverTimestamp()
     });
+
+    // إرسال الإيميل لمحمد فور حفظ الاسم
+    sendAdminNotification(username, email);
 
     alert("تم حفظ اسم المستخدم");
     document.getElementById('welcome-gate').classList.remove('active');
