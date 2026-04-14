@@ -397,29 +397,52 @@ import {
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+async function getUserName(uid) {
+    const snap = await getDoc(doc(db, "users", uid));
+    if (snap.exists()) {
+        return snap.data().username;
+    }
+    return "مستخدم";
+}
+async function askForUsername(uid, email) {
+    const username = prompt("اكتب اسم المستخدم (Username):");
+
+    if (!username) return askForUsername(uid, email);
+
+    await setDoc(doc(db, "users", uid), {
+        username: username,
+        email: email,
+        createdAt: serverTimestamp()
+    });
+
+    alert("تم حفظ اسم المستخدم");
+    document.getElementById('welcome-gate').classList.remove('active');
+}
 const googleProvider = new GoogleAuthProvider();
 window.loginWithGoogle = async () => {
     try {
         const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: "select_account" });
 
-        provider.setCustomParameters({
-            prompt: "select_account"
-        });
-
-        const result = await signInWithPopup(getAuth(), provider);
-
+        const result = await signInWithPopup(auth, provider);
         const user = result.user;
+
         window.currentUser = user;
 
-        console.log("Google user:", user);
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
 
-        document.getElementById('welcome-gate').classList.remove('active');
-        document.getElementById('auth-modal').classList.remove('active');
+        if (!userSnap.exists() || !userSnap.data().username) {
+            askForUsername(user.uid, user.email);
+        } else {
+            document.getElementById('welcome-gate').classList.remove('active');
+            document.getElementById('auth-modal').classList.remove('active');
+        }
 
         alert("تم تسجيل الدخول بنجاح");
 
     } catch (error) {
-        console.error("Google Login Error:", error.code, error.message);
+        console.error(error);
         alert(error.message);
     }
 };
@@ -539,7 +562,7 @@ window.handleEmailAuth = async () => {
     try {
         await addDoc(collection(db, "comments"), {
             imageId: currentImageId,
-            userName: window.currentUser.email.split('@')[0],
+            userName: window.currentUser.username || window.currentUser.email.split('@')[0],
             text: text,
             createdAt: serverTimestamp() // ✅ الإصلاح هنا
         });
