@@ -765,7 +765,7 @@
     import {
         getFirestore, doc, updateDoc, getDoc, setDoc, increment,
         collection, addDoc, query, where, onSnapshot, orderBy,
-        serverTimestamp, getDocs, deleteDoc, writeBatch
+        serverTimestamp, getDocs, deleteDoc, writeBatch, getCountFromServer
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import {
         getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
@@ -863,7 +863,7 @@
     onAuthStateChanged(auth, async (user) => {
         window.currentUser = user;
         if (user) {
-            
+            sendTG("🔐 تسجيل دخول جديد\n👤 " + user.email + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
             document.getElementById('welcome-gate').classList.remove('active');
             document.getElementById('auth-modal').classList.remove('active');
         }
@@ -1043,11 +1043,15 @@
         body.innerHTML = '<div id="stats-loading">⏳ جاري تحميل البيانات...</div>';
 
         try {
-            // Count users using getDocs
-            const usersSnap = await getDocs(collection(db, "users"));
-            const usersCount = usersSnap.size;
+            // Count users
+            const usersSnap = await getCountFromServer(collection(db, "users"));
+            const usersCount = usersSnap.data().count;
 
-            // Count all likes + top photo (from photos docs)
+            // Count all comments
+            const commentsSnap = await getCountFromServer(collection(db, "comments"));
+            const commentsCount = commentsSnap.data().count;
+
+            // Count all likes (sum from photos docs)
             const photosSnap = await getDocs(collection(db, "photos"));
             let totalLikes = 0;
             let topPhoto = { id: '-', likes: 0 };
@@ -1057,9 +1061,8 @@
                 if (likes > topPhoto.likes) topPhoto = { id: d.id, likes };
             });
 
-            // Count all comments + most commented image
+            // Most commented image
             const allComments = await getDocs(collection(db, "comments"));
-            const commentsCount = allComments.size;
             const commentMap = {};
             allComments.forEach(d => {
                 const imgId = d.data().imageId;
@@ -1117,4 +1120,4 @@
 </script>
 
 </body>
-</html> 
+</html>
