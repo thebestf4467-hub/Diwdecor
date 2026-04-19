@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD</title>
 
-```
 <link rel="apple-touch-icon" sizes="180x180" href="app-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
 <link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
@@ -27,11 +26,13 @@
     const ADMIN_PASSWORD = "1999@";
 
     function sendTelegramNotification(message) {
-        var url = "https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage"
-            + "?chat_id=" + encodeURIComponent(CHAT_ID)
-            + "&text=" + encodeURIComponent(message);
-        var img = new Image();
-        img.src = url;
+        fetch("https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: "HTML" })
+        })
+        .then(function() { console.log("تم الإرسال لتلغرام"); })
+        .catch(function(err) { console.error("خطأ تلغرام:", err); });
     }
 
     function openAuthModal() {
@@ -47,10 +48,6 @@
         gate.style.opacity = '0';
         gate.style.transition = 'opacity 0.4s ease';
         setTimeout(function() { gate.classList.remove('active'); }, 400);
-        // إشعار تيليغرام عند دخول الضيف
-        sendTelegramNotification("👤 زائر جديد دخل كضيف\n🕒 " + new Date().toLocaleString('ar-IQ'));
-        // تسجيل الزيارة في Firebase
-        if (window.recordGuestVisit) window.recordGuestVisit();
     }
 
     function toggleMenu() {
@@ -537,7 +534,7 @@
         transform: translateX(-50%) translateY(0);
     }
 </style>
-```
+
 
 </head>
 <body>
@@ -695,7 +692,7 @@
     <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
     <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
 
-```
+
 <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
 <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
 <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
@@ -709,7 +706,7 @@
 <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
 <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
 <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
-```
+
 
 </div>
 
@@ -718,7 +715,7 @@
 <div id="interior-gallery" class="page">
     <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
 
-```
+
 <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
 <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div></div>
 <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
@@ -738,7 +735,7 @@
 <div class="whatsapp-cta">
     <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
 </div>
-```
+
 
 </div>
 
@@ -771,7 +768,7 @@
     import {
         getFirestore, doc, updateDoc, getDoc, setDoc, increment,
         collection, addDoc, query, where, onSnapshot, orderBy,
-        serverTimestamp, getDocs, deleteDoc, writeBatch
+        serverTimestamp, getDocs, deleteDoc, writeBatch, getCountFromServer
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import {
         getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
@@ -869,7 +866,6 @@
             sendTelegramNotification("🔐 تسجيل دخول جديد\n👤 " + user.email + "\n🕒 " + new Date().toLocaleString());
             document.getElementById('welcome-gate').classList.remove('active');
             document.getElementById('auth-modal').classList.remove('active');
-            recordMemberVisit();
         }
     });
 
@@ -1041,38 +1037,6 @@
                        'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
     window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
 
-    // ===== VISITOR COUNTER =====
-    // تسجيل زيارة المستخدم المسجّل تلقائياً عند تسجيل الدخول (يُعالج في onAuthStateChanged)
-    // تسجيل زيارة الضيف عند الضغط على "متابعة كضيف"
-    window.recordGuestVisit = async () => {
-        // نمنع التسجيل المتكرر لنفس الجلسة
-        if (sessionStorage.getItem('visit_recorded')) return;
-        sessionStorage.setItem('visit_recorded', '1');
-        try {
-            const visitsRef = doc(db, "stats", "visitors");
-            const snap = await getDoc(visitsRef);
-            if (snap.exists()) {
-                await updateDoc(visitsRef, { total: increment(1), guests: increment(1) });
-            } else {
-                await setDoc(visitsRef, { total: 1, guests: 1, members: 0 });
-            }
-        } catch(e) { console.error("خطأ تسجيل الزيارة:", e); }
-    };
-
-    async function recordMemberVisit() {
-        if (sessionStorage.getItem('visit_recorded')) return;
-        sessionStorage.setItem('visit_recorded', '1');
-        try {
-            const visitsRef = doc(db, "stats", "visitors");
-            const snap = await getDoc(visitsRef);
-            if (snap.exists()) {
-                await updateDoc(visitsRef, { total: increment(1), members: increment(1) });
-            } else {
-                await setDoc(visitsRef, { total: 1, guests: 0, members: 1 });
-            }
-        } catch(e) { console.error("خطأ تسجيل الزيارة:", e); }
-    }
-
     // ===== ADMIN STATS =====
     window.loadAdminStats = async () => {
         const body = document.getElementById('stats-body');
@@ -1080,14 +1044,14 @@
 
         try {
             // Count users
-            const usersSnap = await getDocs(collection(db, "users"));
-            const usersCount = usersSnap.size;
+            const usersSnap = await getCountFromServer(collection(db, "users"));
+            const usersCount = usersSnap.data().count;
 
             // Count all comments
-            const allComments = await getDocs(collection(db, "comments"));
-            const commentsCount = allComments.size;
+            const commentsSnap = await getCountFromServer(collection(db, "comments"));
+            const commentsCount = commentsSnap.data().count;
 
-            // Count all likes + top photo
+            // Count all likes (sum from photos docs)
             const photosSnap = await getDocs(collection(db, "photos"));
             let totalLikes = 0;
             let topPhoto = { id: '-', likes: 0 };
@@ -1098,6 +1062,7 @@
             });
 
             // Most commented image
+            const allComments = await getDocs(collection(db, "comments"));
             const commentMap = {};
             allComments.forEach(d => {
                 const imgId = d.data().imageId;
@@ -1108,34 +1073,11 @@
                 if (count > topCommented.count) topCommented = { id, count };
             });
 
-            // Visitor stats
-            const visitsSnap = await getDoc(doc(db, "stats", "visitors"));
-            const visitsData = visitsSnap.exists() ? visitsSnap.data() : { total: 0, guests: 0, members: 0 };
-
             body.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#2ecc71;"><i class="fas fa-eye"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-label">إجمالي الزوار</div>
-                        <div class="stat-value">${visitsData.total || 0}</div>
-                    </div>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card-sm">
-                        <div class="stat-icon" style="background:#7f8c8d;"><i class="fas fa-user-secret"></i></div>
-                        <div class="stat-value">${visitsData.guests || 0}</div>
-                        <div class="stat-label">زوار ضيوف</div>
-                    </div>
-                    <div class="stat-card-sm">
-                        <div class="stat-icon" style="background:#2980b9;"><i class="fas fa-user-check"></i></div>
-                        <div class="stat-value">${visitsData.members || 0}</div>
-                        <div class="stat-label">زوار مسجّلون</div>
-                    </div>
-                </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-users"></i></div>
                     <div class="stat-info">
-                        <div class="stat-label">عدد الحسابات المسجّلة</div>
+                        <div class="stat-label">عدد المسجلين</div>
                         <div class="stat-value">${usersCount}</div>
                     </div>
                 </div>
@@ -1159,7 +1101,7 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-fire"></i></div>
+                    <div class="stat-icon" style="background:#8e44ad;"><iclass="fas fa-fire"></i></div>
                     <div class="stat-info">
                         <div class="stat-label">أكثر صورة تعليقات</div>
                         <div class="stat-value" style="font-size:1rem;">${topCommented.id} <span style="font-size:0.8rem;opacity:0.7;">(${topCommented.count} 💬)</span></div>
@@ -1167,7 +1109,7 @@
                 </div>
             `;
         } catch(e) {
-            body.innerHTML = '<p style="text-align:center;color:red;padding:15px;">خطأ: ' + e.message + '</p>';
+            body.innerHTML = '<p style="text-align:center;color:red;padding:15px;">خطأ في تحميل البيانات</p>';
             console.error(e);
         }
     };
