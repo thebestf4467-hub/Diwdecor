@@ -1,761 +1,1181 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD</title>
-    
-    <link rel="apple-touch-icon" sizes="180x180" href="app-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
 
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+```
+<link rel="apple-touch-icon" sizes="180x180" href="app-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-       (function(){
-          // ملاحظة: استبدل YOUR_PUBLIC_KEY_HERE بالمفتاح الخاص بك من موقع EmailJS
-          emailjs.init("erC7kBqB9EB-S6N1r");
-       })();
-    </script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <style>
-        /* --- تنسيق البوابة الجديدة --- */
-        .comment-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; justify-content: center; align-items: center;
-            z-index: 9999;
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script type="text/javascript">
+    window.addEventListener('load', function() {
+        if (typeof emailjs !== 'undefined') {
+            emailjs.init("erC7kBqB9EB-S6N1r");
         }
-        .comment-modal.active { display: flex; }
-        .comment-content {
-            background: var(--creamy-white);
-            border: 1px solid var(--latte-gold);
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            width: 90%; max-width: 400px;
+    });
+
+    const TELEGRAM_TOKEN = "8677042322:AAHexlEQV-u6AbbDgacGBDhORmlPAv2Yi04";
+    const CHAT_ID = "5054803296";
+    const ADMIN_PASSWORD = "1999@";
+
+    function sendTelegramNotification(message) {
+        var url = "https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage"
+            + "?chat_id=" + encodeURIComponent(CHAT_ID)
+            + "&text=" + encodeURIComponent(message);
+        var img = new Image();
+        img.src = url;
+    }
+
+    function openAuthModal() {
+        document.getElementById('auth-modal').classList.add('active');
+    }
+
+    function closeAuthModal() {
+        document.getElementById('auth-modal').classList.remove('active');
+    }
+
+    function continueAsGuest() {
+        var gate = document.getElementById('welcome-gate');
+        gate.style.opacity = '0';
+        gate.style.transition = 'opacity 0.4s ease';
+        setTimeout(function() { gate.classList.remove('active'); }, 400);
+        // إشعار تيليغرام عند دخول الضيف
+        sendTelegramNotification("👤 زائر جديد دخل كضيف\n🕒 " + new Date().toLocaleString('ar-IQ'));
+        // تسجيل الزيارة في Firebase
+        if (window.recordGuestVisit) window.recordGuestVisit();
+    }
+
+    function toggleMenu() {
+        var menu = document.getElementById('sideMenu');
+        var overlay = document.getElementById('overlay');
+        menu.classList.toggle('open');
+        overlay.style.display = menu.classList.contains('open') ? 'block' : 'none';
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
+        document.getElementById(pageId).style.display = 'block';
+        if (document.getElementById('sideMenu').classList.contains('open')) toggleMenu();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(applyReveal, 100);
+    }
+
+    function playVideo() {
+        document.getElementById('vidPlaceholder').style.display = 'none';
+        var v = document.getElementById('main-video');
+        v.style.display = 'block';
+        v.play();
+    }
+
+    function toggleTheme() {
+        var icon = document.getElementById('themeIcon');
+        var headerToggle = document.getElementById('themeToggle');
+        headerToggle.style.transform = "rotate(360deg)";
+        setTimeout(function() { headerToggle.style.transform = "rotate(0deg)"; }, 600);
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+            icon.classList.replace('fa-moon', 'fa-sun');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            icon.classList.replace('fa-sun', 'fa-moon');
+            localStorage.setItem('theme', 'light');
         }
+    }
 
-        :root { 
-            --latte-gold: #c8a165; 
-            --vanilla-light: #f9f1d8; 
-            --bg-gradient: linear-gradient(135deg, #fffcf7 0%, #f3e5ab 100%); 
-            --dark-latte: #4b3832; 
-            --creamy-white: #fffcf9; 
-            --heart-color: #c8a165; 
+    var observerOptions = { threshold: 0.10 };
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) entry.target.classList.add('active-reveal');
+            else entry.target.classList.remove('active-reveal');
+        });
+    }, observerOptions);
+
+    function applyReveal() {
+        document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta').forEach(function(t) {
+            observer.observe(t);
+        });
+    }
+
+    window.addEventListener("scroll", function() {
+        var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        var scrolled = (winScroll / height) * 100;
+        var bar = document.getElementById("myBar");
+        if (bar) bar.style.width = scrolled + "%";
+    });
+
+    window.addEventListener("load", function() {
+        applyReveal();
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            var icon = document.getElementById('themeIcon');
+            if (icon) icon.classList.replace('fa-moon', 'fa-sun');
         }
-        
-        body.dark-mode {
-            --bg-gradient: linear-gradient(135deg, #1a1614 0%, #2d241f 100%);
-            --dark-latte: #f9f1d8;
-            --creamy-white: #251f1c;
-            --vanilla-light: #3d302a;
-            --heart-color: #f3e5ab; 
-            background: var(--bg-gradient);
-            color: var(--dark-latte);
+    });
+
+    // ===== Admin Mode Logic =====
+    window.isAdminMode = false;
+    var logoClickCount = 0;
+    var logoClickTimer = null;
+
+    function handleLogoClick() {
+        logoClickCount++;
+        if (logoClickTimer) clearTimeout(logoClickTimer);
+        if (logoClickCount >= 2) {
+            logoClickCount = 0;
+            promptAdminPassword();
+        } else {
+            logoClickTimer = setTimeout(function() { logoClickCount = 0; }, 500);
         }
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+    function promptAdminPassword() {
+        var modal = document.getElementById('admin-pass-modal');
+        modal.classList.add('active');
+        setTimeout(function() {
+            var inp = document.getElementById('admin-pass-input');
+            if (inp) inp.focus();
+        }, 100);
+    }
 
-        body { 
-            background: var(--bg-gradient); 
-            color: var(--dark-latte); 
-            font-family: 'Cairo', sans-serif; 
-            overflow-x: hidden; 
-            transition: background 0.3s ease, color 0.3s ease;
+    function closeAdminPassModal() {
+        document.getElementById('admin-pass-modal').classList.remove('active');
+        document.getElementById('admin-pass-input').value = '';
+    }
+
+    function checkAdminPassword() {
+        var val = document.getElementById('admin-pass-input').value;
+        if (val === ADMIN_PASSWORD) {
+            window.isAdminMode = true;
+            closeAdminPassModal();
+            activateAdminMode();
+        } else {
+            document.getElementById('admin-pass-input').style.borderColor = '#e74c3c';
+            document.getElementById('admin-pass-input').style.animation = 'shake 0.3s ease';
+            setTimeout(function() {
+                document.getElementById('admin-pass-input').style.borderColor = 'var(--latte-gold)';
+                document.getElementById('admin-pass-input').style.animation = '';
+            }, 600);
         }
+    }
 
-        /* --- القائمة الجانبية --- */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            right: -300px;
-            width: 300px;
-            height: 100%;
-            background: rgba(255, 252, 249, 0.98);
-            z-index: 5000;
-            transition: 0.4s ease;
-            border-left: 1px solid var(--latte-gold);
-            padding: 25px 20px;
-        }
-        body.dark-mode .side-menu { background: rgba(37, 31, 28, 0.98); }
-        .side-menu.open { right: 0; }
-        
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(75, 56, 50, 0.3);
-            display: none;
-            z-index: 4500;
-        }
+    function activateAdminMode() {
+        document.getElementById('admin-fab').style.display = 'flex';
+        document.getElementById('admin-badge').style.display = 'inline-block';
+        showAdminToast('🔐 تم تفعيل وضع الإدارة');
+        updateAdminDeleteButtons();
+    }
 
-        .close-menu { color: var(--latte-gold); font-size: 1.6rem; cursor: pointer; margin-bottom: 30px; display: block; }
-        .menu-section { margin-bottom: 35px; }
-        .menu-section h3 { color: var(--latte-gold); border-bottom: 1px solid var(--latte-gold); padding-bottom: 8px; margin-bottom: 15px; font-size: 1.1rem; }
-        .menu-section p { font-size: 0.9rem; line-height: 1.8; color: var(--dark-latte); text-align: justify; }
-        
-        .social-links { display: flex; flex-direction: column; gap: 18px; }
-        .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
-        .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
+    function deactivateAdminMode() {
+        window.isAdminMode = false;
+        document.getElementById('admin-fab').style.display = 'none';
+        document.getElementById('admin-badge').style.display = 'none';
+        document.getElementById('admin-stats-panel').classList.remove('active');
+        document.querySelectorAll('.admin-delete-like, .admin-delete-comment-btn').forEach(function(el) {
+            el.style.display = 'none';
+        });
+        showAdminToast('تم إلغاء وضع الإدارة');
+    }
 
-        /* --- الهيدر وتغيير المود --- */
-        .sticky-header { 
-            position: sticky; top: 0; z-index: 1000; 
-            background: rgba(255, 252, 249, 0.92); 
-            border-bottom: 1px solid var(--latte-gold); 
-            display: flex; justify-content: space-between; align-items: center;
-            backdrop-filter: blur(10px); 
-            padding: 12px 20px;
-        }
-        body.dark-mode .sticky-header { background: rgba(37, 31, 28, 0.92); }
-        
-        .menu-trigger { color: var(--latte-gold); font-size: 1.5rem; cursor: pointer; }
-        
-        .logo-container { text-align: center; flex-grow: 1; }
-        .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; }
-        .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
+    function updateAdminDeleteButtons() {
+        if (!window.isAdminMode) return;
+        document.querySelectorAll('.admin-delete-like').forEach(function(el) { el.style.display = 'flex'; });
+    }
 
-        .theme-toggle-header {
-            color: var(--latte-gold);
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 30px;
-            text-align: left;
-        }
-        .theme-toggle-header:active { transform: rotate(360deg); }
+    function showAdminToast(msg) {
+        var toast = document.getElementById('admin-toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2500);
+    }
 
-        .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--latte-gold); z-index: 3000; width: 0%; }
-        
-        /* --- الصفحات والعناصر --- */
-        .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
+    function toggleAdminStats() {
+        var panel = document.getElementById('admin-stats-panel');
+        panel.classList.toggle('active');
+        if (panel.classList.contains('active')) loadAdminStats();
+    }
 
-        .reveal, .product-section, .service-card, .whatsapp-cta { 
-            opacity: 0; 
-            transform: translateY(30px); 
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); 
-            will-change: transform, opacity;
-        }
+    function closeAdminStats() {
+        document.getElementById('admin-stats-panel').classList.remove('active');
+    }
+</script>
 
-        .active-reveal { opacity: 1; transform: translateY(0); }
+<style>
+    /* ======= COMMENT MODAL ======= */
+    .comment-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        display: none; justify-content: center; align-items: center; z-index: 9999;
+    }
+    .comment-modal.active { display: flex; }
+    .comment-content {
+        background: var(--creamy-white); border: 1px solid var(--latte-gold);
+        border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 90%; max-width: 400px;
+    }
 
-        .back-btn-container { position: sticky; top: 60px; z-index: 2000; padding: 10px; background: rgba(255, 252, 249, 0.8); display: flex; justify-content: center; }
-        body.dark-mode .back-btn-container { background: rgba(37, 31, 28, 0.8); }
-        .back-btn { background: var(--latte-gold); color: #fff; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+    :root {
+        --latte-gold: #c8a165; --vanilla-light: #f9f1d8;
+        --bg-gradient: linear-gradient(135deg, #fffcf7 0%, #f3e5ab 100%);
+        --dark-latte: #4b3832; --creamy-white: #fffcf9; --heart-color: #c8a165;
+        --admin-red: #e74c3c; --admin-green: #27ae60;
+    }
+    body.dark-mode {
+        --bg-gradient: linear-gradient(135deg, #1a1614 0%, #2d241f 100%);
+        --dark-latte: #f9f1d8; --creamy-white: #251f1c; --vanilla-light: #3d302a; --heart-color: #f3e5ab;
+        background: var(--bg-gradient); color: var(--dark-latte);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg-gradient); color: var(--dark-latte); font-family: 'Cairo', sans-serif; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
 
-        .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(255, 252, 249, 0.6), rgba(255, 252, 249, 0.6)), url('p13.webp') center/cover; padding: 40px 20px; }
-        body.dark-mode .hero { background: linear-gradient(rgba(26, 22, 20, 0.8), rgba(26, 22, 20, 0.8)), url('p13.webp') center/cover; }
-        .hero h2 { font-size: 1.8rem; color: var(--dark-latte); font-weight: 900; }
+    /* ======= SIDE MENU ======= */
+    .side-menu { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; background: rgba(255,252,249,0.98); z-index: 5000; transition: 0.4s ease; border-left: 1px solid var(--latte-gold); padding: 25px 20px; overflow-y: auto; }
+    body.dark-mode .side-menu { background: rgba(37,31,28,0.98); }
+    .side-menu.open { right: 0; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(75,56,50,0.3); display: none; z-index: 4500; }
+    .close-menu { color: var(--latte-gold); font-size: 1.6rem; cursor: pointer; margin-bottom: 30px; display: block; }
+    .menu-section { margin-bottom: 35px; }
+    .menu-section h3 { color: var(--latte-gold); border-bottom: 1px solid var(--latte-gold); padding-bottom: 8px; margin-bottom: 15px; font-size: 1.1rem; }
+    .menu-section p { font-size: 0.9rem; line-height: 1.8; color: var(--dark-latte); text-align: justify; }
+    .social-links { display: flex; flex-direction: column; gap: 18px; }
+    .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
+    .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
 
-        .services { padding: 20px; display: grid; gap: 15px; }
-        .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(200, 161, 101, 0.15); border-radius: 15px; background: var(--creamy-white); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .service-card i { font-size: 2.5rem; color: var(--latte-gold); margin-bottom: 10px; }
-        .service-card h3 { color: var(--dark-latte); }
-        .service-card p { color: #7a6a67; }
-        body.dark-mode .service-card p { color: #ccc; }
-        .click-hint { display: block; font-size: 0.75rem; color: var(--latte-gold); margin-top: 8px; font-weight: bold; opacity: 0.8; }
+    /* ======= HEADER ======= */
+    .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(255,252,249,0.92); border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); padding: 12px 20px; }
+    body.dark-mode .sticky-header { background: rgba(37,31,28,0.92); }
+    .menu-trigger { color: var(--latte-gold); font-size: 1.5rem; cursor: pointer; }
+    .logo-container { text-align: center; flex-grow: 1; position: relative; }
+    .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; cursor: pointer; user-select: none; display: inline-block; }
+    .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
+    .theme-toggle-header { color: var(--latte-gold); font-size: 1.3rem; cursor: pointer; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); width: 30px; text-align: left; }
 
-        .video-box { margin: 15px; border: 1px dashed var(--latte-gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--creamy-white); }
-        #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--latte-gold); margin-top: 10px; }
+    /* Admin badge on logo */
+    #admin-badge {
+        display: none;
+        background: var(--admin-red);
+        color: white;
+        font-size: 0.45rem;
+        padding: 2px 6px;
+        border-radius: 8px;
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        letter-spacing: 0.5px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
 
-        .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); position: relative; }
-        .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; cursor: pointer; }
-        .product-section:hover img { transform: scale(1.03); }
-        .model-tag { background: var(--vanilla-light); padding: 15px; border-top: 2px solid var(--latte-gold); text-align: center; color: var(--dark-latte); font-weight: bold; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: relative; z-index: 10; }
+    /* ======= PROGRESS BAR ======= */
+    .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--latte-gold); z-index: 3000; width: 0%; }
 
-        .like-btn {
-            background: transparent;
-            border: none;
-            color: var(--latte-gold);
-            padding: 5px;
-            cursor: pointer;
-            font-family: 'Cairo', sans-serif;
-            font-size: 0.8rem;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            position: relative;
-        }
-        .like-btn i { font-size: 0.9rem; transition: transform 0.3s; }
-        .like-btn.liked { color: var(--latte-gold); }
-        
-        @keyframes buttonPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        .btn-pulse { animation: buttonPulse 0.4s ease-out; }
+    /* ======= PAGES & ANIMATIONS ======= */
+    .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4,0,0.2,1); }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
+    .reveal, .product-section, .service-card, .whatsapp-cta { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); will-change: transform, opacity; }
+    .active-reveal { opacity: 1; transform: translateY(0); }
+    .back-btn-container { position: sticky; top: 60px; z-index: 2000; padding: 10px; background: rgba(255,252,249,0.8); display: flex; justify-content: center; }
+    body.dark-mode .back-btn-container { background: rgba(37,31,28,0.8); }
+    .back-btn { background: var(--latte-gold); color: #fff; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: 'Cairo', sans-serif; }
 
-        .flying-heart {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0); 
-            color: var(--heart-color); 
-            font-size: 3.5rem;
-            pointer-events: none;
-            z-index: 100;
-            opacity: 0;
-            -webkit-text-stroke: 1.5px var(--latte-gold);
-            text-shadow: 0 0 25px rgba(200, 161, 101, 0.4);
-            transition: transform 2.5s cubic-bezier(0.2, 0, 0.2, 1), opacity 1.5s ease-in-out; 
-        }
+    /* ======= HERO ======= */
+    .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(255,252,249,0.6), rgba(255,252,249,0.6)), url('p13.webp') center/cover; padding: 40px 20px; }
+    body.dark-mode .hero { background: linear-gradient(rgba(26,22,20,0.8), rgba(26,22,20,0.8)), url('p13.webp') center/cover; }
+    .hero h2 { font-size: 1.8rem; color: var(--dark-latte); font-weight: 900; }
 
-        .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200, 161, 101, 0.1); }
-        .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200, 161, 101, 0.3); }
+    /* ======= SERVICES ======= */
+    .services { padding: 20px; display: grid; gap: 15px; }
+    .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(200,161,101,0.15); border-radius: 15px; background: var(--creamy-white); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+    .service-card i { font-size: 2.5rem; color: var(--latte-gold); margin-bottom: 10px; }
+    .service-card h3 { color: var(--dark-latte); }
+    .service-card p { color: #7a6a67; }
+    body.dark-mode .service-card p { color: #ccc; }
+    .click-hint { display: block; font-size: 0.75rem; color: var(--latte-gold); margin-top: 8px; font-weight: bold; opacity: 0.8; }
 
-        footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
-        body.dark-mode footer { border-color: #3d302a; }
+    /* ======= VIDEO ======= */
+    .video-box { margin: 15px; border: 1px dashed var(--latte-gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--creamy-white); }
+    #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--latte-gold); margin-top: 10px; }
 
-        /* --- تنسيقات التعليقات المضافة --- */
-        #comments-list::-webkit-scrollbar { width: 4px; }
-        #comments-list::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
-        .comment-item { 
-            padding: 10px; background: var(--vanilla-light); 
-            border-radius: 12px; border-right: 3px solid var(--latte-gold);
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
-    </style>
+    /* ======= PRODUCT SECTIONS ======= */
+    .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); position: relative; }
+    .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; cursor: pointer; }
+    .product-section:hover img { transform: scale(1.03); }
+    .model-tag { background: var(--vanilla-light); border-top: 2px solid var(--latte-gold); color: var(--dark-latte); font-weight: bold; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; position: relative; z-index: 10; }
+    .like-btn { background: transparent; border: none; color: var(--latte-gold); padding: 5px; cursor: pointer; font-family: 'Cairo', sans-serif; font-size: 0.8rem; transition: 0.3s; display: flex; align-items: center; gap: 5px; position: relative; }
+    .like-btn i { font-size: 0.9rem; transition: transform 0.3s; }
+    .like-btn.liked { color: var(--latte-gold); }
+    @keyframes buttonPulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    .btn-pulse { animation: buttonPulse 0.4s ease-out; }
+    .flying-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); color: var(--heart-color); font-size: 3.5rem; pointer-events: none; z-index: 100; opacity: 0; -webkit-text-stroke: 1.5px var(--latte-gold); text-shadow: 0 0 25px rgba(200,161,101,0.4); transition: transform 2.5s cubic-bezier(0.2,0,0.2,1), opacity 1.5s ease-in-out; }
+
+    /* ======= WHATSAPP CTA ======= */
+    .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200,161,101,0.1); }
+    .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200,161,101,0.3); }
+
+    /* ======= FOOTER ======= */
+    footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
+    body.dark-mode footer { border-color: #3d302a; }
+
+    /* ======= COMMENTS ======= */
+    #comments-list::-webkit-scrollbar { width: 4px; }
+    #comments-list::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
+    .comment-item { padding: 10px; background: var(--vanilla-light); border-radius: 12px; border-right: 3px solid var(--latte-gold); animation: slideIn 0.3s ease-out; position: relative; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* Delete comment button inside comment list */
+    .admin-delete-comment-btn {
+        display: none;
+        position: absolute;
+        top: 6px;
+        left: 8px;
+        background: var(--admin-red);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        padding: 0;
+        z-index: 10;
+        transition: transform 0.2s;
+    }
+    .admin-delete-comment-btn:hover { transform: scale(1.15); }
+
+    /* Admin delete like button */
+    .admin-delete-like {
+        display: none;
+        background: var(--admin-red);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 4px 10px;
+        font-size: 0.7rem;
+        cursor: pointer;
+        align-items: center;
+        gap: 5px;
+        font-family: 'Cairo', sans-serif;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+    .admin-delete-like:hover { opacity: 0.85; transform: scale(1.05); }
+
+    /* ======= ADMIN PASSWORD MODAL ======= */
+    #admin-pass-modal {
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+    }
+    #admin-pass-modal .comment-content {
+        padding: 30px 25px;
+        text-align: center;
+    }
+    #admin-pass-input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 2px solid var(--latte-gold);
+        background: var(--vanilla-light);
+        color: var(--dark-latte);
+        font-family: 'Cairo', sans-serif;
+        font-size: 1.1rem;
+        text-align: center;
+        letter-spacing: 3px;
+        outline: none;
+        margin: 15px 0;
+        transition: border-color 0.3s;
+    }
+    @keyframes shake {
+        0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
+    }
+
+    /* ======= ADMIN FAB ======= */
+    #admin-fab {
+        display: none;
+        position: fixed;
+        bottom: 25px;
+        left: 25px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        z-index: 8000;
+    }
+    .admin-fab-btn {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+        font-family: 'Cairo', sans-serif;
+    }
+    .admin-fab-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.28); }
+    #fab-stats { background: var(--latte-gold); color: white; }
+    #fab-exit { background: var(--admin-red); color: white; font-size: 0.9rem; }
+
+    /* FAB Labels */
+    .fab-wrap { display: flex; align-items: center; gap: 10px; }
+    .fab-label {
+        background: var(--creamy-white);
+        color: var(--dark-latte);
+        border: 1px solid var(--latte-gold);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* ======= ADMIN STATS PANEL ======= */
+    #admin-stats-panel {
+        display: none;
+        position: fixed;
+        bottom: 100px;
+        left: 15px;
+        width: calc(100vw - 30px);
+        max-width: 360px;
+        background: var(--creamy-white);
+        border: 1.5px solid var(--latte-gold);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+        z-index: 7900;
+        overflow: hidden;
+        animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    #admin-stats-panel.active { display: block; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .stats-header {
+        background: var(--latte-gold);
+        color: white;
+        padding: 14px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .stats-close { cursor: pointer; font-size: 1.1rem; opacity: 0.85; }
+    .stats-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--vanilla-light);
+        border-radius: 14px;
+        padding: 14px 16px;
+        border-right: 3px solid var(--latte-gold);
+    }
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: var(--latte-gold);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .stat-info {}
+    .stat-label { font-size: 0.75rem; color: #888; font-weight: 600; }
+    .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--dark-latte); line-height: 1.2; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card-sm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--vanilla-light);
+        border-radius: 14px;
+        padding: 14px;
+        text-align: center;
+    }
+    .stat-card-sm .stat-icon { width: 36px; height: 36px; font-size: 0.95rem; margin-bottom: 6px; }
+    .stat-card-sm .stat-value { font-size: 1.3rem; }
+    .stat-card-sm .stat-label { font-size: 0.7rem; }
+    #stats-loading { text-align: center; padding: 20px; color: var(--latte-gold); font-size: 0.9rem; }
+    #stats-refresh { margin: 0 18px 14px; width: calc(100% - 36px); background: var(--latte-gold); color: white; border: none; border-radius: 12px; padding: 10px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    #stats-refresh:hover { opacity: 0.88; }
+
+    /* ======= ADMIN TOAST ======= */
+    #admin-toast {
+        position: fixed;
+        bottom: 90px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: #2c2c2c;
+        color: white;
+        padding: 10px 22px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: bold;
+        opacity: 0;
+        transition: all 0.4s;
+        z-index: 9999;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+    #admin-toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+</style>
+```
+
 </head>
 <body>
 
-    <div id="welcome-gate" class="comment-modal active" style="z-index: 9999; background: var(--bg-gradient);">
-        <div class="comment-content" style="height: auto; text-align: center; padding: 40px 20px;">
-            <div class="logo" style="font-size: 3rem; margin-bottom: 10px;">MD</div>
-            <h2 style="color: var(--latte-gold); margin-bottom: 15px;">أهلاً بكم في عالم الفخامة</h2>
-            <p style="font-size: 0.9rem; margin-bottom: 30px;">سجل دخولك لتتمكن من التعليق وحفظ تصاميمك المفضلة، أو تصفح أعمالنا كضيف.</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <button class="back-btn" onclick="openAuthModal()" style="width: 100%; padding: 15px; justify-content: center;">تسجيل الدخول / إنشاء حساب</button>
-                <button onclick="continueAsGuest()" style="background: transparent; border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 12px; border-radius: 20px; cursor: pointer; font-weight: bold;">المتابعة كضيف</button>
-            </div>
+<!-- ======= WELCOME GATE ======= -->
+
+<div id="welcome-gate" class="comment-modal active" style="z-index: 9999; background: var(--bg-gradient);">
+    <div class="comment-content" style="height: auto; text-align: center; padding: 40px 20px;">
+        <div class="logo" style="font-size: 3rem; margin-bottom: 10px;">MD</div>
+        <h2 style="color: var(--latte-gold); margin-bottom: 15px;">أهلاً بكم في عالم الفخامة</h2>
+        <p style="font-size: 0.9rem; margin-bottom: 30px;">سجل دخولك لتتمكن من التعليق وحفظ تصاميمك المفضلة، أو تصفح أعمالنا كضيف.</p>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <button class="back-btn" onclick="openAuthModal()" style="width: 100%; padding: 15px; justify-content: center;">تسجيل الدخول / إنشاء حساب</button>
+            <button onclick="continueAsGuest()" style="background: transparent; border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Cairo', sans-serif;">المتابعة كضيف</button>
         </div>
     </div>
-
-    <div class="progress-bar" id="myBar"></div>
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
-    <div class="side-menu" id="sideMenu">
-        <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
-        <div class="menu-section">
-            <h3>من نحن</h3>
-            <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
-        </div>
-        <div class="menu-section">
-            <h3>تواصل معنا</h3>
-            <div class="social-links">
-                <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%20%D8%A3%D8%B3%D8%AA%D8%A7%D8%B0%20%D9%85%D8%AD%D9%85%D8%AF%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1%D8%A7%D8%AA" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
-                <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام </a>
-                <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج(المالك)</a>
-<div class="menu-section">
-    <h3>الحساب</h3>
-    <button onclick="logoutUser()" 
-        style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer;">
-        تسجيل الخروج
-    </button>
 </div>
-            </div>
+
+<!-- ======= ADMIN PASSWORD MODAL ======= -->
+
+<div id="admin-pass-modal" class="comment-modal">
+    <div class="comment-content" style="padding: 30px 25px; text-align: center; max-width: 320px;">
+        <div style="font-size: 2.5rem; color: var(--latte-gold); margin-bottom: 10px;">🔐</div>
+        <h3 style="color: var(--latte-gold); margin-bottom: 5px;">وضع الإدارة</h3>
+        <p style="font-size: 0.82rem; opacity: 0.7; margin-bottom: 5px;">أدخل الرمز السري للمتابعة</p>
+        <input type="password" id="admin-pass-input" placeholder="••••••" onkeydown="if(event.key==='Enter') checkAdminPassword()">
+        <div style="display: flex; gap: 10px;">
+            <button onclick="checkAdminPassword()" class="back-btn" style="flex:1; justify-content:center;">دخول</button>
+            <button onclick="closeAdminPassModal()" style="flex:1; padding:8px; border:1px solid var(--latte-gold); background:transparent; border-radius:20px; cursor:pointer; color:var(--latte-gold); font-family:'Cairo',sans-serif; font-weight:bold;">إلغاء</button>
         </div>
     </div>
+</div>
 
-    <header class="sticky-header">
-        <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
-        <div class="logo-container">
-            <div class="logo">MD</div>
-            <div class="brand-name">MOHAMMAD AL-BAAJ</div>
-        </div>
-        <div class="theme-toggle-header" id="themeToggle" onclick="toggleTheme()">
-            <i class="fas fa-moon" id="themeIcon"></i>
-        </div>
-    </header>
+<!-- ======= ADMIN FAB ======= -->
 
-    <div id="main-page" class="page" style="display: block;">
-        <section class="hero">
-            <h2 class="active-reveal">نصمم الفخامة لذوقكم</h2>
-            <p class="active-reveal">خبرة سنوات في فن الديكور ، نحول منزلك إلى لوحة فنية.</p>
-        </section>
-        <section class="services">
-            <div class="service-card" onclick="showPage('interior-gallery')">
-                <i class="fas fa-paint-roller"></i>
-                <h3>ديكور داخلي</h3>
-                <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
-                <span class="click-hint">اضغط للعرض</span>
-            </div>
-            <div class="service-card" onclick="showPage('stone-gallery')">
-                <i class="fas fa-hammer"></i>
-                <h3>واجهات حجرية</h3>
-                <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
-                <span class="click-hint">اضغط للعرض</span>
-            </div>
-            <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AF%D9%8A%D9%83%D9%88%D8%B1'">
-                <i class="fas fa-comment-dots"></i>
-                <h3>استشارات فنية</h3>
-                <p>تواصل معنا عبر واتساب</p>
-                <span class="click-hint">اضغط للمراسلة</span>
-            </div>
-        </section>
+<div id="admin-fab">
+    <div class="fab-wrap">
+        <button class="admin-fab-btn" id="fab-stats" onclick="toggleAdminStats()" title="إحصائيات الموقع">
+            <i class="fas fa-chart-bar"></i>
+        </button>
+        <span class="fab-label">إحصائيات</span>
     </div>
-
-    <div id="comments-modal" class="comment-modal">
-        <div class="comment-content" style="display: flex; flex-direction: column; max-height: 80vh;">
-            <div style="padding: 15px; border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-size: 1rem; color: var(--latte-gold);">التعليقات</h3>
-                <i class="fas fa-times" onclick="closeComments()" style="cursor: pointer;"></i>
-            </div>
-            <div id="comments-list" style="flex-grow: 1; overflow-y: auto; padding: 15px; min-height: 200px; display: flex; flex-direction: column; gap: 12px;">
-                </div>
-            <div style="padding: 15px; border-top: 1px solid var(--latte-gold); display: flex; gap: 8px;">
-                <input type="text" id="comment-input" placeholder="اكتب تعليقك..." style="flex-grow: 1; padding: 10px; border-radius: 20px; border: 1px solid var(--latte-gold); background: var(--vanilla-light); outline: none; color: var(--dark-latte);">
-                <button onclick="sendComment()" style="background: var(--latte-gold); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
+    <div class="fab-wrap">
+        <button class="admin-fab-btn" id="fab-exit" onclick="deactivateAdminMode()" title="إنهاء وضع الإدارة">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+        <span class="fab-label">إنهاء الإدارة</span>
     </div>
+</div>
 
-    <div id="stone-gallery" class="page">
-        <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-        <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
-        <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
-        
-        <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
-        <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
-        <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
-        <div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p04')"><i class="far fa-comment"></i></button><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i> <span id="count-p04">0</span></button></div></div></div>
-        <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div></div>
-        <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div></div>
-        <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div></div>
-        <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
-        <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div></div>
-        <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div></div>
-        <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
-        <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
-        <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
+<!-- ======= ADMIN STATS PANEL ======= -->
+
+<div id="admin-stats-panel">
+    <div class="stats-header">
+        <span>📊 إحصائيات الموقع</span>
+        <span class="stats-close" onclick="closeAdminStats()"><i class="fas fa-times"></i></span>
     </div>
+    <div class="stats-body" id="stats-body">
+        <div id="stats-loading">⏳ جاري تحميل البيانات...</div>
+    </div>
+    <button id="stats-refresh" onclick="loadAdminStats()"><i class="fas fa-sync-alt"></i> تحديث</button>
+</div>
 
-    <div id="interior-gallery" class="page">
-        <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-        <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
-        <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div></div>
-        <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
-        <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div></div>
-        <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div></div>
-        <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
-        <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
-        <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
-        <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
-        <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
-        <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div></div>
-        <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div></div>
-        <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
-        <div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in14')"><i class="far fa-comment"></i></button><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div></div>
-        <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display: flex; gap: 10px;"><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
-        
-        <div class="whatsapp-cta">
-            <a href="https://wa.me/9647839529360?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D9%85%D8%B2%D9%8A%D8%AF%20%D9%85%D9%86%20%D8%A7%D9%84%D8%AA%D8%B5%D8%A7%D9%85%D9%8A%D9%85" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
+<!-- ======= ADMIN TOAST ======= -->
+
+<div id="admin-toast"></div>
+
+<!-- ======= PROGRESS BAR ======= -->
+
+<div class="progress-bar" id="myBar"></div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<!-- ======= SIDE MENU ======= -->
+
+<div class="side-menu" id="sideMenu">
+    <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
+    <div class="menu-section">
+        <h3>من نحن</h3>
+        <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
+    </div>
+    <div class="menu-section">
+        <h3>تواصل معنا</h3>
+        <div class="social-links">
+            <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
+            <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
+            <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
         </div>
     </div>
+    <div class="menu-section">
+        <h3>الحساب</h3>
+        <button onclick="logoutUser()" style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer; font-family:'Cairo',sans-serif;">تسجيل الخروج</button>
+    </div>
+</div>
 
-    <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+<!-- ======= HEADER ======= -->
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+<header class="sticky-header">
+    <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    <div class="logo-container">
+        <span id="admin-badge">ADMIN</span>
+        <div class="logo" id="logo-trigger" onclick="handleLogoClick()">MD</div>
+        <div class="brand-name">MOHAMMAD AL-BAAJ</div>
+    </div>
+    <div class="theme-toggle-header" id="themeToggle" onclick="toggleTheme()">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </div>
+</header>
 
-import {
-    getFirestore,
-    doc,
-    updateDoc,
-    getDoc,
-    setDoc,
-    increment,
-    collection,
-    addDoc,
-    query,
-    where,
-    onSnapshot,
-    orderBy,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import {
-    getAuth,
-    onAuthStateChanged,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
-            authDomain: "diwd-a7709.firebaseapp.com",
-            databaseURL: "https://diwd-a7709-default-rtdb.firebaseio.com",
-            projectId: "diwd-a7709",
-            storageBucket: "diwd-a7709.firebasestorage.app",
-            messagingSenderId: "190314181686",
-            appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
-            measurementId: "G-VSGFFD435W"
-        
-};
+<!-- ======= MAIN PAGE ======= -->
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+<div id="main-page" class="page" style="display: block;">
+    <section class="hero">
+        <h2 class="active-reveal">نصمم الفخامة لذوقكم</h2>
+        <p class="active-reveal">خبرة سنوات في فن الديكور، نحول منزلك إلى لوحة فنية.</p>
+    </section>
+    <section class="services">
+        <div class="service-card" onclick="showPage('interior-gallery')">
+            <i class="fas fa-paint-roller"></i><h3>ديكور داخلي</h3>
+            <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
+            <span class="click-hint">اضغط للعرض</span>
+        </div>
+        <div class="service-card" onclick="showPage('stone-gallery')">
+            <i class="fas fa-hammer"></i><h3>واجهات حجرية</h3>
+            <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
+            <span class="click-hint">اضغط للعرض</span>
+        </div>
+        <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360'">
+            <i class="fas fa-comment-dots"></i><h3>استشارات فنية</h3>
+            <p>تواصل معنا عبر واتساب</p>
+            <span class="click-hint">اضغط للمراسلة</span>
+        </div>
+    </section>
+</div>
 
-// وظيفة إرسال الإشعار للمالك (EmailJS)
-async function sendAdminNotification(name, email) {
-    const serviceID = "service_d6z689p"; 
-    const templateID = "template_7j8sc6u"; 
-    
-    const templateParams = {
-        user_name: name,
-        user_email: email,
-        date: new Date().toLocaleString('ar-IQ')
+<!-- ======= COMMENTS MODAL ======= -->
+
+<div id="comments-modal" class="comment-modal">
+    <div class="comment-content" style="display: flex; flex-direction: column; max-height: 80vh;">
+        <div style="padding: 15px; border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1rem; color: var(--latte-gold);">التعليقات</h3>
+            <i class="fas fa-times" onclick="closeComments()" style="cursor: pointer;"></i>
+        </div>
+        <div id="comments-list" style="flex-grow: 1; overflow-y: auto; padding: 15px; min-height: 200px; display: flex; flex-direction: column; gap: 12px;"></div>
+        <div style="padding: 15px; border-top: 1px solid var(--latte-gold); display: flex; gap: 8px;">
+            <input type="text" id="comment-input" placeholder="اكتب تعليقك..." style="flex-grow: 1; padding: 10px; border-radius: 20px; border: 1px solid var(--latte-gold); background: var(--vanilla-light); outline: none; color: var(--dark-latte); font-family: 'Cairo', sans-serif;">
+            <button onclick="sendComment()" style="background: var(--latte-gold); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ======= STONE GALLERY ======= -->
+
+<div id="stone-gallery" class="page">
+    <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
+    <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
+    <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
+
+```
+<div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
+<div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
+<div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
+<div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p04')"><i class="far fa-comment"></i></button><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i> <span id="count-p04">0</span></button></div></div></div>
+<div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div></div>
+<div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div></div>
+<div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div></div>
+<div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
+<div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div></div>
+<div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div></div>
+<div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
+<div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
+<div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
+```
+
+</div>
+
+<!-- ======= INTERIOR GALLERY ======= -->
+
+<div id="interior-gallery" class="page">
+    <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
+
+```
+<div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
+<div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div></div>
+<div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
+<div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div></div>
+<div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div></div>
+<div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
+<div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
+<div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
+<div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
+<div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
+<div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div></div>
+<div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div></div>
+<div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
+<div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in14')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in14')"><i class="far fa-comment"></i></button><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div></div>
+<div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in15')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
+
+<div class="whatsapp-cta">
+    <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
+</div>
+```
+
+</div>
+
+<footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+
+<!-- ======= AUTH MODAL ======= -->
+
+<div id="auth-modal" class="comment-modal">
+    <div class="comment-content" style="padding: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="color: var(--latte-gold);">تسجيل الدخول</h3>
+            <i class="fas fa-times" onclick="closeAuthModal()" style="cursor: pointer; color: var(--latte-gold);"></i>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <button onclick="loginWithGoogle()" class="back-btn" style="width:100%; justify-content:center;">
+                <i class="fab fa-google"></i> تسجيل عبر Google
+            </button>
+            <input type="email" id="auth-email" placeholder="البريد الإلكتروني" style="padding:12px; border-radius:10px; border:1px solid var(--latte-gold); background:var(--vanilla-light); color:var(--dark-latte); font-family:'Cairo',sans-serif;">
+            <input type="password" id="auth-password" placeholder="كلمة المرور" style="padding:12px; border-radius:10px; border:1px solid var(--latte-gold); background:var(--vanilla-light); color:var(--dark-latte); font-family:'Cairo',sans-serif;">
+            <button onclick="handleEmailAuth()" id="auth-submit-btn" class="back-btn" style="width:100%; border-radius:10px; justify-content:center;">دخول / اشتراك</button>
+            <p style="font-size:0.8rem; text-align:center;">سيتم إنشاء حساب تلقائياً للمستخدمين الجدد</p>
+        </div>
+    </div>
+</div>
+
+<!-- ======= FIREBASE MODULE ======= -->
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+        getFirestore, doc, updateDoc, getDoc, setDoc, increment,
+        collection, addDoc, query, where, onSnapshot, orderBy,
+        serverTimestamp, getDocs, deleteDoc, writeBatch
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import {
+        getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
+        signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
+        authDomain: "diwd-a7709.firebaseapp.com",
+        databaseURL: "https://diwd-a7709-default-rtdb.firebaseio.com",
+        projectId: "diwd-a7709",
+        storageBucket: "diwd-a7709.firebasestorage.app",
+        messagingSenderId: "190314181686",
+        appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
+        measurementId: "G-VSGFFD435W"
     };
 
-    try {
-        await emailjs.send(serviceID, templateID, templateParams);
-        console.log("تم إرسال إشعار الدخول بنجاح ✅");
-    } catch (error) {
-        console.error("خطأ في إرسال الإشعار ❌:", error);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // ===== AUTH HELPERS =====
+    async function sendAdminNotification(name, email) {
+        try {
+            await emailjs.send("service_d6z689p", "template_7j8sc6u", {
+                user_name: name, user_email: email,
+                date: new Date().toLocaleString('ar-IQ')
+            });
+        } catch (e) { console.error("EmailJS:", e); }
     }
-}
 
-async function getUserName(uid) {
-    const snap = await getDoc(doc(db, "users", uid));
-    if (snap.exists()) {
-        return snap.data().username;
+    async function askForUsername(uid, email) {
+        const username = prompt("اكتب اسم المستخدم:");
+        if (!username) return askForUsername(uid, email);
+        await setDoc(doc(db, "users", uid), { username, email, createdAt: serverTimestamp() });
+        sendAdminNotification(username, email);
+        alert("تم حفظ اسم المستخدم");
+        document.getElementById('welcome-gate').classList.remove('active');
     }
-    return "مستخدم";
-}
-async function askForUsername(uid, email) {
-    const username = prompt("اكتب اسم المستخدم (Username):");
 
-    if (!username) return askForUsername(uid, email);
-
-    await setDoc(doc(db, "users", uid), {
-        username: username,
-        email: email,
-        createdAt: serverTimestamp()
-    });
-
-    // إرسال الإيميل لمحمد فور حفظ الاسم
-    sendAdminNotification(username, email);
-
-    alert("تم حفظ اسم المستخدم");
-    document.getElementById('welcome-gate').classList.remove('active');
-}
-const googleProvider = new GoogleAuthProvider();
-window.loginWithGoogle = async () => {
-    try {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: "select_account" });
-
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-
-        window.currentUser = user;
-
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (!userSnap.exists() || !userSnap.data().username) {
-            askForUsername(user.uid, user.email);
-        } else {
-            document.getElementById('welcome-gate').classList.remove('active');
-            document.getElementById('auth-modal').classList.remove('active');
-        }
-
-        alert("تم تسجيل الدخول بنجاح");
-
-    } catch (error) {
-        console.error(error);
-        alert(error.message);
-    }
-};
-window.logoutUser = async () => {
-    try {
-        await signOut(auth);
-
-        window.currentUser = null;
-
-        // إظهار شاشة الترحيب
-        document.getElementById('welcome-gate').classList.add('active');
-
-        // إغلاق النوافذ المفتوحة
-        document.getElementById('auth-modal').classList.remove('active');
-        document.getElementById('comments-modal').classList.remove('active');
-
-        alert("تم تسجيل الخروج بنجاح");
-    } catch (error) {
-        console.error(error);
-        alert("حدث خطأ أثناء تسجيل الخروج");
-    }
-};
-        // --- نظام الهوية (Auth) ---
-        window.openAuthModal = () => document.getElementById('auth-modal').classList.add('active');
-        window.closeAuthModal = () => document.getElementById('auth-modal').classList.remove('active');
-
-        // استبدل جزء الـ handleEmailAuth بهذا التنسيق المطور
-window.handleEmailAuth = async () => {
-    const email = document.getElementById('auth-email').value.trim();
-    const password = document.getElementById('auth-password').value;
-    const btn = document.getElementById('auth-submit-btn');
-
-    if (!email || !password) return alert("يرجى إدخال كافة البيانات");
-    if (password.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
-
-    btn.innerText = "جاري المعالجة..."; btn.disabled = true;
-
-    try {
-        // محاولة تسجيل الدخول أولاً
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("أهلاً بك مجدداً!");
-    } catch (error) {
-        // إذا كان المستخدم غير موجود، نقوم بإنشاء حساب
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                // نطلب منه الاسم فوراً بعد التسجيل
-                await askForUsername(user.uid, user.email);
-            } catch (regError) {
-                alert("خطأ في التسجيل: " + regError.message);
-            }
-        } else {
-            alert("حدث خطأ: " + error.message);
-        }
-    } finally {
-        btn.innerText = "دخول / اشتراك"; btn.disabled = false;
-    }
-};
-
-
-
-        window.continueAsGuest = () => {
-            document.getElementById('welcome-gate').style.opacity = '0';
-            setTimeout(() => document.getElementById('welcome-gate').classList.remove('active'), 400);
-        };
-
-        onAuthStateChanged(auth, (user) => {
+    window.loginWithGoogle = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: "select_account" });
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
             window.currentUser = user;
-            if (user) {
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            if (!userSnap.exists() || !userSnap.data().username) {
+                await askForUsername(user.uid, user.email);
+            } else {
                 document.getElementById('welcome-gate').classList.remove('active');
                 document.getElementById('auth-modal').classList.remove('active');
+                alert("تم تسجيل الدخول بنجاح");
             }
-        });
+        } catch (e) { alert(e.message); }
+    };
 
-        // --- نظام التعليقات (Comments) ---
-        let currentImageId = null;
-        let unsubscribeComments = null;
-
-        window.openComments = (id) => {
-            if (!window.currentUser) {
-                alert("يجب تسجيل الدخول للتعليق");
-                openAuthModal();
-                return;
-            }
-            currentImageId = id;
-            document.getElementById('comments-modal').classList.add('active');
-            const list = document.getElementById('comments-list');
-            list.innerHTML = '<p style="text-align:center; color:var(--latte-gold);">جاري تحميل التعليقات...</p>';
-
-            const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
-            unsubscribeComments = onSnapshot(q, (snapshot) => {
-                list.innerHTML = '';
-                if (snapshot.empty) list.innerHTML = '<p style="text-align:center; opacity:0.6;">لا توجد تعليقات بعد، كن أول من يعلق!</p>';
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    const name = d.userName || "مستخدم";
-                    list.innerHTML += `
-                        <div class="comment-item">
-                            <div style="font-size:0.7rem; font-weight:bold; color:var(--latte-gold); margin-bottom:3px;">${name}</div>
-                            <div style="font-size:0.9rem; color:var(--dark-latte);">${d.text}</div>
-                        </div>`;
-                });
-                list.scrollTop = list.scrollHeight;
-            });
-        };
-
-        window.closeComments = () => {
+    window.logoutUser = async () => {
+        try {
+            await signOut(auth);
+            window.currentUser = null;
+            var gate = document.getElementById('welcome-gate');
+            gate.style.opacity = '1';
+            gate.classList.add('active');
+            document.getElementById('auth-modal').classList.remove('active');
             document.getElementById('comments-modal').classList.remove('active');
-            if (unsubscribeComments) unsubscribeComments();
-        };
+            alert("تم تسجيل الخروج بنجاح");
+        } catch (e) { alert("حدث خطأ أثناء تسجيل الخروج"); }
+    };
 
-        window.sendComment = async () => {
-    const inp = document.getElementById('comment-input');
-    const text = inp.value.trim();
-    if (!text || !currentImageId) return;
+    window.handleEmailAuth = async () => {
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+        const btn = document.getElementById('auth-submit-btn');
+        if (!email || !password) return alert("يرجى إدخال كافة البيانات");
+        if (password.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+        btn.innerText = "جاري المعالجة..."; btn.disabled = true;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            alert("أهلاً بك مجدداً!");
+        } catch (error) {
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                try {
+                    const uc = await createUserWithEmailAndPassword(auth, email, password);
+                    await askForUsername(uc.user.uid, uc.user.email);
+                } catch (e) { alert("خطأ في التسجيل: " + e.message); }
+            } else { alert("حدث خطأ: " + error.message); }
+        } finally { btn.innerText = "دخول / اشتراك"; btn.disabled = false; }
+    };
 
-    try {
-        await addDoc(collection(db, "comments"), {
-            imageId: currentImageId,
-            userName: window.currentUser.username || window.currentUser.email.split('@')[0],
-            text: text,
-            createdAt: serverTimestamp() // ✅ الإصلاح هنا
-        });
+    onAuthStateChanged(auth, async (user) => {
+        window.currentUser = user;
+        if (user) {
+            sendTelegramNotification("🔐 تسجيل دخول جديد\n👤 " + user.email + "\n🕒 " + new Date().toLocaleString());
+            document.getElementById('welcome-gate').classList.remove('active');
+            document.getElementById('auth-modal').classList.remove('active');
+            recordMemberVisit();
+        }
+    });
 
-        inp.value = '';
-    } catch (e) {
-        alert("حدث خطأ أثناء الإرسال");
-        console.error(e);
-    }
-};
+    // ===== COMMENTS =====
+    let currentImageId = null;
+    let unsubscribeComments = null;
 
-        // --- نظام اللايكات والقلب الطائر الخاص بك ---
-        window.handleDoubleTap = (id) => {
-            const btn = document.getElementById('btn-' + id);
-            if (!btn) return;
-            const container = btn.closest('.product-section');
-            const heart = document.createElement('i');
-            heart.className = 'fas fa-heart flying-heart';
-            container.appendChild(heart);
-            const btnRect = btn.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
-            const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
-            requestAnimationFrame(() => {
-                heart.style.transition = "transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease";
-                heart.style.opacity = '0.7'; 
-                heart.style.transform = `translate(-50%, -50%) scale(1.6)`; 
-                setTimeout(() => {
-                    heart.style.transition = "transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in"; 
-                    heart.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px)) scale(0.25)`;
-                    setTimeout(() => { heart.style.opacity = '0'; }, 500);
-                }, 600);
-            });
-            setTimeout(() => { heart.remove(); }, 1500);
-            btn.classList.add('btn-pulse');
-            setTimeout(() => btn.classList.remove('btn-pulse'), 400);
-            if (!localStorage.getItem('liked_' + id)) window.handleLike(id);
-        };
-
-        let isProcessing = false; 
-        window.handleLike = async (id) => {
-            if (isProcessing) return;
-            isProcessing = true;
-            const photoRef = doc(db, "photos", id);
-            const hasLiked = localStorage.getItem('liked_' + id);
-            try {
-                if (hasLiked) {
-                    await updateDoc(photoRef, { likesCount: increment(-1) });
-                    localStorage.removeItem('liked_' + id);
-                } else {
-                    const docSnap = await getDoc(photoRef);
-                    if (docSnap.exists()) await updateDoc(photoRef, { likesCount: increment(1) });
-                    else await setDoc(photoRef, { likesCount: 1 });
-                    localStorage.setItem('liked_' + id, 'true');
+    window.openComments = (id) => {
+        if (!window.currentUser) {
+            alert("يجب تسجيل الدخول للتعليق");
+            document.getElementById('auth-modal').classList.add('active');
+            return;
+        }
+        currentImageId = id;
+        document.getElementById('comments-modal').classList.add('active');
+        const list = document.getElementById('comments-list');
+        list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">جاري التحميل...</p>';
+        const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
+        unsubscribeComments = onSnapshot(q, (snapshot) => {
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
+            }
+            snapshot.forEach(d => {
+                const data = d.data();
+                const docId = d.id;
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.innerHTML = `
+                    <div style="font-size:0.7rem;font-weight:bold;color:var(--latte-gold);margin-bottom:3px;">${data.userName || 'مستخدم'}</div>
+                    <div style="font-size:0.9rem;color:var(--dark-latte);">${data.text}</div>
+                `;
+                // Admin delete button per comment
+                if (window.isAdminMode) {
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'admin-delete-comment-btn';
+                    delBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    delBtn.style.display = 'flex';
+                    delBtn.onclick = () => adminDeleteSingleComment(docId);
+                    item.appendChild(delBtn);
                 }
-                refreshUI(id);
-            } catch (e) { console.error(e); } finally { isProcessing = false; }
-        };
-
-        async function refreshUI(id) {
-            const docRef = doc(db, "photos", id);
-            try {
-                const docSnap = await getDoc(docRef);
-                const countElement = document.getElementById('count-' + id);
-                const btnElement = document.getElementById('btn-' + id);
-                if (docSnap.exists() && countElement) countElement.innerText = docSnap.data().likesCount;
-                if (btnElement) localStorage.getItem('liked_' + id) ? btnElement.classList.add('liked') : btnElement.classList.remove('liked');
-            } catch (e) { console.error(e); }
-        }
-
-        const allPhotos = ['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13','in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
-        window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
-    </script>
-
-    <script>
-        // الوظائف المساعدة وتغيير المود الأصلية
-        const observerOptions = { threshold: 0.10 };
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active-reveal');
-                else entry.target.classList.remove('active-reveal'); 
+                list.appendChild(item);
             });
-        }, observerOptions);
+            list.scrollTop = list.scrollHeight;
+        });
+    };
 
-        function applyReveal() { document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta').forEach(t => observer.observe(t)); }
-        
-        function toggleMenu() {
-            const menu = document.getElementById('sideMenu');
-            const overlay = document.getElementById('overlay');
-            menu.classList.toggle('open');
-            overlay.style.display = menu.classList.contains('open') ? 'block' : 'none';
+    window.closeComments = () => {
+        document.getElementById('comments-modal').classList.remove('active');
+        if (unsubscribeComments) unsubscribeComments();
+    };
+
+    window.sendComment = async () => {
+        const inp = document.getElementById('comment-input');
+        const text = inp.value.trim();
+        if (!text || !currentImageId) return;
+        sendTelegramNotification("💬 تعليق جديد\n🖼️ " + currentImageId + "\n📝 " + text + "\n🕒 " + new Date().toLocaleString());
+        try {
+            await addDoc(collection(db, "comments"), {
+                imageId: currentImageId,
+                userName: window.currentUser.displayName || window.currentUser.email.split('@')[0],
+                text: text,
+                createdAt: serverTimestamp()
+            });
+            inp.value = '';
+        } catch (e) { alert("حدث خطأ أثناء الإرسال"); }
+    };
+
+    // ===== ADMIN: DELETE SINGLE COMMENT =====
+    window.adminDeleteSingleComment = async (docId) => {
+        if (!window.isAdminMode) return;
+        if (!confirm("حذف هذا التعليق؟")) return;
+        try {
+            await deleteDoc(doc(db, "comments", docId));
+            showAdminToast('✅ تم حذف التعليق');
+        } catch(e) { alert("خطأ في الحذف: " + e.message); }
+    };
+
+    // ===== ADMIN: DELETE ALL COMMENTS FOR IMAGE =====
+    window.adminDeleteAllComments = async (imageId) => {
+        if (!window.isAdminMode) return;
+        if (!confirm("حذف جميع تعليقات هذه الصورة؟")) return;
+        try {
+            const q = query(collection(db, "comments"), where("imageId", "==", imageId));
+            const snap = await getDocs(q);
+            const batch = writeBatch(db);
+            snap.forEach(d => batch.delete(d.ref));
+            await batch.commit();
+            showAdminToast('✅ تم حذف جميع التعليقات');
+        } catch(e) { alert("خطأ: " + e.message); }
+    };
+
+    // ===== ADMIN: DELETE LIKES FOR IMAGE =====
+    window.adminDeleteLikes = async (id) => {
+        if (!window.isAdminMode) return;
+        if (!confirm("إعادة تعيين لايكات هذه الصورة إلى صفر؟")) return;
+        try {
+            const photoRef = doc(db, "photos", id);
+            await setDoc(photoRef, { likesCount: 0 }, { merge: true });
+            const countEl = document.getElementById('count-' + id);
+            if (countEl) countEl.innerText = '0';
+            showAdminToast('✅ تم إعادة تعيين اللايكات');
+        } catch(e) { alert("خطأ: " + e.message); }
+    };
+
+    // ===== LIKES =====
+    window.handleDoubleTap = (id) => {
+        const btn = document.getElementById('btn-' + id);
+        if (!btn) return;
+        const container = btn.closest('.product-section');
+        const heart = document.createElement('i');
+        heart.className = 'fas fa-heart flying-heart';
+        container.appendChild(heart);
+        const btnRect = btn.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
+        const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
+        requestAnimationFrame(() => {
+            heart.style.transition = "transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.4s ease";
+            heart.style.opacity = '0.7';
+            heart.style.transform = 'translate(-50%, -50%) scale(1.6)';
+            setTimeout(() => {
+                heart.style.transition = "transform 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease-in";
+                heart.style.transform = 'translate(calc(-50% + ' + targetX + 'px), calc(-50% + ' + targetY + 'px)) scale(0.25)';
+                setTimeout(() => { heart.style.opacity = '0'; }, 500);
+            }, 600);
+        });
+        setTimeout(() => { heart.remove(); }, 1500);
+        btn.classList.add('btn-pulse');
+        setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+        if (!localStorage.getItem('liked_' + id)) window.handleLike(id);
+    };
+
+    let isProcessing = false;
+
+    window.handleLike = async (id) => {
+        if (isProcessing) return;
+        isProcessing = true;
+        const hasLiked = localStorage.getItem('liked_' + id);
+        if (!hasLiked) {
+            sendTelegramNotification("❤️ لايك جديد\n📌 " + id + "\n🕒 " + new Date().toLocaleString());
         }
-
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            document.getElementById(pageId).style.display = 'block';
-            if(document.getElementById('sideMenu').classList.contains('open')) toggleMenu();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(applyReveal, 100);
-        }
-
-        function playVideo() {
-            document.getElementById('vidPlaceholder').style.display = 'none';
-            const v = document.getElementById('main-video');
-            v.style.display = 'block';
-            v.play();
-        }
-
-        function toggleTheme() {
-            const icon = document.getElementById('themeIcon');
-            const headerToggle = document.getElementById('themeToggle');
-            headerToggle.style.transform = "rotate(360deg)";
-            setTimeout(() => { headerToggle.style.transform = "rotate(0deg)"; }, 600);
-            document.body.classList.toggle('dark-mode');
-            if(document.body.classList.contains('dark-mode')) {
-                icon.classList.replace('fa-moon', 'fa-sun');
-                localStorage.setItem('theme', 'dark');
+        const photoRef = doc(db, "photos", id);
+        try {
+            if (hasLiked) {
+                await updateDoc(photoRef, { likesCount: increment(-1) });
+                localStorage.removeItem('liked_' + id);
             } else {
-                icon.classList.replace('fa-sun', 'fa-moon');
-                localStorage.setItem('theme', 'light');
+                const docSnap = await getDoc(photoRef);
+                if (docSnap.exists()) await updateDoc(photoRef, { likesCount: increment(1) });
+                else await setDoc(photoRef, { likesCount: 1 });
+                localStorage.setItem('liked_' + id, 'true');
             }
-        }
+            refreshUI(id);
+        } catch (e) { console.error(e); } finally { isProcessing = false; }
+    };
 
-        window.addEventListener("scroll", function() {
-            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            if(document.getElementById("myBar")) document.getElementById("myBar").style.width = scrolled + "%";
-        });
+    async function refreshUI(id) {
+        try {
+            const docSnap = await getDoc(doc(db, "photos", id));
+            const countEl = document.getElementById('count-' + id);
+            const btnEl = document.getElementById('btn-' + id);
+            if (docSnap.exists() && countEl) countEl.innerText = docSnap.data().likesCount || 0;
+            if (btnEl) localStorage.getItem('liked_' + id) ? btnEl.classList.add('liked') : btnEl.classList.remove('liked');
+        } catch (e) { console.error(e); }
+    }
 
-        window.addEventListener("load", () => {
-            applyReveal();
-            if(localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-                if(document.getElementById('themeIcon')) document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+    const allPhotos = ['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13',
+                       'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
+    window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
+
+    // ===== VISITOR COUNTER =====
+    // تسجيل زيارة المستخدم المسجّل تلقائياً عند تسجيل الدخول (يُعالج في onAuthStateChanged)
+    // تسجيل زيارة الضيف عند الضغط على "متابعة كضيف"
+    window.recordGuestVisit = async () => {
+        // نمنع التسجيل المتكرر لنفس الجلسة
+        if (sessionStorage.getItem('visit_recorded')) return;
+        sessionStorage.setItem('visit_recorded', '1');
+        try {
+            const visitsRef = doc(db, "stats", "visitors");
+            const snap = await getDoc(visitsRef);
+            if (snap.exists()) {
+                await updateDoc(visitsRef, { total: increment(1), guests: increment(1) });
+            } else {
+                await setDoc(visitsRef, { total: 1, guests: 1, members: 0 });
             }
-        });
-    </script>
+        } catch(e) { console.error("خطأ تسجيل الزيارة:", e); }
+    };
 
-    <div id="auth-modal" class="comment-modal">
-        <div class="comment-content" style="padding: 25px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="color: var(--latte-gold);">تسجيل الدخول</h3>
-<button onclick="loginWithGoogle()" class="back-btn" style="width:100%; margin-top:10px; justify-content:center;">
-    <i class="fab fa-google"></i> تسجيل عبر Google
-</button>
-                <i class="fas fa-times" onclick="closeAuthModal()" style="cursor: pointer; color: var(--latte-gold);"></i>
-            </div>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <input type="email" id="auth-email" placeholder="البريد الإلكتروني" style="padding: 12px; border-radius: 10px; border: 1px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo';">
-                <input type="password" id="auth-password" placeholder="كلمة المرور" style="padding: 12px; border-radius: 10px; border: 1px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo';">
-                
-                <button onclick="handleEmailAuth()" id="auth-submit-btn" class="back-btn" style="width: 100%; border-radius: 10px; justify-content: center;">دخول / اشتراك</button>
-                
-                <div style="text-align: center; margin-top: 10px;">
-                    <p style="font-size: 0.8rem;">سيتم إنشاء حساب تلقائياً للمستخدمين الجدد</p>
+    async function recordMemberVisit() {
+        if (sessionStorage.getItem('visit_recorded')) return;
+        sessionStorage.setItem('visit_recorded', '1');
+        try {
+            const visitsRef = doc(db, "stats", "visitors");
+            const snap = await getDoc(visitsRef);
+            if (snap.exists()) {
+                await updateDoc(visitsRef, { total: increment(1), members: increment(1) });
+            } else {
+                await setDoc(visitsRef, { total: 1, guests: 0, members: 1 });
+            }
+        } catch(e) { console.error("خطأ تسجيل الزيارة:", e); }
+    }
+
+    // ===== ADMIN STATS =====
+    window.loadAdminStats = async () => {
+        const body = document.getElementById('stats-body');
+        body.innerHTML = '<div id="stats-loading">⏳ جاري تحميل البيانات...</div>';
+
+        try {
+            // Count users
+            const usersSnap = await getDocs(collection(db, "users"));
+            const usersCount = usersSnap.size;
+
+            // Count all comments
+            const allComments = await getDocs(collection(db, "comments"));
+            const commentsCount = allComments.size;
+
+            // Count all likes + top photo
+            const photosSnap = await getDocs(collection(db, "photos"));
+            let totalLikes = 0;
+            let topPhoto = { id: '-', likes: 0 };
+            photosSnap.forEach(d => {
+                const likes = d.data().likesCount || 0;
+                totalLikes += likes;
+                if (likes > topPhoto.likes) topPhoto = { id: d.id, likes };
+            });
+
+            // Most commented image
+            const commentMap = {};
+            allComments.forEach(d => {
+                const imgId = d.data().imageId;
+                commentMap[imgId] = (commentMap[imgId] || 0) + 1;
+            });
+            let topCommented = { id: '-', count: 0 };
+            Object.entries(commentMap).forEach(([id, count]) => {
+                if (count > topCommented.count) topCommented = { id, count };
+            });
+
+            // Visitor stats
+            const visitsSnap = await getDoc(doc(db, "stats", "visitors"));
+            const visitsData = visitsSnap.exists() ? visitsSnap.data() : { total: 0, guests: 0, members: 0 };
+
+            body.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#2ecc71;"><i class="fas fa-eye"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-label">إجمالي الزوار</div>
+                        <div class="stat-value">${visitsData.total || 0}</div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <div class="stats-grid">
+                    <div class="stat-card-sm">
+                        <div class="stat-icon" style="background:#7f8c8d;"><i class="fas fa-user-secret"></i></div>
+                        <div class="stat-value">${visitsData.guests || 0}</div>
+                        <div class="stat-label">زوار ضيوف</div>
+                    </div>
+                    <div class="stat-card-sm">
+                        <div class="stat-icon" style="background:#2980b9;"><i class="fas fa-user-check"></i></div>
+                        <div class="stat-value">${visitsData.members || 0}</div>
+                        <div class="stat-label">زوار مسجّلون</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-label">عدد الحسابات المسجّلة</div>
+                        <div class="stat-value">${usersCount}</div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card-sm">
+                        <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                        <div class="stat-value">${totalLikes}</div>
+                        <div class="stat-label">إجمالي اللايكات</div>
+                    </div>
+                    <div class="stat-card-sm">
+                        <div class="stat-icon"><i class="fas fa-comment"></i></div>
+                        <div class="stat-value">${commentsCount}</div>
+                        <div class="stat-label">إجمالي التعليقات</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#e67e22;"><i class="fas fa-star"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-label">أكثر صورة لايكات</div>
+                        <div class="stat-value" style="font-size:1rem;">${topPhoto.id} <span style="font-size:0.8rem;opacity:0.7;">(${topPhoto.likes} ❤️)</span></div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-fire"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-label">أكثر صورة تعليقات</div>
+                        <div class="stat-value" style="font-size:1rem;">${topCommented.id} <span style="font-size:0.8rem;opacity:0.7;">(${topCommented.count} 💬)</span></div>
+                    </div>
+                </div>
+            `;
+        } catch(e) {
+            body.innerHTML = '<p style="text-align:center;color:red;padding:15px;">خطأ: ' + e.message + '</p>';
+            console.error(e);
+        }
+    };
+
+    // ===== EXPOSE openComments for admin comment delete =====
+    // Patch openComments to attach admin delete buttons dynamically
+    const _origOpen = window.openComments;
+</script>
 
 </body>
 </html>
