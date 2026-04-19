@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
 <script type="text/javascript">
     window.addEventListener('load', function() {
         if (typeof emailjs !== 'undefined') {
@@ -25,7 +26,7 @@
     const CHAT_ID = "5054803296";
     const ADMIN_PASSWORD = "1999@";
 
-    function sendTelegramNotification(message) {
+    window.sendTelegramNotification = function(message) {
         fetch("https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -44,6 +45,7 @@
     }
 
     function continueAsGuest() {
+        window.sendTelegramNotification("👤 دخول كضيف\n🕒 " + new Date().toLocaleString('ar-IQ'));
         var gate = document.getElementById('welcome-gate');
         gate.style.opacity = '0';
         gate.style.transition = 'opacity 0.4s ease';
@@ -535,7 +537,6 @@
     }
 </style>
 
-
 </head>
 <body>
 
@@ -692,7 +693,6 @@
     <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
     <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
 
-
 <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
 <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
 <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
@@ -707,14 +707,12 @@
 <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
 <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
 
-
 </div>
 
 <!-- ======= INTERIOR GALLERY ======= -->
 
 <div id="interior-gallery" class="page">
     <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-
 
 <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
 <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div></div>
@@ -735,7 +733,6 @@
 <div class="whatsapp-cta">
     <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
 </div>
-
 
 </div>
 
@@ -768,7 +765,7 @@
     import {
         getFirestore, doc, updateDoc, getDoc, setDoc, increment,
         collection, addDoc, query, where, onSnapshot, orderBy,
-        serverTimestamp, getDocs, deleteDoc, writeBatch, getCountFromServer
+        serverTimestamp, getDocs, deleteDoc, writeBatch
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import {
         getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
@@ -789,6 +786,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+
+    // ربط دالة التلغرام داخل الـ module
+    const sendTG = (msg) => window.sendTelegramNotification(msg);
 
     // ===== AUTH HELPERS =====
     async function sendAdminNotification(name, email) {
@@ -863,7 +863,7 @@
     onAuthStateChanged(auth, async (user) => {
         window.currentUser = user;
         if (user) {
-            sendTelegramNotification("🔐 تسجيل دخول جديد\n👤 " + user.email + "\n🕒 " + new Date().toLocaleString());
+            
             document.getElementById('welcome-gate').classList.remove('active');
             document.getElementById('auth-modal').classList.remove('active');
         }
@@ -922,7 +922,7 @@
         const inp = document.getElementById('comment-input');
         const text = inp.value.trim();
         if (!text || !currentImageId) return;
-        sendTelegramNotification("💬 تعليق جديد\n🖼️ " + currentImageId + "\n📝 " + text + "\n🕒 " + new Date().toLocaleString());
+        sendTG("💬 تعليق جديد\n🖼️ " + currentImageId + "\n📝 " + text + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
         try {
             await addDoc(collection(db, "comments"), {
                 imageId: currentImageId,
@@ -1006,7 +1006,7 @@
         isProcessing = true;
         const hasLiked = localStorage.getItem('liked_' + id);
         if (!hasLiked) {
-            sendTelegramNotification("❤️ لايك جديد\n📌 " + id + "\n🕒 " + new Date().toLocaleString());
+            sendTG("❤️ لايك جديد\n📌 " + id + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
         }
         const photoRef = doc(db, "photos", id);
         try {
@@ -1043,15 +1043,11 @@
         body.innerHTML = '<div id="stats-loading">⏳ جاري تحميل البيانات...</div>';
 
         try {
-            // Count users
-            const usersSnap = await getCountFromServer(collection(db, "users"));
-            const usersCount = usersSnap.data().count;
+            // Count users using getDocs
+            const usersSnap = await getDocs(collection(db, "users"));
+            const usersCount = usersSnap.size;
 
-            // Count all comments
-            const commentsSnap = await getCountFromServer(collection(db, "comments"));
-            const commentsCount = commentsSnap.data().count;
-
-            // Count all likes (sum from photos docs)
+            // Count all likes + top photo (from photos docs)
             const photosSnap = await getDocs(collection(db, "photos"));
             let totalLikes = 0;
             let topPhoto = { id: '-', likes: 0 };
@@ -1061,8 +1057,9 @@
                 if (likes > topPhoto.likes) topPhoto = { id: d.id, likes };
             });
 
-            // Most commented image
+            // Count all comments + most commented image
             const allComments = await getDocs(collection(db, "comments"));
+            const commentsCount = allComments.size;
             const commentMap = {};
             allComments.forEach(d => {
                 const imgId = d.data().imageId;
@@ -1101,7 +1098,7 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background:#8e44ad;"><iclass="fas fa-fire"></i></div>
+                    <div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-fire"></i></div>
                     <div class="stat-info">
                         <div class="stat-label">أكثر صورة تعليقات</div>
                         <div class="stat-value" style="font-size:1rem;">${topCommented.id} <span style="font-size:0.8rem;opacity:0.7;">(${topCommented.count} 💬)</span></div>
@@ -1120,4 +1117,4 @@
 </script>
 
 </body>
-</html>
+</html> 
