@@ -205,6 +205,51 @@
     function closeAdminStats() {
         document.getElementById('admin-stats-panel').classList.remove('active');
     }
+
+    // ===== UPLOAD PHOTO FEATURE =====
+    function openUploadModal() {
+        document.getElementById('upload-modal').classList.add('active');
+        document.getElementById('upload-preview-area').innerHTML = '';
+        document.getElementById('upload-caption').value = '';
+        document.getElementById('upload-gallery-select').value = 'stone-gallery';
+        window._uploadFiles = [];
+    }
+
+    function closeUploadModal() {
+        document.getElementById('upload-modal').classList.remove('active');
+        window._uploadFiles = [];
+    }
+
+    function triggerFileInput() {
+        document.getElementById('upload-file-input').click();
+    }
+
+    function handleFileSelect(input) {
+        var files = Array.from(input.files);
+        if (!files.length) return;
+        window._uploadFiles = files;
+        var area = document.getElementById('upload-preview-area');
+        area.innerHTML = '';
+        files.forEach(function(file, i) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var wrap = document.createElement('div');
+                wrap.style.cssText = 'position:relative;display:inline-block;';
+                var img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:10px;border:2px solid var(--latte-gold);';
+                var badge = document.createElement('span');
+                badge.textContent = i + 1;
+                badge.style.cssText = 'position:absolute;top:2px;right:2px;background:var(--latte-gold);color:white;border-radius:50%;width:18px;height:18px;font-size:0.65rem;display:flex;align-items:center;justify-content:center;font-weight:bold;';
+                wrap.appendChild(img);
+                wrap.appendChild(badge);
+                area.appendChild(wrap);
+            };
+            reader.readAsDataURL(file);
+        });
+        // reset input so same file can be re-selected
+        input.value = '';
+    }
 </script>
 
 <style>
@@ -329,7 +374,6 @@
     .comment-item { padding: 10px; background: var(--vanilla-light); border-radius: 12px; border-right: 3px solid var(--latte-gold); animation: slideIn 0.3s ease-out; position: relative; }
     @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
-    /* Delete comment button inside comment list */
     .admin-delete-comment-btn {
         display: none;
         position: absolute;
@@ -352,7 +396,6 @@
     }
     .admin-delete-comment-btn:hover { transform: scale(1.15); }
 
-    /* Admin delete like button */
     .admin-delete-like {
         display: none;
         background: var(--admin-red);
@@ -425,9 +468,9 @@
     }
     .admin-fab-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.28); }
     #fab-stats { background: var(--latte-gold); color: white; }
+    #fab-upload { background: var(--admin-green); color: white; }
     #fab-exit { background: var(--admin-red); color: white; font-size: 0.9rem; }
 
-    /* FAB Labels */
     .fab-wrap { display: flex; align-items: center; gap: 10px; }
     .fab-label {
         background: var(--creamy-white);
@@ -535,6 +578,111 @@
         opacity: 1;
         transform: translateX(-50%) translateY(0);
     }
+
+    /* ======= UPLOAD MODAL ======= */
+    #upload-modal {
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(6px);
+        z-index: 10000;
+    }
+    #upload-modal .comment-content {
+        max-width: 420px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .upload-drop-zone {
+        border: 2.5px dashed var(--latte-gold);
+        border-radius: 16px;
+        padding: 30px 15px;
+        text-align: center;
+        cursor: pointer;
+        background: var(--vanilla-light);
+        transition: background 0.2s, border-color 0.2s;
+        margin-bottom: 14px;
+    }
+    .upload-drop-zone:hover, .upload-drop-zone.dragover {
+        background: rgba(200,161,101,0.12);
+        border-color: #a07840;
+    }
+    .upload-drop-zone i {
+        font-size: 2.8rem;
+        color: var(--latte-gold);
+        display: block;
+        margin-bottom: 8px;
+    }
+    .upload-drop-zone p {
+        font-size: 0.88rem;
+        color: var(--dark-latte);
+        opacity: 0.8;
+    }
+    #upload-preview-area {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 30px;
+        margin-bottom: 14px;
+    }
+    .upload-field {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: 12px;
+        border: 1.5px solid var(--latte-gold);
+        background: var(--vanilla-light);
+        color: var(--dark-latte);
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.95rem;
+        outline: none;
+        margin-bottom: 10px;
+        transition: border-color 0.2s;
+    }
+    .upload-field:focus { border-color: #a07840; }
+    select.upload-field { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8a165' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 12px center; padding-left: 32px; }
+    #upload-progress-wrap {
+        display: none;
+        margin-bottom: 10px;
+    }
+    #upload-progress-bar-outer {
+        background: var(--vanilla-light);
+        border-radius: 20px;
+        height: 10px;
+        overflow: hidden;
+        border: 1px solid rgba(200,161,101,0.3);
+        margin-bottom: 5px;
+    }
+    #upload-progress-bar-inner {
+        height: 100%;
+        background: linear-gradient(90deg, var(--latte-gold), #e8c07a);
+        border-radius: 20px;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+    #upload-progress-text {
+        font-size: 0.78rem;
+        color: var(--latte-gold);
+        text-align: center;
+        font-weight: bold;
+    }
+    .upload-submit-btn {
+        width: 100%;
+        padding: 13px;
+        background: var(--admin-green);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-family: 'Cairo', sans-serif;
+        font-weight: bold;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: opacity 0.2s, transform 0.15s;
+    }
+    .upload-submit-btn:hover { opacity: 0.88; transform: scale(1.01); }
+    .upload-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    /* Uploaded photos in gallery */
+    .product-section.dynamic-photo { animation: fadeIn 0.5s ease; }
 </style>
 
 </head>
@@ -569,6 +717,63 @@
     </div>
 </div>
 
+<!-- ======= UPLOAD PHOTO MODAL ======= -->
+
+<div id="upload-modal" class="comment-modal">
+    <div class="comment-content" style="padding: 0; overflow: hidden;">
+
+```
+    <!-- Header -->
+    <div style="background: var(--admin-green); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: bold; font-size: 1rem;">📸 إضافة صور جديدة</span>
+        <i class="fas fa-times" onclick="closeUploadModal()" style="cursor: pointer; font-size: 1.1rem; opacity: 0.85;"></i>
+    </div>
+
+    <div style="padding: 20px; display: flex; flex-direction: column; gap: 0;">
+
+        <!-- Drop zone / picker -->
+        <div class="upload-drop-zone" onclick="triggerFileInput()" id="upload-drop-zone">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>اضغط لاختيار الصور من هاتفك</p>
+            <p style="font-size:0.75rem; margin-top:4px; color:var(--latte-gold);">يمكن اختيار أكثر من صورة دفعة واحدة</p>
+        </div>
+
+        <!-- Hidden file input -->
+        <input type="file" id="upload-file-input" accept="image/*" multiple
+               style="display:none;" onchange="handleFileSelect(this)">
+
+        <!-- Preview area -->
+        <div id="upload-preview-area"></div>
+
+        <!-- Caption -->
+        <input type="text" id="upload-caption" class="upload-field"
+               placeholder="اسم / وصف التصميم (اختياري)">
+
+        <!-- Gallery selector -->
+        <select id="upload-gallery-select" class="upload-field">
+            <option value="stone-gallery">معرض الواجهات الحجرية</option>
+            <option value="interior-gallery">معرض الديكور الداخلي</option>
+        </select>
+
+        <!-- Progress -->
+        <div id="upload-progress-wrap">
+            <div id="upload-progress-bar-outer">
+                <div id="upload-progress-bar-inner"></div>
+            </div>
+            <div id="upload-progress-text">جاري الرفع...</div>
+        </div>
+
+        <!-- Submit -->
+        <button class="upload-submit-btn" id="upload-submit-btn" onclick="submitUploadedPhotos()">
+            <i class="fas fa-check"></i> رفع الصور
+        </button>
+
+    </div>
+</div>
+```
+
+</div>
+
 <!-- ======= ADMIN FAB ======= -->
 
 <div id="admin-fab">
@@ -577,6 +782,13 @@
             <i class="fas fa-chart-bar"></i>
         </button>
         <span class="fab-label">إحصائيات</span>
+    </div>
+    <!-- NEW: Upload button -->
+    <div class="fab-wrap">
+        <button class="admin-fab-btn" id="fab-upload" onclick="openUploadModal()" title="إضافة صور">
+            <i class="fas fa-camera"></i>
+        </button>
+        <span class="fab-label">إضافة صور</span>
     </div>
     <div class="fab-wrap">
         <button class="admin-fab-btn" id="fab-exit" onclick="deactivateAdminMode()" title="إنهاء وضع الإدارة">
@@ -707,6 +919,10 @@
 <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
 <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
 
+<!-- Dynamic photos injected here for stone gallery -->
+
+<div id="stone-dynamic-photos"></div>
+
 </div>
 
 <!-- ======= INTERIOR GALLERY ======= -->
@@ -729,6 +945,10 @@
 <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
 <div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in14')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in14')"><i class="far fa-comment"></i></button><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div></div>
 <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in15')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
+
+<!-- Dynamic photos injected here for interior gallery -->
+
+<div id="interior-dynamic-photos"></div>
 
 <div class="whatsapp-cta">
     <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
@@ -770,6 +990,7 @@
         getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
         signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    // Firebase Storage removed - using base64 in Firestore instead
 
     const firebaseConfig = {
         apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
@@ -786,7 +1007,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // ربط دالة التلغرام داخل الـ module
+
     const sendTG = (msg) => window.sendTelegramNotification(msg);
 
     // ===== AUTH HELPERS =====
@@ -897,7 +1118,6 @@
                     <div style="font-size:0.7rem;font-weight:bold;color:var(--latte-gold);margin-bottom:3px;">${data.userName || 'مستخدم'}</div>
                     <div style="font-size:0.9rem;color:var(--dark-latte);">${data.text}</div>
                 `;
-                // Admin delete button per comment
                 if (window.isAdminMode) {
                     const delBtn = document.createElement('button');
                     delBtn.className = 'admin-delete-comment-btn';
@@ -933,7 +1153,6 @@
         } catch (e) { alert("حدث خطأ أثناء الإرسال"); }
     };
 
-    // ===== ADMIN: DELETE SINGLE COMMENT =====
     window.adminDeleteSingleComment = async (docId) => {
         if (!window.isAdminMode) return;
         if (!confirm("حذف هذا التعليق؟")) return;
@@ -943,7 +1162,6 @@
         } catch(e) { alert("خطأ في الحذف: " + e.message); }
     };
 
-    // ===== ADMIN: DELETE ALL COMMENTS FOR IMAGE =====
     window.adminDeleteAllComments = async (imageId) => {
         if (!window.isAdminMode) return;
         if (!confirm("حذف جميع تعليقات هذه الصورة؟")) return;
@@ -957,7 +1175,6 @@
         } catch(e) { alert("خطأ: " + e.message); }
     };
 
-    // ===== ADMIN: DELETE LIKES FOR IMAGE =====
     window.adminDeleteLikes = async (id) => {
         if (!window.isAdminMode) return;
         if (!confirm("إعادة تعيين لايكات هذه الصورة إلى صفر؟")) return;
@@ -1040,17 +1257,11 @@
     window.loadAdminStats = async () => {
         const body = document.getElementById('stats-body');
         body.innerHTML = '<div id="stats-loading">⏳ جاري تحميل البيانات...</div>';
-
         try {
-            // Count users
             const usersSnap = await getCountFromServer(collection(db, "users"));
             const usersCount = usersSnap.data().count;
-
-            // Count all comments
             const commentsSnap = await getCountFromServer(collection(db, "comments"));
             const commentsCount = commentsSnap.data().count;
-
-            // Count all likes (sum from photos docs)
             const photosSnap = await getDocs(collection(db, "photos"));
             let totalLikes = 0;
             let topPhoto = { id: '-', likes: 0 };
@@ -1059,8 +1270,6 @@
                 totalLikes += likes;
                 if (likes > topPhoto.likes) topPhoto = { id: d.id, likes };
             });
-
-            // Most commented image
             const allComments = await getDocs(collection(db, "comments"));
             const commentMap = {};
             allComments.forEach(d => {
@@ -1071,7 +1280,6 @@
             Object.entries(commentMap).forEach(([id, count]) => {
                 if (count > topCommented.count) topCommented = { id, count };
             });
-
             body.innerHTML = `
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-users"></i></div>
@@ -1113,24 +1321,204 @@
         }
     };
 
-    // ===== EXPOSE openComments for admin comment delete =====
-    // Patch openComments to attach admin delete buttons dynamically
-    const _origOpen = window.openComments;
-</script>
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; padding: 15px; background: var(--vanilla-light); border: 1px solid var(--latte-gold); border-radius: 15px; max-width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-    
-    <div style="color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-        <i class="fas fa-users" style="color: var(--latte-gold);"></i>
-        <span>( تجريبي )عدد زوار الموقع:</span>
-    </div>
+    // ===== REALTIME DATABASE SETUP =====
+    // Using Realtime DB because it supports large base64 strings (no 1MB doc limit)
+    const RTDB_URL = "https://diwd-a7709-default-rtdb.firebaseio.com";
 
-    <div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div>
-    <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
-    <noscript>
-        <a href="https://www.freecounterstat.com" title="website counter">
-            <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter">
-        </a>
-    </noscript>
+    async function rtdbSet(path, data) {
+        const res = await fetch(RTDB_URL + path + '.json', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('RTDB write failed: ' + res.status);
+        return res.json();
+    }
+
+    async function rtdbPush(path, data) {
+        const res = await fetch(RTDB_URL + path + '.json', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('RTDB push failed: ' + res.status);
+        return res.json(); // returns { name: "-Nxxx..." }
+    }
+
+    async function rtdbGet(path) {
+        const res = await fetch(RTDB_URL + path + '.json');
+        if (!res.ok) throw new Error('RTDB read failed: ' + res.status);
+        return res.json();
+    }
+
+    async function rtdbDelete(path) {
+        const res = await fetch(RTDB_URL + path + '.json', { method: 'DELETE' });
+        if (!res.ok) throw new Error('RTDB delete failed: ' + res.status);
+    }
+
+    // ===== LOAD DYNAMIC PHOTOS FROM REALTIME DB =====
+    async function loadDynamicPhotos() {
+        try {
+            const data = await rtdbGet('/admin_photos');
+            if (!data) return;
+            // Sort by createdAt ascending so newest appears last
+            const entries = Object.entries(data).sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
+            entries.forEach(([key, val]) => {
+                injectPhotoCard(val.photoId, val.caption || 'تصميم جديد', val.gallery, val.url, key);
+                refreshUI(val.photoId);
+            });
+        } catch(e) { console.error("خطأ تحميل الصور:", e); }
+    }
+
+    function injectPhotoCard(photoId, caption, gallery, url, rtdbKey) {
+        const containerId = gallery === 'stone-gallery' ? 'stone-dynamic-photos' : 'interior-dynamic-photos';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        if (document.getElementById('section-' + photoId)) return;
+
+        const section = document.createElement('div');
+        section.className = 'product-section dynamic-photo';
+        section.id = 'section-' + photoId;
+        section.innerHTML = `
+            <img src="${url}" ondblclick="handleDoubleTap('${photoId}')" style="width:100%;display:block;" loading="lazy">
+            <div class="model-tag">
+                <span>${caption}</span>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <button class="admin-delete-like" style="${window.isAdminMode ? 'display:flex' : 'display:none'}"
+                        onclick="adminDeleteLikes('${photoId}')">
+                        <i class="fas fa-trash"></i> حذف اللايكات
+                    </button>
+                    <button class="admin-delete-like" style="${window.isAdminMode ? 'display:flex' : 'display:none'}; background:var(--admin-red);"
+                        onclick="adminDeleteDynamicPhoto('${rtdbKey}','${photoId}')">
+                        <i class="fas fa-image"></i> حذف الصورة
+                    </button>
+                    <button class="like-btn" onclick="openComments('${photoId}')"><i class="far fa-comment"></i></button>
+                    <button id="btn-${photoId}" class="like-btn" onclick="handleLike('${photoId}')">
+                        <i class="fas fa-heart"></i> <span id="count-${photoId}">0</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        container.appendChild(section);
+        applyReveal();
+    }
+
+    window.adminDeleteDynamicPhoto = async (rtdbKey, photoId) => {
+        if (!window.isAdminMode) return;
+        if (!confirm("حذف هذه الصورة نهائياً؟")) return;
+        try {
+            await rtdbDelete('/admin_photos/' + rtdbKey);
+            const el = document.getElementById('section-' + photoId);
+            if (el) el.remove();
+            showAdminToast('✅ تم حذف الصورة');
+        } catch(e) { alert("خطأ: " + e.message); }
+    };
+
+    // ===== IMAGE COMPRESSION HELPER =====
+    function compressImage(file, maxWidth, quality) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onerror = reject;
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onerror = reject;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', quality));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // ===== SUBMIT UPLOADED PHOTOS → Realtime DB =====
+    window.submitUploadedPhotos = async () => {
+        if (!window.isAdminMode) return;
+        const files = window._uploadFiles || [];
+        if (!files.length) { showAdminToast('⚠️ اختر صورة واحدة على الأقل'); return; }
+
+        const caption = document.getElementById('upload-caption').value.trim() || 'تصميم جديد';
+        const gallery = document.getElementById('upload-gallery-select').value;
+        const btn = document.getElementById('upload-submit-btn');
+        const progressWrap = document.getElementById('upload-progress-wrap');
+        const progressBar = document.getElementById('upload-progress-bar-inner');
+        const progressText = document.getElementById('upload-progress-text');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        progressWrap.style.display = 'block';
+        progressBar.style.width = '0%';
+
+        let uploaded = 0;
+        const total = files.length;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            try {
+                progressText.textContent = `ضغط الصورة ${i+1}/${total}...`;
+                // Compress: max 800px wide, quality 0.65 → keeps under ~300KB base64
+                const compressed = await compressImage(file, 800, 0.65);
+
+                const photoId = 'adm_' + Date.now() + '_' + i;
+
+                progressText.textContent = `حفظ الصورة ${i+1}/${total}...`;
+                const result = await rtdbPush('/admin_photos', {
+                    photoId,
+                    caption,
+                    gallery,
+                    url: compressed,
+                    createdAt: Date.now()
+                });
+
+                injectPhotoCard(photoId, caption, gallery, compressed, result.name);
+                refreshUI(photoId);
+
+                uploaded++;
+                progressBar.style.width = Math.round((uploaded / total) * 100) + '%';
+                progressText.textContent = `✅ ${uploaded} / ${total} تم`;
+                sendTG("📸 صورة جديدة\n📁 " + gallery + "\n🏷️ " + caption);
+
+            } catch(e) {
+                console.error("خطأ:", e);
+                progressText.textContent = '❌ خطأ: ' + e.message;
+                showAdminToast('❌ خطأ في حفظ الصورة');
+            }
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check"></i> رفع الصور';
+        if (uploaded > 0) {
+            showAdminToast('✅ تم حفظ ' + uploaded + ' صورة!');
+            setTimeout(() => { closeUploadModal(); showPage(gallery); }, 1000);
+        }
+    };
+
+    // Load dynamic photos on startup
+    window.addEventListener('DOMContentLoaded', loadDynamicPhotos);
+</script>
+
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; padding: 15px; background: var(--vanilla-light); border: 1px solid var(--latte-gold); border-radius: 15px; max-width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+
+```
+<div style="color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+    <i class="fas fa-users" style="color: var(--latte-gold);"></i>
+    <span>( تجريبي )عدد زوار الموقع:</span>
+</div>
+
+<div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div>
+<script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
+<noscript>
+    <a href="https://www.freecounterstat.com" title="website counter">
+        <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter">
+    </a>
+</noscript>
+```
+
 </div>
 
 </body>
