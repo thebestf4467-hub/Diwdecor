@@ -5,21 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD</title>
-
-<link rel="apple-touch-icon" sizes="180x180" href="app-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
-<link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="app-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script type="text/javascript">
     window.addEventListener('load', function() {
-        if (typeof emailjs !== 'undefined') {
-            emailjs.init("erC7kBqB9EB-S6N1r");
-        }
+        if (typeof emailjs !== 'undefined') emailjs.init("erC7kBqB9EB-S6N1r");
     });
 
     const TELEGRAM_TOKEN = "8677042322:AAHexlEQV-u6AbbDgacGBDhORmlPAv2Yi04";
@@ -31,18 +26,11 @@
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: "HTML" })
-        })
-        .then(function() { console.log("تم الإرسال لتلغرام"); })
-        .catch(function(err) { console.error("خطأ تلغرام:", err); });
-    }
+        }).then(() => {}).catch(err => console.error("خطأ تلغرام:", err));
+    };
 
-    function openAuthModal() {
-        document.getElementById('auth-modal').classList.add('active');
-    }
-
-    function closeAuthModal() {
-        document.getElementById('auth-modal').classList.remove('active');
-    }
+    function openAuthModal() { document.getElementById('auth-modal').classList.add('active'); }
+    function closeAuthModal() { document.getElementById('auth-modal').classList.remove('active'); }
 
     function continueAsGuest() {
         window.sendTelegramNotification("👤 دخول كضيف\n🕒 " + new Date().toLocaleString('ar-IQ'));
@@ -60,11 +48,12 @@
     }
 
     function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(function(p) { p.style.display = 'none'; });
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         document.getElementById(pageId).style.display = 'block';
         if (document.getElementById('sideMenu').classList.contains('open')) toggleMenu();
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(applyReveal, 100);
+        if (pageId === 'profile-page') loadProfilePage();
     }
 
     function playVideo() {
@@ -78,7 +67,7 @@
         var icon = document.getElementById('themeIcon');
         var headerToggle = document.getElementById('themeToggle');
         headerToggle.style.transform = "rotate(360deg)";
-        setTimeout(function() { headerToggle.style.transform = "rotate(0deg)"; }, 600);
+        setTimeout(() => { headerToggle.style.transform = "rotate(0deg)"; }, 600);
         document.body.classList.toggle('dark-mode');
         if (document.body.classList.contains('dark-mode')) {
             icon.classList.replace('fa-moon', 'fa-sun');
@@ -91,16 +80,14 @@
 
     var observerOptions = { threshold: 0.10 };
     var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
+        entries.forEach(entry => {
             if (entry.isIntersecting) entry.target.classList.add('active-reveal');
             else entry.target.classList.remove('active-reveal');
         });
     }, observerOptions);
 
     function applyReveal() {
-        document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta').forEach(function(t) {
-            observer.observe(t);
-        });
+        document.querySelectorAll('.product-section, .service-card, .reveal, .whatsapp-cta').forEach(t => observer.observe(t));
     }
 
     window.addEventListener("scroll", function() {
@@ -120,7 +107,7 @@
         }
     });
 
-    // ===== Admin Mode Logic =====
+    // ===== Admin Mode =====
     window.isAdminMode = false;
     var logoClickCount = 0;
     var logoClickTimer = null;
@@ -132,17 +119,13 @@
             logoClickCount = 0;
             promptAdminPassword();
         } else {
-            logoClickTimer = setTimeout(function() { logoClickCount = 0; }, 500);
+            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 500);
         }
     }
 
     function promptAdminPassword() {
-        var modal = document.getElementById('admin-pass-modal');
-        modal.classList.add('active');
-        setTimeout(function() {
-            var inp = document.getElementById('admin-pass-input');
-            if (inp) inp.focus();
-        }, 100);
+        document.getElementById('admin-pass-modal').classList.add('active');
+        setTimeout(() => { var inp = document.getElementById('admin-pass-input'); if (inp) inp.focus(); }, 100);
     }
 
     function closeAdminPassModal() {
@@ -159,7 +142,7 @@
         } else {
             document.getElementById('admin-pass-input').style.borderColor = '#e74c3c';
             document.getElementById('admin-pass-input').style.animation = 'shake 0.3s ease';
-            setTimeout(function() {
+            setTimeout(() => {
                 document.getElementById('admin-pass-input').style.borderColor = 'var(--latte-gold)';
                 document.getElementById('admin-pass-input').style.animation = '';
             }, 600);
@@ -178,22 +161,20 @@
         document.getElementById('admin-fab').style.display = 'none';
         document.getElementById('admin-badge').style.display = 'none';
         document.getElementById('admin-stats-panel').classList.remove('active');
-        document.querySelectorAll('.admin-delete-like, .admin-delete-comment-btn').forEach(function(el) {
-            el.style.display = 'none';
-        });
+        document.querySelectorAll('.admin-delete-like, .admin-delete-comment-btn').forEach(el => el.style.display = 'none');
         showAdminToast('تم إلغاء وضع الإدارة');
     }
 
     function updateAdminDeleteButtons() {
         if (!window.isAdminMode) return;
-        document.querySelectorAll('.admin-delete-like').forEach(function(el) { el.style.display = 'flex'; });
+        document.querySelectorAll('.admin-delete-like').forEach(el => el.style.display = 'flex');
     }
 
     function showAdminToast(msg) {
         var toast = document.getElementById('admin-toast');
         toast.textContent = msg;
         toast.classList.add('show');
-        setTimeout(function() { toast.classList.remove('show'); }, 2500);
+        setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
     function toggleAdminStats() {
@@ -202,11 +183,9 @@
         if (panel.classList.contains('active')) loadAdminStats();
     }
 
-    function closeAdminStats() {
-        document.getElementById('admin-stats-panel').classList.remove('active');
-    }
+    function closeAdminStats() { document.getElementById('admin-stats-panel').classList.remove('active'); }
 
-    // ===== UPLOAD PHOTO FEATURE =====
+    // ===== Upload Photo =====
     function openUploadModal() {
         document.getElementById('upload-modal').classList.add('active');
         document.getElementById('upload-preview-area').innerHTML = '';
@@ -220,9 +199,7 @@
         window._uploadFiles = [];
     }
 
-    function triggerFileInput() {
-        document.getElementById('upload-file-input').click();
-    }
+    function triggerFileInput() { document.getElementById('upload-file-input').click(); }
 
     function handleFileSelect(input) {
         var files = Array.from(input.files);
@@ -230,7 +207,7 @@
         window._uploadFiles = files;
         var area = document.getElementById('upload-preview-area');
         area.innerHTML = '';
-        files.forEach(function(file, i) {
+        files.forEach((file, i) => {
             var reader = new FileReader();
             reader.onload = function(e) {
                 var wrap = document.createElement('div');
@@ -241,13 +218,10 @@
                 var badge = document.createElement('span');
                 badge.textContent = i + 1;
                 badge.style.cssText = 'position:absolute;top:2px;right:2px;background:var(--latte-gold);color:white;border-radius:50%;width:18px;height:18px;font-size:0.65rem;display:flex;align-items:center;justify-content:center;font-weight:bold;';
-                wrap.appendChild(img);
-                wrap.appendChild(badge);
-                area.appendChild(wrap);
+                wrap.appendChild(img); wrap.appendChild(badge); area.appendChild(wrap);
             };
             reader.readAsDataURL(file);
         });
-        // reset input so same file can be re-selected
         input.value = '';
     }
 </script>
@@ -284,8 +258,8 @@
     body.dark-mode .side-menu { background: rgba(37,31,28,0.98); }
     .side-menu.open { right: 0; }
     .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(75,56,50,0.3); display: none; z-index: 4500; }
-    .close-menu { color: var(--latte-gold); font-size: 1.6rem; cursor: pointer; margin-bottom: 30px; display: block; }
-    .menu-section { margin-bottom: 35px; }
+    .close-menu { color: var(--latte-gold); font-size: 1.6rem; cursor: pointer; margin-bottom: 20px; display: block; }
+    .menu-section { margin-bottom: 25px; }
     .menu-section h3 { color: var(--latte-gold); border-bottom: 1px solid var(--latte-gold); padding-bottom: 8px; margin-bottom: 15px; font-size: 1.1rem; }
     .menu-section p { font-size: 0.9rem; line-height: 1.8; color: var(--dark-latte); text-align: justify; }
     .social-links { display: flex; flex-direction: column; gap: 18px; }
@@ -300,28 +274,12 @@
     .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; cursor: pointer; user-select: none; display: inline-block; }
     .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
     .theme-toggle-header { color: var(--latte-gold); font-size: 1.3rem; cursor: pointer; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); width: 30px; text-align: left; }
-
-    /* Admin badge on logo */
-    #admin-badge {
-        display: none;
-        background: var(--admin-red);
-        color: white;
-        font-size: 0.45rem;
-        padding: 2px 6px;
-        border-radius: 8px;
-        position: absolute;
-        top: -4px;
-        left: 50%;
-        transform: translateX(-50%);
-        letter-spacing: 0.5px;
-        font-weight: bold;
-        white-space: nowrap;
-    }
+    #admin-badge { display: none; background: var(--admin-red); color: white; font-size: 0.45rem; padding: 2px 6px; border-radius: 8px; position: absolute; top: -4px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; font-weight: bold; white-space: nowrap; }
 
     /* ======= PROGRESS BAR ======= */
     .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--latte-gold); z-index: 3000; width: 0%; }
 
-    /* ======= PAGES & ANIMATIONS ======= */
+    /* ======= PAGES ======= */
     .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4,0,0.2,1); }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
     .reveal, .product-section, .service-card, .whatsapp-cta { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); will-change: transform, opacity; }
@@ -371,318 +329,280 @@
     /* ======= COMMENTS ======= */
     #comments-list::-webkit-scrollbar { width: 4px; }
     #comments-list::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
-    .comment-item { padding: 10px; background: var(--vanilla-light); border-radius: 12px; border-right: 3px solid var(--latte-gold); animation: slideIn 0.3s ease-out; position: relative; }
+
+    .comment-item {
+        padding: 10px 12px;
+        background: var(--vanilla-light);
+        border-radius: 14px;
+        border-right: 3px solid var(--latte-gold);
+        animation: slideIn 0.3s ease-out;
+        position: relative;
+    }
     @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
-    .admin-delete-comment-btn {
-        display: none;
-        position: absolute;
-        top: 6px;
-        left: 8px;
-        background: var(--admin-red);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 22px;
-        height: 22px;
-        font-size: 0.7rem;
-        cursor: pointer;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        padding: 0;
-        z-index: 10;
-        transition: transform 0.2s;
+    /* Comment avatar row */
+    .comment-avatar-row { display: flex; align-items: flex-start; gap: 10px; }
+    .comment-user-avatar {
+        width: 33px; height: 33px; border-radius: 50%;
+        border: 2px solid var(--latte-gold); overflow: hidden;
+        background: var(--vanilla-light); flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: transform 0.2s;
     }
-    .admin-delete-comment-btn:hover { transform: scale(1.15); }
+    .comment-user-avatar:hover { transform: scale(1.1); }
+    .comment-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-initials { font-size: 0.7rem; font-weight: bold; color: var(--latte-gold); }
+    .comment-content-box { flex: 1; min-width: 0; }
+    .comment-username-link { cursor: pointer; color: var(--latte-gold); font-weight: bold; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 3px; margin-bottom: 3px; transition: opacity 0.2s; }
+    .comment-username-link:hover { opacity: 0.7; }
+    .comment-text-content { font-size: 0.9rem; color: var(--dark-latte); word-break: break-word; }
 
-    .admin-delete-like {
-        display: none;
-        background: var(--admin-red);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 4px 10px;
+    /* ── Comment action buttons (edit/delete for owner) ── */
+    .comment-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 7px;
+        justify-content: flex-end;
+    }
+    .comment-action-btn {
+        background: transparent;
+        border: 1px solid rgba(200,161,101,0.4);
+        color: var(--latte-gold);
+        border-radius: 20px;
+        padding: 3px 10px;
         font-size: 0.7rem;
-        cursor: pointer;
-        align-items: center;
-        gap: 5px;
         font-family: 'Cairo', sans-serif;
         font-weight: bold;
-        transition: 0.2s;
-    }
-    .admin-delete-like:hover { opacity: 0.85; transform: scale(1.05); }
-
-    /* ======= ADMIN PASSWORD MODAL ======= */
-    #admin-pass-modal {
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(4px);
-    }
-    #admin-pass-modal .comment-content {
-        padding: 30px 25px;
-        text-align: center;
-    }
-    #admin-pass-input {
-        width: 100%;
-        padding: 12px;
-        border-radius: 12px;
-        border: 2px solid var(--latte-gold);
-        background: var(--vanilla-light);
-        color: var(--dark-latte);
-        font-family: 'Cairo', sans-serif;
-        font-size: 1.1rem;
-        text-align: center;
-        letter-spacing: 3px;
-        outline: none;
-        margin: 15px 0;
-        transition: border-color 0.3s;
-    }
-    @keyframes shake {
-        0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)}
-    }
-
-    /* ======= ADMIN FAB ======= */
-    #admin-fab {
-        display: none;
-        position: fixed;
-        bottom: 25px;
-        left: 25px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        z-index: 8000;
-    }
-    .admin-fab-btn {
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        border: none;
         cursor: pointer;
-        font-size: 1.3rem;
         display: flex;
         align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 18px rgba(0,0,0,0.2);
-        transition: transform 0.2s, box-shadow 0.2s;
-        font-family: 'Cairo', sans-serif;
+        gap: 4px;
+        transition: all 0.2s;
     }
+    .comment-action-btn:hover { background: var(--latte-gold); color: white; }
+    .comment-action-btn.delete-btn:hover { background: var(--admin-red); border-color: var(--admin-red); color: white; }
+
+    /* Inline edit textarea */
+    .comment-edit-area {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1.5px solid var(--latte-gold);
+        background: var(--creamy-white);
+        color: var(--dark-latte);
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.9rem;
+        resize: none;
+        outline: none;
+        margin-top: 6px;
+        transition: border-color 0.2s;
+        min-height: 60px;
+    }
+    .comment-edit-area:focus { border-color: #a07840; }
+    .comment-edit-actions {
+        display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end;
+    }
+    .comment-save-btn {
+        background: var(--latte-gold); color: white; border: none;
+        border-radius: 20px; padding: 5px 14px; font-size: 0.75rem;
+        font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer;
+        display: flex; align-items: center; gap: 5px; transition: 0.2s;
+    }
+    .comment-save-btn:hover { opacity: 0.85; }
+    .comment-cancel-btn {
+        background: transparent; color: var(--latte-gold);
+        border: 1px solid var(--latte-gold); border-radius: 20px;
+        padding: 5px 14px; font-size: 0.75rem;
+        font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; transition: 0.2s;
+    }
+    .comment-cancel-btn:hover { background: rgba(200,161,101,0.12); }
+
+    /* Admin delete buttons */
+    .admin-delete-comment-btn { display: none; position: absolute; top: 6px; left: 8px; background: var(--admin-red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; align-items: center; justify-content: center; line-height: 1; padding: 0; z-index: 10; transition: transform 0.2s; }
+    .admin-delete-comment-btn:hover { transform: scale(1.15); }
+    .admin-delete-like { display: none; background: var(--admin-red); color: white; border: none; border-radius: 50px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer; align-items: center; gap: 5px; font-family: 'Cairo', sans-serif; font-weight: bold; transition: 0.2s; }
+    .admin-delete-like:hover { opacity: 0.85; transform: scale(1.05); }
+    #admin-pass-modal { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+    #admin-pass-modal .comment-content { padding: 30px 25px; text-align: center; }
+    #admin-pass-input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 1.1rem; text-align: center; letter-spacing: 3px; outline: none; margin: 15px 0; transition: border-color 0.3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    #admin-fab { display: none; position: fixed; bottom: 25px; left: 25px; flex-direction: column; align-items: flex-start; gap: 10px; z-index: 8000; }
+    .admin-fab-btn { width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s; font-family: 'Cairo', sans-serif; }
     .admin-fab-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.28); }
     #fab-stats { background: var(--latte-gold); color: white; }
     #fab-upload { background: var(--admin-green); color: white; }
     #fab-exit { background: var(--admin-red); color: white; font-size: 0.9rem; }
-
     .fab-wrap { display: flex; align-items: center; gap: 10px; }
-    .fab-label {
-        background: var(--creamy-white);
-        color: var(--dark-latte);
-        border: 1px solid var(--latte-gold);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        white-space: nowrap;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    /* ======= ADMIN STATS PANEL ======= */
-    #admin-stats-panel {
-        display: none;
-        position: fixed;
-        bottom: 100px;
-        left: 15px;
-        width: calc(100vw - 30px);
-        max-width: 360px;
-        background: var(--creamy-white);
-        border: 1.5px solid var(--latte-gold);
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.18);
-        z-index: 7900;
-        overflow: hidden;
-        animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
-    }
+    .fab-label { background: var(--creamy-white); color: var(--dark-latte); border: 1px solid var(--latte-gold); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    #admin-stats-panel { display: none; position: fixed; bottom: 100px; left: 15px; width: calc(100vw - 30px); max-width: 360px; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.18); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
     #admin-stats-panel.active { display: block; }
     @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .stats-header {
-        background: var(--latte-gold);
-        color: white;
-        padding: 14px 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-weight: bold;
-        font-size: 1rem;
-    }
+    .stats-header { background: var(--latte-gold); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
     .stats-close { cursor: pointer; font-size: 1.1rem; opacity: 0.85; }
     .stats-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-    .stat-card {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        background: var(--vanilla-light);
-        border-radius: 14px;
-        padding: 14px 16px;
-        border-right: 3px solid var(--latte-gold);
-    }
-    .stat-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        background: var(--latte-gold);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        flex-shrink: 0;
-    }
-    .stat-info {}
+    .stat-card { display: flex; align-items: center; gap: 14px; background: var(--vanilla-light); border-radius: 14px; padding: 14px 16px; border-right: 3px solid var(--latte-gold); }
+    .stat-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--latte-gold); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
     .stat-label { font-size: 0.75rem; color: #888; font-weight: 600; }
     .stat-value { font-size: 1.5rem; font-weight: 900; color: var(--dark-latte); line-height: 1.2; }
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .stat-card-sm {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: var(--vanilla-light);
-        border-radius: 14px;
-        padding: 14px;
-        text-align: center;
-    }
+    .stat-card-sm { display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--vanilla-light); border-radius: 14px; padding: 14px; text-align: center; }
     .stat-card-sm .stat-icon { width: 36px; height: 36px; font-size: 0.95rem; margin-bottom: 6px; }
     .stat-card-sm .stat-value { font-size: 1.3rem; }
     .stat-card-sm .stat-label { font-size: 0.7rem; }
     #stats-loading { text-align: center; padding: 20px; color: var(--latte-gold); font-size: 0.9rem; }
     #stats-refresh { margin: 0 18px 14px; width: calc(100% - 36px); background: var(--latte-gold); color: white; border: none; border-radius: 12px; padding: 10px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    #stats-refresh:hover { opacity: 0.88; }
+    #admin-toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 30px; font-size: 0.85rem; font-weight: bold; opacity: 0; transition: all 0.4s; z-index: 9999; pointer-events: none; white-space: nowrap; }
+    #admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ======= ADMIN TOAST ======= */
-    #admin-toast {
-        position: fixed;
-        bottom: 90px;
-        left: 50%;
-        transform: translateX(-50%) translateY(20px);
-        background: #2c2c2c;
-        color: white;
-        padding: 10px 22px;
-        border-radius: 30px;
-        font-size: 0.85rem;
-        font-weight: bold;
-        opacity: 0;
-        transition: all 0.4s;
-        z-index: 9999;
-        pointer-events: none;
-        white-space: nowrap;
-    }
-    #admin-toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
+    /* Upload Modal */
+    #upload-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
+    #upload-modal .comment-content { max-width: 420px; max-height: 90vh; overflow-y: auto; }
+    .upload-drop-zone { border: 2.5px dashed var(--latte-gold); border-radius: 16px; padding: 30px 15px; text-align: center; cursor: pointer; background: var(--vanilla-light); transition: background 0.2s, border-color 0.2s; margin-bottom: 14px; }
+    .upload-drop-zone i { font-size: 2.8rem; color: var(--latte-gold); display: block; margin-bottom: 8px; }
+    .upload-drop-zone p { font-size: 0.88rem; color: var(--dark-latte); opacity: 0.8; }
+    #upload-preview-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 30px; margin-bottom: 14px; }
+    .upload-field { width: 100%; padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 0.95rem; outline: none; margin-bottom: 10px; transition: border-color 0.2s; }
+    select.upload-field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8a165' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 12px center; padding-left: 32px; }
+    #upload-progress-wrap { display: none; margin-bottom: 10px; }
+    #upload-progress-bar-outer { background: var(--vanilla-light); border-radius: 20px; height: 10px; overflow: hidden; border: 1px solid rgba(200,161,101,0.3); margin-bottom: 5px; }
+    #upload-progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--latte-gold), #e8c07a); border-radius: 20px; width: 0%; transition: width 0.3s ease; }
+    #upload-progress-text { font-size: 0.78rem; color: var(--latte-gold); text-align: center; font-weight: bold; }
+    .upload-submit-btn { width: 100%; padding: 13px; background: var(--admin-green); color: white; border: none; border-radius: 14px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s, transform 0.15s; }
+    .upload-submit-btn:hover { opacity: 0.88; }
+    .upload-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ======= UPLOAD MODAL ======= */
-    #upload-modal {
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(6px);
-        z-index: 10000;
-    }
-    #upload-modal .comment-content {
-        max-width: 420px;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-    .upload-drop-zone {
-        border: 2.5px dashed var(--latte-gold);
-        border-radius: 16px;
-        padding: 30px 15px;
+    /* =============================================
+       PROFILE PAGE STYLES
+    ============================================= */
+    #profile-page { min-height: 100vh; padding-bottom: 40px; }
+
+    .profile-hero {
+        background: linear-gradient(135deg, var(--latte-gold) 0%, #8a5e30 100%);
+        padding: 50px 20px 75px;
         text-align: center;
-        cursor: pointer;
-        background: var(--vanilla-light);
-        transition: background 0.2s, border-color 0.2s;
-        margin-bottom: 14px;
+        position: relative;
+        overflow: hidden;
     }
-    .upload-drop-zone:hover, .upload-drop-zone.dragover {
-        background: rgba(200,161,101,0.12);
-        border-color: #a07840;
+    .profile-hero::before {
+        content: '';
+        position: absolute; top: -50%; left: -50%;
+        width: 200%; height: 200%;
+        background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.1) 0%, transparent 60%);
+        pointer-events: none;
     }
-    .upload-drop-zone i {
-        font-size: 2.8rem;
+    .profile-hero::after {
+        content: '';
+        position: absolute; bottom: -1px; left: 0; right: 0;
+        height: 35px;
+        background: var(--creamy-white);
+        border-radius: 30px 30px 0 0;
+    }
+
+    .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 15px; }
+    .profile-avatar {
+        width: 105px; height: 105px; border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.95);
+        object-fit: cover; overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        cursor: pointer; transition: transform 0.3s;
+        background: rgba(255,255,255,0.2);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .profile-avatar:hover { transform: scale(1.05); }
+    .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-placeholder-text { font-size: 2.8rem; color: rgba(255,255,255,0.95); font-weight: 900; }
+    .avatar-edit-badge {
+        position: absolute; bottom: 3px; left: 3px;
+        width: 30px; height: 30px; background: white; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        transition: transform 0.2s;
+    }
+    .avatar-edit-badge:hover { transform: scale(1.15); }
+    .avatar-edit-badge i { color: var(--latte-gold); font-size: 0.78rem; }
+    .profile-name { color: white; font-size: 1.5rem; font-weight: 900; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+    .profile-email { color: rgba(255,255,255,0.75); font-size: 0.8rem; margin-bottom: 6px; }
+    .profile-joined { color: rgba(255,255,255,0.65); font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+    .profile-stats-bar {
+        display: flex; background: var(--creamy-white);
+        border-bottom: 1px solid rgba(200,161,101,0.12);
+        position: relative; z-index: 2;
+    }
+    .profile-stat { flex: 1; text-align: center; padding: 20px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
+    .profile-stat:last-child { border-left: none; }
+    .profile-stat-value { font-size: 1.5rem; font-weight: 900; color: var(--latte-gold); display: block; }
+    .profile-stat-label { font-size: 0.65rem; color: #999; font-weight: 600; }
+
+    .profile-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; background: var(--bg-gradient); min-height: 200px; }
+
+    .profile-card { background: var(--creamy-white); border-radius: 18px; border: 1px solid rgba(200,161,101,0.15); overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.04); }
+    .profile-card-header { padding: 14px 18px; border-bottom: 1px solid rgba(200,161,101,0.12); display: flex; align-items: center; gap: 10px; background: var(--vanilla-light); }
+    .profile-card-header i { color: var(--latte-gold); font-size: 1rem; }
+    .profile-card-header span { font-weight: bold; font-size: 0.9rem; color: var(--dark-latte); }
+    .profile-card-body { padding: 18px; }
+
+    .edit-field-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(200,161,101,0.08); }
+    .edit-field-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .edit-field-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .edit-field-icon i { color: var(--latte-gold); font-size: 0.85rem; }
+    .edit-field-info { flex: 1; }
+    .edit-field-label { font-size: 0.7rem; color: #999; font-weight: 600; margin-bottom: 2px; }
+    .edit-field-value { font-size: 0.95rem; color: var(--dark-latte); font-weight: bold; }
+    .edit-btn { background: var(--vanilla-light); border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; font-family: 'Cairo', sans-serif; transition: 0.2s; white-space: nowrap; }
+    .edit-btn:hover { background: var(--latte-gold); color: white; }
+
+    /* Edit Username Modal */
+    #edit-username-modal { background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); z-index: 10002; }
+    #edit-username-modal .comment-content { max-width: 340px; padding: 30px 24px; text-align: center; }
+    .edit-input { width: 100%; padding: 13px 16px; border-radius: 14px; border: 2px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 1rem; text-align: center; outline: none; margin: 15px 0; transition: border-color 0.2s; }
+    .edit-input:focus { border-color: #a07840; }
+
+    /* Avatar Upload Modal */
+    #avatar-upload-modal { background: rgba(0,0,0,0.65); backdrop-filter: blur(7px); z-index: 10003; }
+    #avatar-upload-modal .comment-content { max-width: 360px; padding: 0; overflow: hidden; }
+    .avatar-upload-header { background: var(--latte-gold); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
+    .avatar-upload-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+    .avatar-preview-circle { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--latte-gold); overflow: hidden; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s; box-shadow: 0 4px 16px rgba(200,161,101,0.25); }
+    .avatar-preview-circle:hover { transform: scale(1.05); }
+    .avatar-preview-circle img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-preview-circle i { font-size: 2.8rem; color: var(--latte-gold); }
+    .avatar-pick-btn { width: 100%; padding: 13px; background: var(--vanilla-light); border: 2px dashed var(--latte-gold); border-radius: 14px; color: var(--latte-gold); font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+    .avatar-pick-btn:hover { background: rgba(200,161,101,0.1); }
+    .avatar-save-btn { width: 100%; padding: 13px; background: var(--latte-gold); border: none; border-radius: 14px; color: white; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+    .avatar-save-btn:hover { opacity: 0.88; }
+    .avatar-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Logout button */
+    .profile-logout-btn { width: 100%; padding: 15px; background: transparent; border: 2px solid #e74c3c; border-radius: 14px; color: #e74c3c; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
+    .profile-logout-btn:hover { background: #e74c3c; color: white; }
+
+    /* Menu profile preview */
+    .menu-profile-preview { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--vanilla-light); border-radius: 14px; margin-bottom: 20px; cursor: pointer; border: 1px solid rgba(200,161,101,0.2); transition: 0.2s; }
+    .menu-profile-preview:hover { background: rgba(200,161,101,0.12); }
+    .menu-profile-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--latte-gold); overflow: hidden; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .menu-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .menu-avatar-placeholder { font-size: 1.2rem; color: var(--latte-gold); font-weight: bold; }
+    .menu-profile-name { font-weight: bold; font-size: 0.95rem; color: var(--dark-latte); }
+    .menu-profile-sub { font-size: 0.72rem; color: var(--latte-gold); }
+
+    /* Liked gallery in profile */
+    .liked-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
+    .liked-thumb { aspect-ratio: 1; overflow: hidden; border-radius: 6px; cursor: pointer; }
+    .liked-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .liked-thumb:hover img { transform: scale(1.1); }
+    .empty-liked { text-align: center; padding: 30px 20px; color: #999; }
+    .empty-liked i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
+
+    /* ── Updating-profile overlay inside comment list ── */
+    .updating-overlay {
+        text-align: center;
+        padding: 14px;
         color: var(--latte-gold);
-        display: block;
-        margin-bottom: 8px;
-    }
-    .upload-drop-zone p {
-        font-size: 0.88rem;
-        color: var(--dark-latte);
+        font-size: 0.82rem;
+        font-weight: bold;
         opacity: 0.8;
     }
-    #upload-preview-area {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        min-height: 30px;
-        margin-bottom: 14px;
-    }
-    .upload-field {
-        width: 100%;
-        padding: 11px 14px;
-        border-radius: 12px;
-        border: 1.5px solid var(--latte-gold);
-        background: var(--vanilla-light);
-        color: var(--dark-latte);
-        font-family: 'Cairo', sans-serif;
-        font-size: 0.95rem;
-        outline: none;
-        margin-bottom: 10px;
-        transition: border-color 0.2s;
-    }
-    .upload-field:focus { border-color: #a07840; }
-    select.upload-field { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8a165' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 12px center; padding-left: 32px; }
-    #upload-progress-wrap {
-        display: none;
-        margin-bottom: 10px;
-    }
-    #upload-progress-bar-outer {
-        background: var(--vanilla-light);
-        border-radius: 20px;
-        height: 10px;
-        overflow: hidden;
-        border: 1px solid rgba(200,161,101,0.3);
-        margin-bottom: 5px;
-    }
-    #upload-progress-bar-inner {
-        height: 100%;
-        background: linear-gradient(90deg, var(--latte-gold), #e8c07a);
-        border-radius: 20px;
-        width: 0%;
-        transition: width 0.3s ease;
-    }
-    #upload-progress-text {
-        font-size: 0.78rem;
-        color: var(--latte-gold);
-        text-align: center;
-        font-weight: bold;
-    }
-    .upload-submit-btn {
-        width: 100%;
-        padding: 13px;
-        background: var(--admin-green);
-        color: white;
-        border: none;
-        border-radius: 14px;
-        font-family: 'Cairo', sans-serif;
-        font-weight: bold;
-        font-size: 1rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition: opacity 0.2s, transform 0.15s;
-    }
-    .upload-submit-btn:hover { opacity: 0.88; transform: scale(1.01); }
-    .upload-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    /* Uploaded photos in gallery */
-    .product-section.dynamic-photo { animation: fadeIn 0.5s ease; }
 </style>
 
 </head>
@@ -717,83 +637,92 @@
     </div>
 </div>
 
+<!-- ======= EDIT USERNAME MODAL ======= -->
+
+<div id="edit-username-modal" class="comment-modal">
+    <div class="comment-content">
+        <div style="text-align:center; padding: 28px 24px;">
+            <div style="font-size:2rem; color:var(--latte-gold); margin-bottom:8px;"><i class="fas fa-user-edit"></i></div>
+            <h3 style="color:var(--latte-gold); margin-bottom:4px;">تغيير اسم المستخدم</h3>
+            <p style="font-size:0.8rem; opacity:0.6; margin-bottom:0;">سيتم تحديث اسمك في جميع تعليقاتك تلقائياً</p>
+            <input type="text" id="new-username-input" class="edit-input" placeholder="اسم المستخدم الجديد" maxlength="20">
+            <div style="display:flex; gap:10px;">
+                <button onclick="saveNewUsername()" class="back-btn" style="flex:1; justify-content:center;">حفظ</button>
+                <button onclick="closeEditUsernameModal()" style="flex:1; padding:8px; border:1px solid var(--latte-gold); background:transparent; border-radius:20px; cursor:pointer; color:var(--latte-gold); font-family:'Cairo',sans-serif; font-weight:bold;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======= AVATAR UPLOAD MODAL ======= -->
+
+<div id="avatar-upload-modal" class="comment-modal">
+    <div class="comment-content" style="max-width:360px;">
+        <div class="avatar-upload-header">
+            <span><i class="fas fa-camera" style="margin-left:8px;"></i> تغيير الصورة الشخصية</span>
+            <i class="fas fa-times" onclick="closeAvatarUploadModal()" style="cursor:pointer; opacity:0.85;"></i>
+        </div>
+        <div class="avatar-upload-body">
+            <div class="avatar-preview-circle" onclick="triggerAvatarInput()" id="avatar-preview-circle">
+                <i class="fas fa-user-circle" id="avatar-preview-placeholder"></i>
+                <img id="avatar-preview-img" style="display:none; width:100%; height:100%; object-fit:cover;" alt="">
+            </div>
+            <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarFileSelect(this)">
+            <button class="avatar-pick-btn" onclick="triggerAvatarInput()">
+                <i class="fas fa-image"></i> اختر صورة من هاتفك
+            </button>
+            <button class="avatar-save-btn" id="avatar-save-btn" onclick="saveAvatar()" disabled>
+                <i class="fas fa-check"></i> حفظ الصورة الشخصية
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- ======= UPLOAD PHOTO MODAL ======= -->
 
 <div id="upload-modal" class="comment-modal">
     <div class="comment-content" style="padding: 0; overflow: hidden;">
-
-```
-    <!-- Header -->
-    <div style="background: var(--admin-green); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: bold; font-size: 1rem;">📸 إضافة صور جديدة</span>
-        <i class="fas fa-times" onclick="closeUploadModal()" style="cursor: pointer; font-size: 1.1rem; opacity: 0.85;"></i>
-    </div>
-
-    <div style="padding: 20px; display: flex; flex-direction: column; gap: 0;">
-
-        <!-- Drop zone / picker -->
-        <div class="upload-drop-zone" onclick="triggerFileInput()" id="upload-drop-zone">
-            <i class="fas fa-cloud-upload-alt"></i>
-            <p>اضغط لاختيار الصور من هاتفك</p>
-            <p style="font-size:0.75rem; margin-top:4px; color:var(--latte-gold);">يمكن اختيار أكثر من صورة دفعة واحدة</p>
+        <div style="background: var(--admin-green); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: bold; font-size: 1rem;">📸 إضافة صور جديدة</span>
+            <i class="fas fa-times" onclick="closeUploadModal()" style="cursor: pointer; font-size: 1.1rem; opacity: 0.85;"></i>
         </div>
-
-        <!-- Hidden file input -->
-        <input type="file" id="upload-file-input" accept="image/*" multiple
-               style="display:none;" onchange="handleFileSelect(this)">
-
-        <!-- Preview area -->
-        <div id="upload-preview-area"></div>
-
-        <!-- Caption -->
-        <input type="text" id="upload-caption" class="upload-field"
-               placeholder="اسم / وصف التصميم (اختياري)">
-
-        <!-- Gallery selector -->
-        <select id="upload-gallery-select" class="upload-field">
-            <option value="stone-gallery">معرض الواجهات الحجرية</option>
-            <option value="interior-gallery">معرض الديكور الداخلي</option>
-        </select>
-
-        <!-- Progress -->
-        <div id="upload-progress-wrap">
-            <div id="upload-progress-bar-outer">
-                <div id="upload-progress-bar-inner"></div>
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 0;">
+            <div class="upload-drop-zone" onclick="triggerFileInput()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>اضغط لاختيار الصور من هاتفك</p>
+                <p style="font-size:0.75rem; margin-top:4px; color:var(--latte-gold);">يمكن اختيار أكثر من صورة دفعة واحدة</p>
             </div>
-            <div id="upload-progress-text">جاري الرفع...</div>
+            <input type="file" id="upload-file-input" accept="image/*" multiple style="display:none;" onchange="handleFileSelect(this)">
+            <div id="upload-preview-area"></div>
+            <input type="text" id="upload-caption" class="upload-field" placeholder="اسم / وصف التصميم (اختياري)">
+            <select id="upload-gallery-select" class="upload-field">
+                <option value="stone-gallery">معرض الواجهات الحجرية</option>
+                <option value="interior-gallery">معرض الديكور الداخلي</option>
+            </select>
+            <div id="upload-progress-wrap">
+                <div id="upload-progress-bar-outer"><div id="upload-progress-bar-inner"></div></div>
+                <div id="upload-progress-text">جاري الرفع...</div>
+            </div>
+            <button class="upload-submit-btn" id="upload-submit-btn" onclick="submitUploadedPhotos()">
+                <i class="fas fa-check"></i> رفع الصور
+            </button>
         </div>
-
-        <!-- Submit -->
-        <button class="upload-submit-btn" id="upload-submit-btn" onclick="submitUploadedPhotos()">
-            <i class="fas fa-check"></i> رفع الصور
-        </button>
-
     </div>
-</div>
-```
-
 </div>
 
 <!-- ======= ADMIN FAB ======= -->
 
 <div id="admin-fab">
     <div class="fab-wrap">
-        <button class="admin-fab-btn" id="fab-stats" onclick="toggleAdminStats()" title="إحصائيات الموقع">
-            <i class="fas fa-chart-bar"></i>
-        </button>
+        <button class="admin-fab-btn" id="fab-stats" onclick="toggleAdminStats()"><i class="fas fa-chart-bar"></i></button>
         <span class="fab-label">إحصائيات</span>
     </div>
-    <!-- NEW: Upload button -->
     <div class="fab-wrap">
-        <button class="admin-fab-btn" id="fab-upload" onclick="openUploadModal()" title="إضافة صور">
-            <i class="fas fa-camera"></i>
-        </button>
+        <button class="admin-fab-btn" id="fab-upload" onclick="openUploadModal()"><i class="fas fa-camera"></i></button>
         <span class="fab-label">إضافة صور</span>
     </div>
     <div class="fab-wrap">
-        <button class="admin-fab-btn" id="fab-exit" onclick="deactivateAdminMode()" title="إنهاء وضع الإدارة">
-            <i class="fas fa-sign-out-alt"></i>
-        </button>
+        <button class="admin-fab-btn" id="fab-exit" onclick="deactivateAdminMode()"><i class="fas fa-sign-out-alt"></i></button>
         <span class="fab-label">إنهاء الإدارة</span>
     </div>
 </div>
@@ -805,18 +734,11 @@
         <span>📊 إحصائيات الموقع</span>
         <span class="stats-close" onclick="closeAdminStats()"><i class="fas fa-times"></i></span>
     </div>
-    <div class="stats-body" id="stats-body">
-        <div id="stats-loading">⏳ جاري تحميل البيانات...</div>
-    </div>
+    <div class="stats-body" id="stats-body"><div id="stats-loading">⏳ جاري تحميل البيانات...</div></div>
     <button id="stats-refresh" onclick="loadAdminStats()"><i class="fas fa-sync-alt"></i> تحديث</button>
 </div>
 
-<!-- ======= ADMIN TOAST ======= -->
-
 <div id="admin-toast"></div>
-
-<!-- ======= PROGRESS BAR ======= -->
-
 <div class="progress-bar" id="myBar"></div>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -824,22 +746,37 @@
 
 <div class="side-menu" id="sideMenu">
     <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
-    <div class="menu-section">
-        <h3>من نحن</h3>
-        <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم. نفخر بتنفيذ العديد من المشاريع السكنية من مرحلة الصفر وصولاً إلى آخر خطوة في التسليم.</p>
+
+```
+<!-- Profile Preview in Menu -->
+<div class="menu-profile-preview" id="menu-profile-preview" onclick="goToProfile()" style="display:none;">
+    <div class="menu-profile-avatar" id="menu-avatar-wrap">
+        <span class="menu-avatar-placeholder" id="menu-avatar-placeholder">?</span>
     </div>
-    <div class="menu-section">
-        <h3>تواصل معنا</h3>
-        <div class="social-links">
-            <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
-            <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
-            <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
-        </div>
+    <div class="menu-profile-info">
+        <div class="menu-profile-name" id="menu-profile-name">—</div>
+        <div class="menu-profile-sub">عرض ملفك الشخصي ←</div>
     </div>
-    <div class="menu-section">
-        <h3>الحساب</h3>
-        <button onclick="logoutUser()" style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer; font-family:'Cairo',sans-serif;">تسجيل الخروج</button>
+</div>
+
+<div class="menu-section">
+    <h3>من نحن</h3>
+    <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم.</p>
+</div>
+<div class="menu-section">
+    <h3>تواصل معنا</h3>
+    <div class="social-links">
+        <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
+        <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
+        <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
     </div>
+</div>
+<div class="menu-section">
+    <h3>الحساب</h3>
+    <button onclick="logoutUser()" style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer; font-family:'Cairo',sans-serif;">تسجيل الخروج</button>
+</div>
+```
+
 </div>
 
 <!-- ======= HEADER ======= -->
@@ -882,6 +819,103 @@
     </section>
 </div>
 
+<!-- ======= PROFILE PAGE ======= -->
+
+<div id="profile-page" class="page">
+    <div class="back-btn-container">
+        <button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button>
+    </div>
+
+```
+<!-- Hero -->
+<div class="profile-hero">
+    <div class="avatar-wrapper">
+        <div class="profile-avatar" onclick="openAvatarUploadModal()" id="profile-avatar-display">
+            <span class="avatar-placeholder-text" id="profile-avatar-placeholder">?</span>
+        </div>
+        <div class="avatar-edit-badge" onclick="openAvatarUploadModal()">
+            <i class="fas fa-camera"></i>
+        </div>
+    </div>
+    <div class="profile-name" id="profile-display-name">—</div>
+    <div class="profile-email" id="profile-display-email">—</div>
+    <div class="profile-joined"><i class="fas fa-calendar-alt"></i> <span id="profile-joined-date">—</span></div>
+</div>
+
+<!-- Stats bar -->
+<div class="profile-stats-bar">
+    <div class="profile-stat">
+        <span class="profile-stat-value" id="profile-stat-likes">0</span>
+        <span class="profile-stat-label">❤️ لايكات</span>
+    </div>
+    <div class="profile-stat">
+        <span class="profile-stat-value" id="profile-stat-comments">0</span>
+        <span class="profile-stat-label">💬 تعليقات</span>
+    </div>
+    <div class="profile-stat">
+        <span class="profile-stat-value" id="profile-stat-liked">0</span>
+        <span class="profile-stat-label">💛 أعجبني</span>
+    </div>
+</div>
+
+<div class="profile-body">
+    <!-- Edit Info Card -->
+    <div class="profile-card">
+        <div class="profile-card-header">
+            <i class="fas fa-user-cog"></i>
+            <span>معلوماتي الشخصية</span>
+        </div>
+        <div class="profile-card-body">
+            <div class="edit-field-row">
+                <div class="edit-field-icon"><i class="fas fa-user"></i></div>
+                <div class="edit-field-info">
+                    <div class="edit-field-label">اسم المستخدم</div>
+                    <div class="edit-field-value" id="info-username">—</div>
+                </div>
+                <button class="edit-btn" onclick="openEditUsernameModal()"><i class="fas fa-pen"></i> تعديل</button>
+            </div>
+            <div class="edit-field-row">
+                <div class="edit-field-icon"><i class="fas fa-envelope"></i></div>
+                <div class="edit-field-info">
+                    <div class="edit-field-label">البريد الإلكتروني</div>
+                    <div class="edit-field-value" id="info-email" style="font-weight:normal; font-size:0.85rem;">—</div>
+                </div>
+            </div>
+            <div class="edit-field-row">
+                <div class="edit-field-icon"><i class="fas fa-image"></i></div>
+                <div class="edit-field-info">
+                    <div class="edit-field-label">الصورة الشخصية</div>
+                    <div class="edit-field-value" style="font-weight:normal; font-size:0.82rem; color:#999;">تظهر مع تعليقاتك</div>
+                </div>
+                <button class="edit-btn" onclick="openAvatarUploadModal()"><i class="fas fa-camera"></i> تغيير</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liked Photos -->
+    <div class="profile-card">
+        <div class="profile-card-header">
+            <i class="fas fa-heart"></i>
+            <span>الصور التي أعجبتني</span>
+        </div>
+        <div class="profile-card-body" style="padding: 14px;">
+            <div id="liked-photos-grid" class="liked-grid"></div>
+            <div id="liked-photos-empty" class="empty-liked" style="display:none;">
+                <i class="far fa-heart"></i>
+                <p>لم تعجبك أي صورة بعد</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout -->
+    <button class="profile-logout-btn" onclick="logoutUser()">
+        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+    </button>
+</div>
+```
+
+</div>
+
 <!-- ======= COMMENTS MODAL ======= -->
 
 <div id="comments-modal" class="comment-modal">
@@ -905,6 +939,7 @@
     <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
     <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
 
+```
 <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
 <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
 <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
@@ -918,10 +953,8 @@
 <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
 <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
 <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
-
-<!-- Dynamic photos injected here for stone gallery -->
-
 <div id="stone-dynamic-photos"></div>
+```
 
 </div>
 
@@ -929,32 +962,27 @@
 
 <div id="interior-gallery" class="page">
     <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
-
-<div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
-<div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div></div>
-<div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
-<div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div></div>
-<div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div></div>
-<div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
-<div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
-<div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
-<div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
-<div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
-<div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div></div>
-<div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div></div>
-<div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
-<div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in14')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in14')"><i class="far fa-comment"></i></button><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div></div>
-<div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in15')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
-
-<!-- Dynamic photos injected here for interior gallery -->
-
-<div id="interior-dynamic-photos"></div>
-
-<div class="whatsapp-cta">
-    <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
+    <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
+    <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i> <span id="count-in02">0</span></button></div></div></div>
+    <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
+    <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div></div>
+    <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div></div>
+    <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
+    <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
+    <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
+    <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
+    <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
+    <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div></div>
+    <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div></div>
+    <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
+    <div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in14')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in14')"><i class="far fa-comment"></i></button><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i> <span id="count-in14">0</span></button></div></div></div>
+    <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in15')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
+    <div id="interior-dynamic-photos"></div>
+    <div class="whatsapp-cta">
+        <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
+    </div>
 </div>
 
-</div>
 <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
 <!-- ======= AUTH MODAL ======= -->
@@ -977,6 +1005,17 @@
     </div>
 </div>
 
+<!-- Counter -->
+
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; padding: 15px; background: var(--vanilla-light); border: 1px solid var(--latte-gold); border-radius: 15px; max-width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+    <div style="color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+        <i class="fas fa-users" style="color: var(--latte-gold);"></i>
+        <span>عدد زوار الموقع:</span>
+    </div>
+    <div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div>
+    <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
+</div>
+
 <!-- ======= FIREBASE MODULE ======= -->
 
 <script type="module">
@@ -990,7 +1029,6 @@
         getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
         signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    // Firebase Storage removed - using base64 in Firestore instead
 
     const firebaseConfig = {
         apiKey: "AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",
@@ -999,422 +1037,17 @@
         projectId: "diwd-a7709",
         storageBucket: "diwd-a7709.firebasestorage.app",
         messagingSenderId: "190314181686",
-        appId: "1:190314181686:web:97b7f8674522bdbb4d5497",
-        measurementId: "G-VSGFFD435W"
+        appId: "1:190314181686:web:97b7f8674522bdbb4d5497"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-
-
     const sendTG = (msg) => window.sendTelegramNotification(msg);
 
-    // ===== AUTH HELPERS =====
-    async function sendAdminNotification(name, email) {
-        try {
-            await emailjs.send("service_d6z689p", "template_7j8sc6u", {
-                user_name: name, user_email: email,
-                date: new Date().toLocaleString('ar-IQ')
-            });
-        } catch (e) { console.error("EmailJS:", e); }
-    }
-
-    async function askForUsername(uid, email) {
-        const username = prompt("اكتب اسم المستخدم:");
-        if (!username) return askForUsername(uid, email);
-        await setDoc(doc(db, "users", uid), { username, email, createdAt: serverTimestamp() });
-        sendAdminNotification(username, email);
-        alert("تم حفظ اسم المستخدم");
-        document.getElementById('welcome-gate').classList.remove('active');
-    }
-
-    window.loginWithGoogle = async () => {
-        try {
-            const provider = new GoogleAuthProvider();
-            provider.setCustomParameters({ prompt: "select_account" });
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            window.currentUser = user;
-            const userSnap = await getDoc(doc(db, "users", user.uid));
-            if (!userSnap.exists() || !userSnap.data().username) {
-                await askForUsername(user.uid, user.email);
-            } else {
-                document.getElementById('welcome-gate').classList.remove('active');
-                document.getElementById('auth-modal').classList.remove('active');
-                alert("تم تسجيل الدخول بنجاح");
-            }
-        } catch (e) { alert(e.message); }
-    };
-
-    window.logoutUser = async () => {
-        try {
-            await signOut(auth);
-            window.currentUser = null;
-            var gate = document.getElementById('welcome-gate');
-            gate.style.opacity = '1';
-            gate.classList.add('active');
-            document.getElementById('auth-modal').classList.remove('active');
-            document.getElementById('comments-modal').classList.remove('active');
-            alert("تم تسجيل الخروج بنجاح");
-        } catch (e) { alert("حدث خطأ أثناء تسجيل الخروج"); }
-    };
-
-    window.handleEmailAuth = async () => {
-        const email = document.getElementById('auth-email').value.trim();
-        const password = document.getElementById('auth-password').value;
-        const btn = document.getElementById('auth-submit-btn');
-        if (!email || !password) return alert("يرجى إدخال كافة البيانات");
-        if (password.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
-        btn.innerText = "جاري المعالجة..."; btn.disabled = true;
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            alert("أهلاً بك مجدداً!");
-        } catch (error) {
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                try {
-                    const uc = await createUserWithEmailAndPassword(auth, email, password);
-                    await askForUsername(uc.user.uid, uc.user.email);
-                } catch (e) { alert("خطأ في التسجيل: " + e.message); }
-            } else { alert("حدث خطأ: " + error.message); }
-        } finally { btn.innerText = "دخول / اشتراك"; btn.disabled = false; }
-    };
-
-    onAuthStateChanged(auth, async (user) => {
-        window.currentUser = user;
-        if (user) {
-            sendTG("🔐 تسجيل دخول جديد\n👤 " + user.email + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
-            document.getElementById('welcome-gate').classList.remove('active');
-            document.getElementById('auth-modal').classList.remove('active');
-        }
-    });
-
-    // ===== COMMENTS =====
-    let currentImageId = null;
-    let unsubscribeComments = null;
-
-    window.openComments = (id) => {
-        if (!window.currentUser) {
-            alert("يجب تسجيل الدخول للتعليق");
-            document.getElementById('auth-modal').classList.add('active');
-            return;
-        }
-        currentImageId = id;
-        document.getElementById('comments-modal').classList.add('active');
-        const list = document.getElementById('comments-list');
-        list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">جاري التحميل...</p>';
-        const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
-        unsubscribeComments = onSnapshot(q, (snapshot) => {
-            list.innerHTML = '';
-            if (snapshot.empty) {
-                list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
-            }
-            snapshot.forEach(d => {
-                const data = d.data();
-                const docId = d.id;
-                const item = document.createElement('div');
-                item.className = 'comment-item';
-                item.innerHTML = `
-                    <div style="font-size:0.7rem;font-weight:bold;color:var(--latte-gold);margin-bottom:3px;">${data.userName || 'مستخدم'}</div>
-                    <div style="font-size:0.9rem;color:var(--dark-latte);">${data.text}</div>
-                `;
-                if (window.isAdminMode) {
-                    const delBtn = document.createElement('button');
-                    delBtn.className = 'admin-delete-comment-btn';
-                    delBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    delBtn.style.display = 'flex';
-                    delBtn.onclick = () => adminDeleteSingleComment(docId);
-                    item.appendChild(delBtn);
-                }
-                list.appendChild(item);
-            });
-            list.scrollTop = list.scrollHeight;
-        });
-    };
-
-    window.closeComments = () => {
-        document.getElementById('comments-modal').classList.remove('active');
-        if (unsubscribeComments) unsubscribeComments();
-    };
-
-    window.sendComment = async () => {
-        const inp = document.getElementById('comment-input');
-        const text = inp.value.trim();
-        if (!text || !currentImageId) return;
-        sendTG("💬 تعليق جديد\n🖼️ " + currentImageId + "\n📝 " + text + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
-        try {
-            await addDoc(collection(db, "comments"), {
-                imageId: currentImageId,
-                userName: window.currentUser.displayName || window.currentUser.email.split('@')[0],
-                text: text,
-                createdAt: serverTimestamp()
-            });
-            inp.value = '';
-        } catch (e) { alert("حدث خطأ أثناء الإرسال"); }
-    };
-
-    window.adminDeleteSingleComment = async (docId) => {
-        if (!window.isAdminMode) return;
-        if (!confirm("حذف هذا التعليق؟")) return;
-        try {
-            await deleteDoc(doc(db, "comments", docId));
-            showAdminToast('✅ تم حذف التعليق');
-        } catch(e) { alert("خطأ في الحذف: " + e.message); }
-    };
-
-    window.adminDeleteAllComments = async (imageId) => {
-        if (!window.isAdminMode) return;
-        if (!confirm("حذف جميع تعليقات هذه الصورة؟")) return;
-        try {
-            const q = query(collection(db, "comments"), where("imageId", "==", imageId));
-            const snap = await getDocs(q);
-            const batch = writeBatch(db);
-            snap.forEach(d => batch.delete(d.ref));
-            await batch.commit();
-            showAdminToast('✅ تم حذف جميع التعليقات');
-        } catch(e) { alert("خطأ: " + e.message); }
-    };
-
-    window.adminDeleteLikes = async (id) => {
-        if (!window.isAdminMode) return;
-        if (!confirm("إعادة تعيين لايكات هذه الصورة إلى صفر؟")) return;
-        try {
-            const photoRef = doc(db, "photos", id);
-            await setDoc(photoRef, { likesCount: 0 }, { merge: true });
-            const countEl = document.getElementById('count-' + id);
-            if (countEl) countEl.innerText = '0';
-            showAdminToast('✅ تم إعادة تعيين اللايكات');
-        } catch(e) { alert("خطأ: " + e.message); }
-    };
-
-    // ===== LIKES =====
-    window.handleDoubleTap = (id) => {
-        const btn = document.getElementById('btn-' + id);
-        if (!btn) return;
-        const container = btn.closest('.product-section');
-        const heart = document.createElement('i');
-        heart.className = 'fas fa-heart flying-heart';
-        container.appendChild(heart);
-        const btnRect = btn.getBoundingClientRect();
-        const containerRect = container.getBoundingClientRect();
-        const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
-        const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
-        requestAnimationFrame(() => {
-            heart.style.transition = "transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.4s ease";
-            heart.style.opacity = '0.7';
-            heart.style.transform = 'translate(-50%, -50%) scale(1.6)';
-            setTimeout(() => {
-                heart.style.transition = "transform 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease-in";
-                heart.style.transform = 'translate(calc(-50% + ' + targetX + 'px), calc(-50% + ' + targetY + 'px)) scale(0.25)';
-                setTimeout(() => { heart.style.opacity = '0'; }, 500);
-            }, 600);
-        });
-        setTimeout(() => { heart.remove(); }, 1500);
-        btn.classList.add('btn-pulse');
-        setTimeout(() => btn.classList.remove('btn-pulse'), 400);
-        if (!localStorage.getItem('liked_' + id)) window.handleLike(id);
-    };
-
-    let isProcessing = false;
-
-    window.handleLike = async (id) => {
-        if (isProcessing) return;
-        isProcessing = true;
-        const hasLiked = localStorage.getItem('liked_' + id);
-        if (!hasLiked) {
-            sendTG("❤️ لايك جديد\n📌 " + id + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
-        }
-        const photoRef = doc(db, "photos", id);
-        try {
-            if (hasLiked) {
-                await updateDoc(photoRef, { likesCount: increment(-1) });
-                localStorage.removeItem('liked_' + id);
-            } else {
-                const docSnap = await getDoc(photoRef);
-                if (docSnap.exists()) await updateDoc(photoRef, { likesCount: increment(1) });
-                else await setDoc(photoRef, { likesCount: 1 });
-                localStorage.setItem('liked_' + id, 'true');
-            }
-            refreshUI(id);
-        } catch (e) { console.error(e); } finally { isProcessing = false; }
-    };
-
-    async function refreshUI(id) {
-        try {
-            const docSnap = await getDoc(doc(db, "photos", id));
-            const countEl = document.getElementById('count-' + id);
-            const btnEl = document.getElementById('btn-' + id);
-            if (docSnap.exists() && countEl) countEl.innerText = docSnap.data().likesCount || 0;
-            if (btnEl) localStorage.getItem('liked_' + id) ? btnEl.classList.add('liked') : btnEl.classList.remove('liked');
-        } catch (e) { console.error(e); }
-    }
-
-    const allPhotos = ['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13',
-                       'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
-    window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
-
-    // ===== ADMIN STATS =====
-    window.loadAdminStats = async () => {
-        const body = document.getElementById('stats-body');
-        body.innerHTML = '<div id="stats-loading">⏳ جاري تحميل البيانات...</div>';
-        try {
-            const usersSnap = await getCountFromServer(collection(db, "users"));
-            const usersCount = usersSnap.data().count;
-            const commentsSnap = await getCountFromServer(collection(db, "comments"));
-            const commentsCount = commentsSnap.data().count;
-            const photosSnap = await getDocs(collection(db, "photos"));
-            let totalLikes = 0;
-            let topPhoto = { id: '-', likes: 0 };
-            photosSnap.forEach(d => {
-                const likes = d.data().likesCount || 0;
-                totalLikes += likes;
-                if (likes > topPhoto.likes) topPhoto = { id: d.id, likes };
-            });
-            const allComments = await getDocs(collection(db, "comments"));
-            const commentMap = {};
-            allComments.forEach(d => {
-                const imgId = d.data().imageId;
-                commentMap[imgId] = (commentMap[imgId] || 0) + 1;
-            });
-            let topCommented = { id: '-', count: 0 };
-            Object.entries(commentMap).forEach(([id, count]) => {
-                if (count > topCommented.count) topCommented = { id, count };
-            });
-            body.innerHTML = `
-                <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-label">عدد المسجلين</div>
-                        <div class="stat-value">${usersCount}</div>
-                    </div>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card-sm">
-                        <div class="stat-icon"><i class="fas fa-heart"></i></div>
-                        <div class="stat-value">${totalLikes}</div>
-                        <div class="stat-label">إجمالي اللايكات</div>
-                    </div>
-                    <div class="stat-card-sm">
-                        <div class="stat-icon"><i class="fas fa-comment"></i></div>
-                        <div class="stat-value">${commentsCount}</div>
-                        <div class="stat-label">إجمالي التعليقات</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#e67e22;"><i class="fas fa-star"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-label">أكثر صورة لايكات</div>
-                        <div class="stat-value" style="font-size:1rem;">${topPhoto.id} <span style="font-size:0.8rem;opacity:0.7;">(${topPhoto.likes} ❤️)</span></div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-fire"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-label">أكثر صورة تعليقات</div>
-                        <div class="stat-value" style="font-size:1rem;">${topCommented.id} <span style="font-size:0.8rem;opacity:0.7;">(${topCommented.count} 💬)</span></div>
-                    </div>
-                </div>
-            `;
-        } catch(e) {
-            body.innerHTML = '<p style="text-align:center;color:red;padding:15px;">خطأ في تحميل البيانات</p>';
-            console.error(e);
-        }
-    };
-
-    // ===== REALTIME DATABASE SETUP =====
-    // Using Realtime DB because it supports large base64 strings (no 1MB doc limit)
-    const RTDB_URL = "https://diwd-a7709-default-rtdb.firebaseio.com";
-
-    async function rtdbSet(path, data) {
-        const res = await fetch(RTDB_URL + path + '.json', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) throw new Error('RTDB write failed: ' + res.status);
-        return res.json();
-    }
-
-    async function rtdbPush(path, data) {
-        const res = await fetch(RTDB_URL + path + '.json', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (!res.ok) throw new Error('RTDB push failed: ' + res.status);
-        return res.json(); // returns { name: "-Nxxx..." }
-    }
-
-    async function rtdbGet(path) {
-        const res = await fetch(RTDB_URL + path + '.json');
-        if (!res.ok) throw new Error('RTDB read failed: ' + res.status);
-        return res.json();
-    }
-
-    async function rtdbDelete(path) {
-        const res = await fetch(RTDB_URL + path + '.json', { method: 'DELETE' });
-        if (!res.ok) throw new Error('RTDB delete failed: ' + res.status);
-    }
-
-    // ===== LOAD DYNAMIC PHOTOS FROM REALTIME DB =====
-    async function loadDynamicPhotos() {
-        try {
-            const data = await rtdbGet('/admin_photos');
-            if (!data) return;
-            // Sort by createdAt ascending so newest appears last
-            const entries = Object.entries(data).sort((a, b) => (a[1].createdAt || 0) - (b[1].createdAt || 0));
-            entries.forEach(([key, val]) => {
-                injectPhotoCard(val.photoId, val.caption || 'تصميم جديد', val.gallery, val.url, key);
-                refreshUI(val.photoId);
-            });
-        } catch(e) { console.error("خطأ تحميل الصور:", e); }
-    }
-
-    function injectPhotoCard(photoId, caption, gallery, url, rtdbKey) {
-        const containerId = gallery === 'stone-gallery' ? 'stone-dynamic-photos' : 'interior-dynamic-photos';
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        if (document.getElementById('section-' + photoId)) return;
-
-        const section = document.createElement('div');
-        section.className = 'product-section dynamic-photo';
-        section.id = 'section-' + photoId;
-        section.innerHTML = `
-            <img src="${url}" ondblclick="handleDoubleTap('${photoId}')" style="width:100%;display:block;" loading="lazy">
-            <div class="model-tag">
-                <span>${caption}</span>
-                <div style="display:flex;gap:10px;align-items:center;">
-                    <button class="admin-delete-like" style="${window.isAdminMode ? 'display:flex' : 'display:none'}"
-                        onclick="adminDeleteLikes('${photoId}')">
-                        <i class="fas fa-trash"></i> حذف اللايكات
-                    </button>
-                    <button class="admin-delete-like" style="${window.isAdminMode ? 'display:flex' : 'display:none'}; background:var(--admin-red);"
-                        onclick="adminDeleteDynamicPhoto('${rtdbKey}','${photoId}')">
-                        <i class="fas fa-image"></i> حذف الصورة
-                    </button>
-                    <button class="like-btn" onclick="openComments('${photoId}')"><i class="far fa-comment"></i></button>
-                    <button id="btn-${photoId}" class="like-btn" onclick="handleLike('${photoId}')">
-                        <i class="fas fa-heart"></i> <span id="count-${photoId}">0</span>
-                    </button>
-                </div>
-            </div>
-        `;
-        container.appendChild(section);
-        applyReveal();
-    }
-
-    window.adminDeleteDynamicPhoto = async (rtdbKey, photoId) => {
-        if (!window.isAdminMode) return;
-        if (!confirm("حذف هذه الصورة نهائياً؟")) return;
-        try {
-            await rtdbDelete('/admin_photos/' + rtdbKey);
-            const el = document.getElementById('section-' + photoId);
-            if (el) el.remove();
-            showAdminToast('✅ تم حذف الصورة');
-        } catch(e) { alert("خطأ: " + e.message); }
-    };
-
-    // ===== IMAGE COMPRESSION HELPER =====
+    // =============================================
+    // IMAGE COMPRESSION
+    // =============================================
     function compressImage(file, maxWidth, quality) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -1436,90 +1069,785 @@
         });
     }
 
-    // ===== SUBMIT UPLOADED PHOTOS → Realtime DB =====
+    // =============================================
+    // REALTIME DB HELPERS
+    // =============================================
+    const RTDB_URL = "https://diwd-a7709-default-rtdb.firebaseio.com";
+
+    async function rtdbSet(path, data) {
+        const res = await fetch(RTDB_URL + path + '.json', { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+        if (!res.ok) throw new Error('RTDB write failed: ' + res.status);
+        return res.json();
+    }
+    async function rtdbPush(path, data) {
+        const res = await fetch(RTDB_URL + path + '.json', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+        if (!res.ok) throw new Error('RTDB push failed: ' + res.status);
+        return res.json();
+    }
+    async function rtdbGet(path) {
+        const res = await fetch(RTDB_URL + path + '.json');
+        if (!res.ok) throw new Error('RTDB read failed: ' + res.status);
+        return res.json();
+    }
+    async function rtdbDelete(path) {
+        const res = await fetch(RTDB_URL + path + '.json', { method: 'DELETE' });
+        if (!res.ok) throw new Error('RTDB delete failed');
+    }
+
+    // =============================================
+    // AUTH HELPERS
+    // =============================================
+    async function sendAdminNotification(name, email) {
+        try {
+            await emailjs.send("service_d6z689p", "template_7j8sc6u", { user_name: name, user_email: email, date: new Date().toLocaleString('ar-IQ') });
+        } catch(e) {}
+    }
+
+    async function askForUsername(uid, email) {
+        const username = prompt("اكتب اسم المستخدم:");
+        if (!username) return askForUsername(uid, email);
+        await setDoc(doc(db, "users", uid), {
+            username,
+            email,
+            createdAt: serverTimestamp(),
+            avatarUrl: '',
+            avatarBase64: ''
+        });
+        sendAdminNotification(username, email);
+        sendTG("🆕 مستخدم جديد\n👤 " + username + "\n📧 " + email + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
+        alert("تم حفظ اسم المستخدم");
+        document.getElementById('welcome-gate').classList.remove('active');
+    }
+
+    window.loginWithGoogle = async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: "select_account" });
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            window.currentUser = user;
+            const userSnap = await getDoc(doc(db, "users", user.uid));
+            if (!userSnap.exists() || !userSnap.data().username) {
+                await askForUsername(user.uid, user.email);
+            } else {
+                document.getElementById('welcome-gate').classList.remove('active');
+                document.getElementById('auth-modal').classList.remove('active');
+            }
+        } catch(e) { alert(e.message); }
+    };
+
+    window.logoutUser = async () => {
+        try {
+            await signOut(auth);
+            window.currentUser = null;
+            window._currentUserData = null;
+            updateMenuProfileUI(null, null);
+            document.getElementById('welcome-gate').style.opacity = '1';
+            document.getElementById('welcome-gate').classList.add('active');
+            document.getElementById('auth-modal').classList.remove('active');
+            document.getElementById('comments-modal').classList.remove('active');
+            showPage('main-page');
+        } catch(e) { alert("حدث خطأ أثناء تسجيل الخروج"); }
+    };
+
+    window.handleEmailAuth = async () => {
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+        const btn = document.getElementById('auth-submit-btn');
+        if (!email || !password) return alert("يرجى إدخال كافة البيانات");
+        if (password.length < 6) return alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");
+        btn.innerText = "جاري المعالجة..."; btn.disabled = true;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch(error) {
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                try {
+                    const uc = await createUserWithEmailAndPassword(auth, email, password);
+                    await askForUsername(uc.user.uid, uc.user.email);
+                } catch(e) { alert("خطأ في التسجيل: " + e.message); }
+            } else { alert("حدث خطأ: " + error.message); }
+        } finally { btn.innerText = "دخول / اشتراك"; btn.disabled = false; }
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+        window.currentUser = user;
+        if (user) {
+            sendTG("🔐 دخول\n👤 " + (user.email || user.displayName) + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
+            document.getElementById('welcome-gate').classList.remove('active');
+            document.getElementById('auth-modal').classList.remove('active');
+            try {
+                const snap = await getDoc(doc(db, "users", user.uid));
+                if (snap.exists()) {
+                    window._currentUserData = snap.data();
+                    updateMenuProfileUI(snap.data(), user);
+                }
+            } catch(e) {}
+        }
+    });
+
+    // =============================================
+    // PROFILE UI HELPERS
+    // =============================================
+    function updateMenuProfileUI(userData, user) {
+        const preview = document.getElementById('menu-profile-preview');
+        const nameEl = document.getElementById('menu-profile-name');
+        const avatarWrap = document.getElementById('menu-avatar-wrap');
+
+        if (!userData || !user) {
+            preview.style.display = 'none';
+            return;
+        }
+        preview.style.display = 'flex';
+        nameEl.textContent = userData.username || user.email.split('@')[0];
+        const av = userData.avatarBase64 || userData.avatarUrl || '';
+        if (av) {
+            avatarWrap.innerHTML = `<img src="${av}" style="width:100%;height:100%;object-fit:cover;">`;
+        } else {
+            const initial = (userData.username || 'U')[0].toUpperCase();
+            avatarWrap.innerHTML = `<span class="menu-avatar-placeholder">${initial}</span>`;
+        }
+    }
+
+    window.goToProfile = function() {
+        if (!window.currentUser) {
+            document.getElementById('auth-modal').classList.add('active');
+            return;
+        }
+        showPage('profile-page');
+    };
+
+    window.loadProfilePage = async function() {
+        if (!window.currentUser) return;
+        const user = window.currentUser;
+        try {
+            const snap = await getDoc(doc(db, "users", user.uid));
+            const data = snap.exists() ? snap.data() : {};
+            window._currentUserData = data;
+
+            const username = data.username || user.email.split('@')[0];
+            document.getElementById('profile-display-name').textContent = username;
+            document.getElementById('profile-display-email').textContent = user.email || '';
+            document.getElementById('info-username').textContent = username;
+            document.getElementById('info-email').textContent = user.email || '';
+
+            if (data.createdAt) {
+                const d = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                document.getElementById('profile-joined-date').textContent = 'عضو منذ ' + d.toLocaleDateString('ar-IQ', { year:'numeric', month:'long' });
+            }
+
+            const av = data.avatarBase64 || data.avatarUrl || '';
+            setProfileAvatarDisplay(av, username);
+            loadProfileStats(user.uid, username);
+            loadLikedPhotos();
+        } catch(e) { console.error(e); }
+    };
+
+    function setProfileAvatarDisplay(avatarSrc, username) {
+        const display = document.getElementById('profile-avatar-display');
+        if (avatarSrc) {
+            display.innerHTML = `<img src="${avatarSrc}" style="width:100%;height:100%;object-fit:cover;" alt="">`;
+        } else {
+            const initial = (username || 'U')[0].toUpperCase();
+            display.innerHTML = `<span class="avatar-placeholder-text">${initial}</span>`;
+        }
+    }
+
+    async function loadProfileStats(uid, username) {
+        try {
+            const allKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
+            document.getElementById('profile-stat-liked').textContent = allKeys.length;
+            const commentsQ = query(collection(db, "comments"), where("userId", "==", uid));
+            const commentsSnap = await getDocs(commentsQ);
+            document.getElementById('profile-stat-comments').textContent = commentsSnap.size;
+            document.getElementById('profile-stat-likes').textContent = allKeys.length;
+        } catch(e) {}
+    }
+
+    function loadLikedPhotos() {
+        const grid = document.getElementById('liked-photos-grid');
+        const empty = document.getElementById('liked-photos-empty');
+        const allLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_')).map(k => k.replace('liked_', ''));
+
+        if (allLiked.length === 0) {
+            grid.style.display = 'none';
+            empty.style.display = 'block';
+            return;
+        }
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+        grid.innerHTML = '';
+
+        allLiked.forEach(id => {
+            let src = '';
+            if (id.startsWith('in')) src = id + '.webp';
+            else if (id.startsWith('p')) src = id + '.webp';
+            else src = '';
+
+            if (!src) return;
+            const thumb = document.createElement('div');
+            thumb.className = 'liked-thumb';
+            thumb.innerHTML = `<img src="${src}" alt="${id}" onerror="this.parentElement.style.display='none'">`;
+            thumb.onclick = () => {
+                if (id.startsWith('in')) showPage('interior-gallery');
+                else showPage('stone-gallery');
+            };
+            grid.appendChild(thumb);
+        });
+    }
+
+    // =============================================
+    // EDIT USERNAME — now updates all comments too
+    // =============================================
+    window.openEditUsernameModal = function() {
+        const current = document.getElementById('info-username').textContent;
+        document.getElementById('new-username-input').value = current === '—' ? '' : current;
+        document.getElementById('edit-username-modal').classList.add('active');
+        setTimeout(() => document.getElementById('new-username-input').focus(), 150);
+    };
+
+    window.closeEditUsernameModal = function() {
+        document.getElementById('edit-username-modal').classList.remove('active');
+    };
+
+    window.saveNewUsername = async function() {
+        const newName = document.getElementById('new-username-input').value.trim();
+        if (!newName || newName.length < 2) { alert('الاسم يجب أن يكون حرفين على الأقل'); return; }
+        if (newName.length > 20) { alert('الاسم طويل جداً (20 حرف كحد أقصى)'); return; }
+        if (!window.currentUser) return;
+
+        const saveBtn = document.querySelector('#edit-username-modal .back-btn');
+        if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ جاري الحفظ...'; }
+
+        try {
+            const uid = window.currentUser.uid;
+
+            // 1. Update user document
+            await updateDoc(doc(db, "users", uid), { username: newName });
+
+            // 2. Update ALL comments by this user (using userId field for reliability)
+            const commentsQ = query(collection(db, "comments"), where("userId", "==", uid));
+            const commentsSnap = await getDocs(commentsQ);
+            if (!commentsSnap.empty) {
+                const batch = writeBatch(db);
+                commentsSnap.forEach(d => batch.update(d.ref, { userName: newName }));
+                await batch.commit();
+            }
+
+            // 3. Invalidate avatar cache for old name
+            if (window._currentUserData?.username) {
+                delete _avatarCache[window._currentUserData.username];
+            }
+
+            // 4. Update local state & UI
+            if (window._currentUserData) window._currentUserData.username = newName;
+            document.getElementById('profile-display-name').textContent = newName;
+            document.getElementById('info-username').textContent = newName;
+            updateMenuProfileUI(window._currentUserData, window.currentUser);
+
+            closeEditUsernameModal();
+            showAdminToast('✅ تم تغيير الاسم وتحديث جميع تعليقاتك');
+            sendTG("✏️ تغيير اسم\n👤 " + newName + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
+        } catch(e) {
+            alert("خطأ: " + e.message);
+        } finally {
+            if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'حفظ'; }
+        }
+    };
+
+    // =============================================
+    // AVATAR UPLOAD — now refreshes open comment list too
+    // =============================================
+    window._avatarBase64 = null;
+
+    window.openAvatarUploadModal = function() {
+        if (!window.currentUser) { document.getElementById('auth-modal').classList.add('active'); return; }
+        window._avatarBase64 = null;
+        document.getElementById('avatar-preview-img').style.display = 'none';
+        document.getElementById('avatar-preview-placeholder').style.display = 'block';
+        document.getElementById('avatar-save-btn').disabled = true;
+        document.getElementById('avatar-upload-modal').classList.add('active');
+    };
+
+    window.closeAvatarUploadModal = function() {
+        document.getElementById('avatar-upload-modal').classList.remove('active');
+    };
+
+    window.triggerAvatarInput = function() {
+        document.getElementById('avatar-file-input').click();
+    };
+
+    window.handleAvatarFileSelect = async function(input) {
+        if (!input.files.length) return;
+        const file = input.files[0];
+        input.value = '';
+        try {
+            const compressed = await compressImage(file, 200, 0.75);
+            window._avatarBase64 = compressed;
+            const previewImg = document.getElementById('avatar-preview-img');
+            const previewPlaceholder = document.getElementById('avatar-preview-placeholder');
+            previewImg.src = compressed;
+            previewImg.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+            document.getElementById('avatar-save-btn').disabled = false;
+        } catch(e) { alert("خطأ في قراءة الصورة"); }
+    };
+
+    window.saveAvatar = async function() {
+        if (!window._avatarBase64 || !window.currentUser) return;
+        const btn = document.getElementById('avatar-save-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+        try {
+            await updateDoc(doc(db, "users", window.currentUser.uid), {
+                avatarBase64: window._avatarBase64
+            });
+
+            if (window._currentUserData) window._currentUserData.avatarBase64 = window._avatarBase64;
+
+            // Invalidate avatar cache so comments reload fresh avatar
+            const username = window._currentUserData?.username || '';
+            if (username) delete _avatarCache[username];
+
+            const usernameForDisplay = window._currentUserData?.username || window.currentUser.email.split('@')[0];
+            setProfileAvatarDisplay(window._avatarBase64, usernameForDisplay);
+            updateMenuProfileUI(window._currentUserData, window.currentUser);
+
+            closeAvatarUploadModal();
+            showAdminToast('✅ تم تحديث الصورة — ستظهر في تعليقاتك الجديدة');
+        } catch(e) {
+            alert("خطأ في الحفظ: " + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check"></i> حفظ الصورة الشخصية';
+        }
+    };
+
+    // =============================================
+    // HELPER: Get user avatar (with cache)
+    // =============================================
+    const _avatarCache = {};
+
+    async function getUserAvatar(userName) {
+        if (_avatarCache[userName] !== undefined) return _avatarCache[userName];
+        try {
+            const q = query(collection(db, "users"), where("username", "==", userName));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                const av = data.avatarBase64 || data.avatarUrl || '';
+                _avatarCache[userName] = av;
+                return av;
+            }
+        } catch(e) {}
+        _avatarCache[userName] = '';
+        return '';
+    }
+
+    // =============================================
+    // COMMENTS — with edit & delete for owner
+    // =============================================
+    let currentImageId = null;
+    let unsubscribeComments = null;
+
+    window.openComments = (id) => {
+        if (!window.currentUser) {
+            alert("يجب تسجيل الدخول للتعليق");
+            document.getElementById('auth-modal').classList.add('active');
+            return;
+        }
+        currentImageId = id;
+        document.getElementById('comments-modal').classList.add('active');
+        const list = document.getElementById('comments-list');
+        list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
+
+        const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
+        unsubscribeComments = onSnapshot(q, async (snapshot) => {
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
+                return;
+            }
+            for (const d of snapshot.docs) {
+                const data = d.data();
+                const docId = d.id;
+                const userName = data.userName || 'مستخدم';
+                const isOwner = window.currentUser && data.userId === window.currentUser.uid;
+
+                // Use current user's live avatar if it's their comment
+                let avatarSrc;
+                if (isOwner && window._currentUserData?.avatarBase64) {
+                    avatarSrc = window._currentUserData.avatarBase64;
+                } else {
+                    avatarSrc = await getUserAvatar(userName);
+                }
+
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.dataset.docId = docId;
+
+                let avatarHTML = avatarSrc
+                    ? `<img src="${avatarSrc}" alt="${userName}">`
+                    : `<span class="avatar-initials">${userName[0].toUpperCase()}</span>`;
+
+                // Owner action buttons
+                let actionsHTML = '';
+                if (isOwner) {
+                    actionsHTML = `
+                        <div class="comment-actions">
+                            <button class="comment-action-btn" onclick="startEditComment('${docId}', this)">
+                                <i class="fas fa-pen"></i> تعديل
+                            </button>
+                            <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    `;
+                }
+
+                item.innerHTML = `
+                    <div class="comment-avatar-row">
+                        <div class="comment-user-avatar" onclick="viewUserProfile('${userName}')">
+                            ${avatarHTML}
+                        </div>
+                        <div class="comment-content-box">
+                            <div class="comment-username-link" onclick="viewUserProfile('${userName}')">
+                                <i class="fas fa-user" style="font-size:0.6rem;"></i> ${userName}
+                            </div>
+                            <div class="comment-text-content" id="text-${docId}">${data.text}</div>
+                            ${actionsHTML}
+                        </div>
+                    </div>
+                `;
+
+                // Admin delete button
+                if (window.isAdminMode) {
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'admin-delete-comment-btn';
+                    delBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    delBtn.style.display = 'flex';
+                    delBtn.onclick = () => adminDeleteSingleComment(docId);
+                    item.appendChild(delBtn);
+                }
+                list.appendChild(item);
+            }
+            list.scrollTop = list.scrollHeight;
+        });
+    };
+
+    // ── Edit comment inline ──
+    window.startEditComment = function(docId, btn) {
+        const textEl = document.getElementById('text-' + docId);
+        if (!textEl) return;
+        const originalText = textEl.textContent.trim();
+
+        // Replace text + action buttons with edit UI
+        const actionsEl = btn.closest('.comment-actions');
+        textEl.style.display = 'none';
+        if (actionsEl) actionsEl.style.display = 'none';
+
+        const textarea = document.createElement('textarea');
+        textarea.className = 'comment-edit-area';
+        textarea.value = originalText;
+        textarea.maxLength = 300;
+
+        const editActions = document.createElement('div');
+        editActions.className = 'comment-edit-actions';
+        editActions.innerHTML = `
+            <button class="comment-cancel-btn" id="cancel-edit-${docId}">إلغاء</button>
+            <button class="comment-save-btn" id="save-edit-${docId}"><i class="fas fa-check"></i> حفظ</button>
+        `;
+
+        const box = btn.closest('.comment-content-box');
+        box.appendChild(textarea);
+        box.appendChild(editActions);
+        textarea.focus();
+        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+
+        // Cancel
+        document.getElementById('cancel-edit-' + docId).onclick = () => {
+            textarea.remove();
+            editActions.remove();
+            textEl.style.display = '';
+            if (actionsEl) actionsEl.style.display = '';
+        };
+
+        // Save
+        document.getElementById('save-edit-' + docId).onclick = async () => {
+            const newText = textarea.value.trim();
+            if (!newText) { alert('التعليق لا يمكن أن يكون فارغاً'); return; }
+            if (newText === originalText) {
+                textarea.remove();
+                editActions.remove();
+                textEl.style.display = '';
+                if (actionsEl) actionsEl.style.display = '';
+                return;
+            }
+            const saveBtn2 = document.getElementById('save-edit-' + docId);
+            saveBtn2.disabled = true;
+            saveBtn2.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            try {
+                await updateDoc(doc(db, "comments", docId), {
+                    text: newText,
+                    editedAt: serverTimestamp()
+                });
+                // onSnapshot will re-render automatically
+            } catch(e) {
+                alert("خطأ في التحديث: " + e.message);
+                saveBtn2.disabled = false;
+                saveBtn2.innerHTML = '<i class="fas fa-check"></i> حفظ';
+            }
+        };
+    };
+
+    // ── Delete own comment ──
+    window.deleteOwnComment = async function(docId) {
+        if (!window.currentUser) return;
+        if (!confirm('هل تريد حذف تعليقك نهائياً؟')) return;
+        try {
+            await deleteDoc(doc(db, "comments", docId));
+            showAdminToast('🗑️ تم حذف تعليقك');
+        } catch(e) {
+            alert("خطأ في الحذف: " + e.message);
+        }
+    };
+
+    window.viewUserProfile = async function(userName) {
+        if (!window.currentUser) return;
+        const myData = window._currentUserData;
+        if (myData && myData.username === userName) {
+            document.getElementById('comments-modal').classList.remove('active');
+            if (unsubscribeComments) unsubscribeComments();
+            showPage('profile-page');
+        }
+    };
+
+    window.closeComments = () => {
+        document.getElementById('comments-modal').classList.remove('active');
+        if (unsubscribeComments) unsubscribeComments();
+    };
+
+    window.sendComment = async () => {
+        const inp = document.getElementById('comment-input');
+        const text = inp.value.trim();
+        if (!text || !currentImageId) return;
+        if (!window.currentUser) { alert("يجب تسجيل الدخول للتعليق"); return; }
+        const userName = window._currentUserData?.username || window.currentUser.email.split('@')[0];
+        sendTG("💬 تعليق جديد\n🖼️ " + currentImageId + "\n👤 " + userName + "\n📝 " + text);
+        inp.value = '';
+        try {
+            await addDoc(collection(db, "comments"), {
+                imageId: currentImageId,
+                userName,
+                userId: window.currentUser.uid,   // always store userId for ownership checks
+                text,
+                createdAt: serverTimestamp()
+            });
+        } catch(e) { alert("حدث خطأ أثناء الإرسال"); }
+    };
+
+    window.adminDeleteSingleComment = async (docId) => {
+        if (!window.isAdminMode) return;
+        if (!confirm("حذف هذا التعليق؟")) return;
+        try { await deleteDoc(doc(db, "comments", docId)); showAdminToast('✅ تم حذف التعليق'); }
+        catch(e) { alert("خطأ: " + e.message); }
+    };
+
+    window.adminDeleteLikes = async (id) => {
+        if (!window.isAdminMode) return;
+        if (!confirm("إعادة تعيين لايكات هذه الصورة؟")) return;
+        try {
+            await setDoc(doc(db, "photos", id), { likesCount: 0 }, { merge: true });
+            const el = document.getElementById('count-' + id);
+            if (el) el.innerText = '0';
+            showAdminToast('✅ تم إعادة تعيين اللايكات');
+        } catch(e) { alert("خطأ: " + e.message); }
+    };
+
+    // =============================================
+    // LIKES
+    // =============================================
+    window.handleDoubleTap = (id) => {
+        const btn = document.getElementById('btn-' + id);
+        if (!btn) return;
+        const container = btn.closest('.product-section');
+        const heart = document.createElement('i');
+        heart.className = 'fas fa-heart flying-heart';
+        container.appendChild(heart);
+        const btnRect = btn.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const targetX = (btnRect.left + btnRect.width / 2 + 6) - (containerRect.left + containerRect.width / 2);
+        const targetY = (btnRect.top + btnRect.height / 2) - (containerRect.top + containerRect.height / 2);
+        requestAnimationFrame(() => {
+            heart.style.transition = "transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.4s ease";
+            heart.style.opacity = '0.7';
+            heart.style.transform = 'translate(-50%, -50%) scale(1.6)';
+            setTimeout(() => {
+                heart.style.transition = "transform 0.8s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease-in";
+                heart.style.transform = 'translate(calc(-50% + ' + targetX + 'px), calc(-50% + ' + targetY + 'px)) scale(0.25)';
+                setTimeout(() => { heart.style.opacity = '0'; }, 500);
+            }, 600);
+        });
+        setTimeout(() => heart.remove(), 1500);
+        btn.classList.add('btn-pulse');
+        setTimeout(() => btn.classList.remove('btn-pulse'), 400);
+        if (!localStorage.getItem('liked_' + id)) window.handleLike(id);
+    };
+
+    let isProcessing = false;
+    window.handleLike = async (id) => {
+        if (isProcessing) return;
+        isProcessing = true;
+        const hasLiked = localStorage.getItem('liked_' + id);
+        if (!hasLiked) sendTG("❤️ لايك\n📌 " + id);
+        const photoRef = doc(db, "photos", id);
+        try {
+            if (hasLiked) {
+                await updateDoc(photoRef, { likesCount: increment(-1) });
+                localStorage.removeItem('liked_' + id);
+            } else {
+                const docSnap = await getDoc(photoRef);
+                if (docSnap.exists()) await updateDoc(photoRef, { likesCount: increment(1) });
+                else await setDoc(photoRef, { likesCount: 1 });
+                localStorage.setItem('liked_' + id, 'true');
+            }
+            refreshUI(id);
+        } catch(e) { console.error(e); } finally { isProcessing = false; }
+    };
+
+    async function refreshUI(id) {
+        try {
+            const docSnap = await getDoc(doc(db, "photos", id));
+            const countEl = document.getElementById('count-' + id);
+            const btnEl = document.getElementById('btn-' + id);
+            if (docSnap.exists() && countEl) countEl.innerText = docSnap.data().likesCount || 0;
+            if (btnEl) localStorage.getItem('liked_' + id) ? btnEl.classList.add('liked') : btnEl.classList.remove('liked');
+        } catch(e) {}
+    }
+
+    const allPhotos = ['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13',
+                       'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
+    window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
+
+    // =============================================
+    // ADMIN STATS
+    // =============================================
+    window.loadAdminStats = async () => {
+        const body = document.getElementById('stats-body');
+        body.innerHTML = '<div id="stats-loading">⏳ جاري تحميل البيانات...</div>';
+        try {
+            const usersSnap = await getCountFromServer(collection(db, "users"));
+            const commentsSnap = await getCountFromServer(collection(db, "comments"));
+            const photosSnap = await getDocs(collection(db, "photos"));
+            let totalLikes = 0, topPhoto = { id: '-', likes: 0 };
+            photosSnap.forEach(d => {
+                const likes = d.data().likesCount || 0;
+                totalLikes += likes;
+                if (likes > topPhoto.likes) topPhoto = { id: d.id, likes };
+            });
+            const allComments = await getDocs(collection(db, "comments"));
+            const commentMap = {};
+            allComments.forEach(d => {
+                const imgId = d.data().imageId;
+                commentMap[imgId] = (commentMap[imgId] || 0) + 1;
+            });
+            let topCommented = { id: '-', count: 0 };
+            Object.entries(commentMap).forEach(([id, count]) => { if (count > topCommented.count) topCommented = { id, count }; });
+
+            body.innerHTML = `
+                <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><div class="stat-label">عدد المسجلين</div><div class="stat-value">${usersSnap.data().count}</div></div></div>
+                <div class="stats-grid">
+                    <div class="stat-card-sm"><div class="stat-icon"><i class="fas fa-heart"></i></div><div class="stat-value">${totalLikes}</div><div class="stat-label">إجمالي اللايكات</div></div>
+                    <div class="stat-card-sm"><div class="stat-icon"><i class="fas fa-comment"></i></div><div class="stat-value">${commentsSnap.data().count}</div><div class="stat-label">إجمالي التعليقات</div></div>
+                </div>
+                <div class="stat-card"><div class="stat-icon" style="background:#e67e22;"><i class="fas fa-star"></i></div><div class="stat-info"><div class="stat-label">أكثر صورة لايكات</div><div class="stat-value" style="font-size:1rem;">${topPhoto.id} <span style="font-size:0.8rem;opacity:0.7;">(${topPhoto.likes} ❤️)</span></div></div></div>
+                <div class="stat-card"><div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-fire"></i></div><div class="stat-info"><div class="stat-label">أكثر صورة تعليقات</div><div class="stat-value" style="font-size:1rem;">${topCommented.id} <span style="font-size:0.8rem;opacity:0.7;">(${topCommented.count} 💬)</span></div></div></div>
+            `;
+        } catch(e) { body.innerHTML = '<p style="text-align:center;color:red;padding:15px;">خطأ في تحميل البيانات</p>'; }
+    };
+
+    // =============================================
+    // DYNAMIC PHOTOS
+    // =============================================
+    async function loadDynamicPhotos() {
+        try {
+            const data = await rtdbGet('/admin_photos');
+            if (!data) return;
+            const entries = Object.entries(data).sort((a,b) => (a[1].createdAt||0) - (b[1].createdAt||0));
+            entries.forEach(([key, val]) => {
+                injectPhotoCard(val.photoId, val.caption || 'تصميم جديد', val.gallery, val.url, key);
+                refreshUI(val.photoId);
+            });
+        } catch(e) { console.error("خطأ تحميل الصور:", e); }
+    }
+
+    function injectPhotoCard(photoId, caption, gallery, url, rtdbKey) {
+        const containerId = gallery === 'stone-gallery' ? 'stone-dynamic-photos' : 'interior-dynamic-photos';
+        const container = document.getElementById(containerId);
+        if (!container || document.getElementById('section-' + photoId)) return;
+        const section = document.createElement('div');
+        section.className = 'product-section dynamic-photo';
+        section.id = 'section-' + photoId;
+        section.innerHTML = `
+            <img src="${url}" ondblclick="handleDoubleTap('${photoId}')" style="width:100%;display:block;" loading="lazy">
+            <div class="model-tag">
+                <span>${caption}</span>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <button class="admin-delete-like" style="${window.isAdminMode?'display:flex':'display:none'}" onclick="adminDeleteLikes('${photoId}')"><i class="fas fa-trash"></i> حذف اللايكات</button>
+                    <button class="admin-delete-like" style="${window.isAdminMode?'display:flex':'display:none'};background:var(--admin-red);" onclick="adminDeleteDynamicPhoto('${rtdbKey}','${photoId}')"><i class="fas fa-image"></i> حذف الصورة</button>
+                    <button class="like-btn" onclick="openComments('${photoId}')"><i class="far fa-comment"></i></button>
+                    <button id="btn-${photoId}" class="like-btn" onclick="handleLike('${photoId}')"><i class="fas fa-heart"></i> <span id="count-${photoId}">0</span></button>
+                </div>
+            </div>
+        `;
+        container.appendChild(section);
+        applyReveal();
+    }
+
+    window.adminDeleteDynamicPhoto = async (rtdbKey, photoId) => {
+        if (!window.isAdminMode || !confirm("حذف هذه الصورة نهائياً؟")) return;
+        try {
+            await rtdbDelete('/admin_photos/' + rtdbKey);
+            const el = document.getElementById('section-' + photoId);
+            if (el) el.remove();
+            showAdminToast('✅ تم حذف الصورة');
+        } catch(e) { alert("خطأ: " + e.message); }
+    };
+
     window.submitUploadedPhotos = async () => {
         if (!window.isAdminMode) return;
         const files = window._uploadFiles || [];
         if (!files.length) { showAdminToast('⚠️ اختر صورة واحدة على الأقل'); return; }
-
         const caption = document.getElementById('upload-caption').value.trim() || 'تصميم جديد';
         const gallery = document.getElementById('upload-gallery-select').value;
         const btn = document.getElementById('upload-submit-btn');
         const progressWrap = document.getElementById('upload-progress-wrap');
         const progressBar = document.getElementById('upload-progress-bar-inner');
         const progressText = document.getElementById('upload-progress-text');
-
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-        progressWrap.style.display = 'block';
-        progressBar.style.width = '0%';
-
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        progressWrap.style.display = 'block'; progressBar.style.width = '0%';
         let uploaded = 0;
-        const total = files.length;
-
         for (let i = 0; i < files.length; i++) {
-            const file = files[i];
             try {
-                progressText.textContent = `ضغط الصورة ${i+1}/${total}...`;
-                // Compress: max 800px wide, quality 0.65 → keeps under ~300KB base64
-                const compressed = await compressImage(file, 800, 0.65);
-
+                progressText.textContent = `ضغط الصورة ${i+1}/${files.length}...`;
+                const compressed = await compressImage(files[i], 800, 0.65);
                 const photoId = 'adm_' + Date.now() + '_' + i;
-
-                progressText.textContent = `حفظ الصورة ${i+1}/${total}...`;
-                const result = await rtdbPush('/admin_photos', {
-                    photoId,
-                    caption,
-                    gallery,
-                    url: compressed,
-                    createdAt: Date.now()
-                });
-
+                progressText.textContent = `حفظ الصورة ${i+1}/${files.length}...`;
+                const result = await rtdbPush('/admin_photos', { photoId, caption, gallery, url: compressed, createdAt: Date.now() });
                 injectPhotoCard(photoId, caption, gallery, compressed, result.name);
                 refreshUI(photoId);
-
                 uploaded++;
-                progressBar.style.width = Math.round((uploaded / total) * 100) + '%';
-                progressText.textContent = `✅ ${uploaded} / ${total} تم`;
+                progressBar.style.width = Math.round((uploaded / files.length) * 100) + '%';
+                progressText.textContent = `✅ ${uploaded} / ${files.length} تم`;
                 sendTG("📸 صورة جديدة\n📁 " + gallery + "\n🏷️ " + caption);
-
-            } catch(e) {
-                console.error("خطأ:", e);
-                progressText.textContent = '❌ خطأ: ' + e.message;
-                showAdminToast('❌ خطأ في حفظ الصورة');
-            }
+            } catch(e) { progressText.textContent = '❌ خطأ: ' + e.message; }
         }
-
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-check"></i> رفع الصور';
-        if (uploaded > 0) {
-            showAdminToast('✅ تم حفظ ' + uploaded + ' صورة!');
-            setTimeout(() => { closeUploadModal(); showPage(gallery); }, 1000);
-        }
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> رفع الصور';
+        if (uploaded > 0) { showAdminToast('✅ تم حفظ ' + uploaded + ' صورة!'); setTimeout(() => { closeUploadModal(); showPage(gallery); }, 1000); }
     };
 
-    // Load dynamic photos on startup
     window.addEventListener('DOMContentLoaded', loadDynamicPhotos);
 </script>
-
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; padding: 15px; background: var(--vanilla-light); border: 1px solid var(--latte-gold); border-radius: 15px; max-width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-
-```
-<div style="color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-    <i class="fas fa-users" style="color: var(--latte-gold);"></i>
-    <span>( تجريبي )عدد زوار الموقع:</span>
-</div>
-
-<div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div>
-<script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
-<noscript>
-    <a href="https://www.freecounterstat.com" title="website counter">
-        <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter">
-    </a>
-</noscript>
-```
-
-</div>
 
 </body>
 </html>
