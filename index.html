@@ -211,18 +211,15 @@
         document.getElementById('upload-caption').value = '';
         document.getElementById('upload-gallery-select').value = 'stone-gallery';
         window._uploadFiles = [];
-        // تحميل الأقسام المخصصة في القائمة
         loadCustomSectionsInSelect();
     }
     function loadCustomSectionsInSelect() {
         var sel = document.getElementById('upload-gallery-select');
-        // احذف الخيارات القديمة المخصصة
         var toRemove = [];
         for (var i = 0; i < sel.options.length; i++) {
             if (sel.options[i].value.startsWith('custom_')) toRemove.push(sel.options[i]);
         }
         toRemove.forEach(function(o) { sel.removeChild(o); });
-        // اجلب من Firebase
         fetch('https://diwd-a7709-default-rtdb.firebaseio.com/custom_sections.json')
             .then(function(r) { return r.json(); })
             .then(function(data) {
@@ -685,14 +682,11 @@
     }
     .custom-section-archive-btn:hover { background: var(--latte-gold); color: white; }
 
-    /* Modal إضافة قسم */
     #add-section-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
     #add-section-modal .comment-content { max-width: 420px; max-height: 90vh; overflow-y: auto; }
 
-    /* صفحة القسم الديناميكي */
     .dynamic-section-page { min-height: 50vh; }
 
-    /* أرشيف الأقسام */
     #archive-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
     #archive-modal .comment-content { max-width: 420px; max-height: 85vh; overflow-y: auto; }
     .archive-item {
@@ -733,6 +727,70 @@
         transition: background 0.2s;
     }
     #lightbox-close:hover { background: rgba(255,255,255,0.28); }
+
+    /* =============================================
+       TOP USER RANK BADGES
+    ============================================= */
+    .pub-rank-badge {
+        display: none;
+        position: relative;
+        z-index: 2;
+        margin: 10px auto 0;
+        font-size: 4rem;
+        line-height: 1;
+        animation: badgePop 0.65s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        filter: drop-shadow(0 4px 14px rgba(255,215,0,0.55));
+    }
+    .pub-rank-label {
+        display: none;
+        position: relative;
+        z-index: 2;
+        margin-top: 8px;
+        background: rgba(255,255,255,0.22);
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 900;
+        padding: 5px 18px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.35);
+    }
+    @keyframes badgePop {
+        0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+        70%  { transform: scale(1.25) rotate(6deg);  opacity: 1; }
+        100% { transform: scale(1) rotate(0deg);    opacity: 1; }
+    }
+
+    /* توهج الأول */
+    @keyframes goldGlow {
+        0%, 100% { box-shadow: 0 0 22px 7px rgba(255,215,0,0.6), 0 0 55px 18px rgba(255,165,0,0.3); }
+        50%       { box-shadow: 0 0 40px 14px rgba(255,215,0,0.85), 0 0 90px 30px rgba(255,165,0,0.48); }
+    }
+    .pub-profile-hero.rank-gold {
+        animation: goldGlow 2.2s ease-in-out infinite;
+        background: linear-gradient(145deg, #7a5500 0%, #f5c518 45%, #c8860a 100%) !important;
+    }
+    .pub-profile-hero.rank-gold .pub-avatar-ring {
+        border-color: #fff176 !important;
+        animation: avatarPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes avatarPulse {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(255,215,0,0.6), 0 8px 35px rgba(0,0,0,0.35); }
+        50%       { box-shadow: 0 0 0 10px rgba(255,215,0,0.3), 0 8px 35px rgba(0,0,0,0.35); }
+    }
+
+    /* المركز الثاني فضي */
+    .pub-profile-hero.rank-silver {
+        background: linear-gradient(145deg, #3a3a3a 0%, #c0c0c0 45%, #6e6e6e 100%) !important;
+    }
+    .pub-profile-hero.rank-silver .pub-avatar-ring {
+        border-color: #f0f0f0 !important;
+        box-shadow: 0 0 0 3px rgba(192,192,192,0.5), 0 8px 35px rgba(0,0,0,0.35) !important;
+    }
+    .pub-rank-badge.silver-badge {
+        filter: drop-shadow(0 3px 8px rgba(150,150,150,0.5));
+    }
 </style>
 
 </head>
@@ -962,9 +1020,7 @@
             <span class="click-hint">اضغط للعرض</span>
         </div>
     </section>
-    <!-- أقسام ديناميكية -->
     <div id="dynamic-sections-container"></div>
-    <!-- زر واتساب دائماً في الأخير -->
     <div style="padding: 0 20px 20px;">
         <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360'">
             <i class="fas fa-comment-dots"></i><h3>استشارات فنية</h3>
@@ -1071,13 +1127,16 @@
     </div>
 
 ```
-<div class="pub-profile-hero">
+<div class="pub-profile-hero" id="pub-profile-hero">
     <div class="hero-deco-1"></div>
     <div class="hero-deco-2"></div>
     <div class="pub-avatar-ring" id="pub-avatar-ring">
         <span class="pub-avatar-initial" id="pub-avatar-initial">?</span>
     </div>
     <div class="pub-username" id="pub-username">—</div>
+    <!-- شعار الترتيب -->
+    <div class="pub-rank-badge" id="pub-rank-badge"></div>
+    <div class="pub-rank-label" id="pub-rank-label"></div>
     <div class="pub-joined">
         <i class="fas fa-calendar-alt"></i>
         <span id="pub-joined-text">—</span>
@@ -1221,7 +1280,7 @@
     <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
     <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
     <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
-    <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-command"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
+    <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
     <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div></div>
     <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div></div>
     <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
@@ -1295,7 +1354,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     const sendTG = (msg) => window.sendTelegramNotification(msg);
-    // expose db functions to window for onclick handlers
     window._db = db;
     window._deleteDoc = deleteDoc;
     window._doc = doc;
@@ -1730,6 +1788,7 @@
         const activePage = [...document.querySelectorAll('.page')].find(p => p.style.display !== 'none');
         _pubProfilePrevPage = activePage ? activePage.id : 'main-page';
 
+        // إعادة تعيين الواجهة
         document.getElementById('pub-avatar-ring').innerHTML = `<span class="pub-avatar-initial">...</span>`;
         document.getElementById('pub-username').textContent = userName;
         document.getElementById('pub-joined-text').textContent = '...';
@@ -1739,6 +1798,15 @@
         document.getElementById('pub-own-banner').style.display = 'none';
         document.getElementById('pub-liked-grid').innerHTML = '';
         document.getElementById('pub-liked-empty').style.display = 'none';
+
+        // إعادة تعيين الترتيب والتوهج
+        const heroEl = document.getElementById('pub-profile-hero');
+        heroEl.classList.remove('rank-gold', 'rank-silver');
+        const badgeEl = document.getElementById('pub-rank-badge');
+        const labelEl = document.getElementById('pub-rank-label');
+        badgeEl.style.display = 'none';
+        badgeEl.className = 'pub-rank-badge';
+        labelEl.style.display = 'none';
 
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         document.getElementById('public-profile-page').style.display = 'block';
@@ -1778,9 +1846,39 @@
                 document.getElementById('pub-joined-text').textContent = 'عضو في الموقع';
             }
 
+            // إحصاء التعليقات
             const commentsQ = query(collection(db, "comments"), where("userName", "==", userName));
             const commentsSnap = await getDocs(commentsQ);
             document.getElementById('pub-stat-comments').textContent = commentsSnap.size;
+
+            // ===== حساب ترتيب المستخدم =====
+            try {
+                const allCommentsSnap = await getDocs(collection(db, "comments"));
+                const userCommentMap = {};
+                allCommentsSnap.forEach(d => {
+                    const u = d.data().userName || '';
+                    if (u) userCommentMap[u] = (userCommentMap[u] || 0) + 1;
+                });
+                const sorted = Object.entries(userCommentMap).sort((a, b) => b[1] - a[1]);
+                const rank1 = sorted[0]?.[0];
+                const rank2 = sorted[1]?.[0];
+
+                if (userName === rank1 && sorted[0][1] > 0) {
+                    heroEl.classList.add('rank-gold');
+                    badgeEl.textContent = '🥇';
+                    badgeEl.style.display = 'block';
+                    labelEl.textContent = 'الأكثر تفاعلاً في الموقع';
+                    labelEl.style.display = 'inline-block';
+                } else if (userName === rank2 && sorted[1][1] > 0) {
+                    heroEl.classList.add('rank-silver');
+                    badgeEl.textContent = '🥈';
+                    badgeEl.classList.add('silver-badge');
+                    badgeEl.style.display = 'block';
+                    labelEl.textContent = 'المركز الثاني في التفاعل';
+                    labelEl.style.display = 'inline-block';
+                }
+            } catch(e) {}
+            // ===== نهاية حساب الترتيب =====
 
             let likedIds = [];
             if (myUsername === userName) {
@@ -1852,7 +1950,6 @@
         document.getElementById('lightbox-img').src = '';
         document.body.style.overflow = '';
     };
-    // إغلاق بزر الرجوع
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
 
     window.closePubProfile = function() {
@@ -2065,8 +2162,7 @@
     // =============================================
     // LIKES
     // =============================================
-    // Double tap support for touch screens
-    var _lastTap = {}; 
+    var _lastTap = {};
     document.addEventListener('touchend', function(e) {
         var img = e.target.closest('.product-section img');
         if (!img) return;
@@ -2235,10 +2331,10 @@
                         <div class="stat-label">إجمالي التعليقات</div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background:#e67e22;"><i class="fas fa-fire"></i></div>
+                <div class="stat-card" style="cursor:pointer;" onclick="window.openPublicProfile && window.openPublicProfile('${topCommenter.name}')">
+                    <div class="stat-icon" style="background:#e67e22;font-size:1.4rem;">🥇</div>
                     <div>
-                        <div class="stat-label">أكثر مستخدم تفاعلاً</div>
+                        <div class="stat-label">الأكثر تفاعلاً — اضغط للعرض</div>
                         <div class="stat-value" style="font-size:1rem;">${topCommenter.name}
                             <span style="font-size:0.75rem;opacity:0.65;">(${topCommenter.count} 💬)</span>
                         </div>
@@ -2410,7 +2506,6 @@
         container.appendChild(card);
         observer.observe(card);
         injectSectionPage(key, val);
-        // show archive btn in admin mode
         if (window.isAdminMode) document.getElementById('arch-btn-' + key).style.display = 'block';
     }
 
@@ -2430,7 +2525,6 @@
         `;
         var wrapper = document.getElementById("custom-pages-wrapper") || document.body;
         wrapper.appendChild(page);
-        // load photos for this section
         loadSectionPhotos(key);
     }
 
@@ -2474,7 +2568,6 @@
         if (page) { page.style.display = 'block'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(applyReveal,100); }
     }
 
-    // إضافة قسم جديد
     window.openAddSectionModal = function() {
         if (!window.isAdminMode) return;
         document.getElementById('new-section-name').value = '';
@@ -2498,7 +2591,6 @@
             closeAddSectionModal();
             showAdminToast('✅ تم إنشاء القسم: ' + name);
             sendTG('📁 قسم جديد\n📌 ' + name + '\n🕒 ' + new Date().toLocaleString('ar-IQ'));
-            // تحديث قائمة رفع الصور
             addSectionToUploadSelect(result.name, name);
         } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
     };
@@ -2513,7 +2605,6 @@
         sel.appendChild(opt);
     }
 
-    // أرشفة قسم
     window.archiveSection = async function(e, key) {
         e.stopPropagation();
         if (!window.isAdminMode) return;
@@ -2526,36 +2617,53 @@
         } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
     };
 
-    // فتح الأرشيف
     window.openArchiveModal = async function() {
         if (!window.isAdminMode) return;
         document.getElementById('archive-modal').classList.add('active');
         const list = document.getElementById('archive-list');
         list.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin" style="color:var(--latte-gold);"></i></p>';
         try {
-            const data = await rtdbGet('/custom_sections');
-            const archived = data ? Object.entries(data).filter(([k,v]) => v.archived) : [];
-            if (archived.length === 0) {
-                list.innerHTML = '<p style="text-align:center;opacity:0.5;font-size:0.85rem;">لا توجد أقسام مؤرشفة</p>';
-                return;
-            }
+            const [customData, fixedData] = await Promise.all([
+                rtdbGet('/custom_sections'),
+                rtdbGet('/fixed_sections_archive')
+            ]);
             list.innerHTML = '';
-            archived.forEach(([key, val]) => {
-                const item = document.createElement('div');
-                item.className = 'archive-item';
-                item.innerHTML = `
-                    <div class="archive-item-name"><i class="${val.icon||'fas fa-layer-group'}" style="color:var(--latte-gold);margin-left:8px;"></i>${val.name}</div>
-                    <button class="archive-restore-btn" onclick="restoreSection('${key}')"><i class="fas fa-undo"></i> استعادة</button>
-                `;
-                list.appendChild(item);
-            });
+            let hasItems = false;
+
+            if (fixedData) {
+                Object.entries(fixedData).forEach(([key, archived]) => {
+                    if (!archived || !FIXED_SECTIONS[key]) return;
+                    hasItems = true;
+                    const item = document.createElement('div');
+                    item.className = 'archive-item';
+                    item.innerHTML = `
+                        <div class="archive-item-name"><i class="${FIXED_SECTIONS[key].icon}" style="color:var(--latte-gold);margin-left:8px;"></i>${FIXED_SECTIONS[key].name}</div>
+                        <button class="archive-restore-btn" onclick="restoreFixedSection('${key}')"><i class="fas fa-undo"></i> استعادة</button>`;
+                    list.appendChild(item);
+                });
+            }
+
+            if (customData) {
+                Object.entries(customData).filter(([k,v]) => v.archived).forEach(([key, val]) => {
+                    hasItems = true;
+                    const item = document.createElement('div');
+                    item.className = 'archive-item';
+                    item.innerHTML = `
+                        <div class="archive-item-name"><i class="${val.icon||'fas fa-layer-group'}" style="color:var(--latte-gold);margin-left:8px;"></i>${val.name}</div>
+                        <button class="archive-restore-btn" onclick="restoreSection('${key}')"><i class="fas fa-undo"></i> استعادة</button>`;
+                    list.appendChild(item);
+                });
+            }
+
+            if (!hasItems) {
+                list.innerHTML = '<p style="text-align:center;opacity:0.5;font-size:0.85rem;padding:20px;">لا توجد أقسام مؤرشفة</p>';
+            }
         } catch(e) { list.innerHTML = '<p style="color:red;text-align:center;">خطأ في التحميل</p>'; }
     };
     window.closeArchiveModal = function() {
         document.getElementById('archive-modal').classList.remove('active');
     };
 
-    // استعادة قسم
     window.restoreSection = async function(key) {
         try {
             const data = await rtdbGet('/custom_sections/' + key);
@@ -2566,16 +2674,13 @@
         } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
     };
 
-    // إظهار أزرار الأرشفة في وضع الإدارة
     const _origActivate = window.activateAdminMode || function(){};
     window.activateAdminMode = function() {
         _origActivate();
         document.querySelectorAll('.custom-section-archive-btn').forEach(el => el.style.display = 'block');
-        // تحميل حالة الأقسام الثابتة
         loadFixedSectionsState();
     };
 
-    // أرشفة/استعادة الأقسام الثابتة
     const FIXED_SECTIONS = {
         'interior': { name: 'ديكور داخلي', icon: 'fas fa-paint-roller', page: 'interior-gallery' },
         'stone':    { name: 'واجهات حجرية', icon: 'fas fa-hammer', page: 'stone-gallery' }
@@ -2594,7 +2699,6 @@
         } catch(e) {}
     }
 
-    // تحميل حالة الأقسام عند فتح الصفحة
     window.addEventListener('DOMContentLoaded', async function() {
         try {
             const data = await rtdbGet('/fixed_sections_archive');
@@ -2618,64 +2722,6 @@
             if (card) card.style.display = 'none';
             showAdminToast('📦 تم أرشفة: ' + FIXED_SECTIONS[key].name);
         } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
-    };
-
-    // تحديث openArchiveModal لإظهار الأقسام الثابتة المؤرشفة أيضاً
-    const _origOpenArchive = window.openArchiveModal;
-    window.openArchiveModal = async function() {
-        if (!window.isAdminMode) return;
-        document.getElementById('archive-modal').classList.add('active');
-        const list = document.getElementById('archive-list');
-        list.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin" style="color:var(--latte-gold);"></i></p>';
-        try {
-            const [customData, fixedData] = await Promise.all([
-                rtdbGet('/custom_sections'),
-                rtdbGet('/fixed_sections_archive')
-            ]);
-            list.innerHTML = '';
-            let hasItems = false;
-
-            // الأقسام الثابتة المؤرشفة
-            if (fixedData) {
-                Object.entries(fixedData).forEach(([key, archived]) => {
-                    if (!archived || !FIXED_SECTIONS[key]) return;
-                    hasItems = true;
-                    const item = document.createElement('div');
-                    item.className = 'archive-item';
-                    item.innerHTML = `
-                        <div class="archive-item-name">
-                            <i class="${FIXED_SECTIONS[key].icon}" style="color:var(--latte-gold);margin-left:8px;"></i>
-                            ${FIXED_SECTIONS[key].name}
-                        </div>
-                        <button class="archive-restore-btn" onclick="restoreFixedSection('${key}'))">
-                            <i class="fas fa-undo"></i> استعادة
-                        </button>`;
-                    list.appendChild(item);
-                });
-            }
-
-            // الأقسام المخصصة المؤرشفة
-            if (customData) {
-                Object.entries(customData).filter(([k,v]) => v.archived).forEach(([key, val]) => {
-                    hasItems = true;
-                    const item = document.createElement('div');
-                    item.className = 'archive-item';
-                    item.innerHTML = `
-                        <div class="archive-item-name">
-                            <i class="${val.icon||'fas fa-layer-group'}" style="color:var(--latte-gold);margin-left:8px;"></i>
-                            ${val.name}
-                        </div>
-                        <button class="archive-restore-btn" onclick="restoreSection('${key}')">
-                            <i class="fas fa-undo"></i> استعادة
-                        </button>`;
-                    list.appendChild(item);
-                });
-            }
-
-            if (!hasItems) {
-                list.innerHTML = '<p style="text-align:center;opacity:0.5;font-size:0.85rem;padding:20px;">لا توجد أقسام مؤرشفة</p>';
-            }
-        } catch(e) { list.innerHTML = '<p style="color:red;text-align:center;">خطأ في التحميل</p>'; }
     };
 
     window.restoreFixedSection = async function(key) {
