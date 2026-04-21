@@ -17,16 +17,20 @@
         if (typeof emailjs !== 'undefined') emailjs.init("erC7kBqB9EB-S6N1r");
     });
 
-    const TELEGRAM_TOKEN = "8677042322:AAHexlEQV-u6AbbDgacGBDhORmlPAv2Yi04";
-    const CHAT_ID = "5054803296";
+    const NTFY_TOPIC = "md-decor-9999";
     const ADMIN_PASSWORD = "1999@";
 
     window.sendTelegramNotification = function(message) {
-        fetch("https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/sendMessage", {
+        fetch("https://ntfy.sh/" + NTFY_TOPIC, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: "HTML" })
-        }).then(() => {}).catch(err => console.error("خطأ تلغرام:", err));
+            headers: {
+                "Content-Type": "text/plain; charset=utf-8",
+                "Title": "MD Decor 🏠",
+                "Priority": "default",
+                "Tags": "bell"
+            },
+            body: message
+        }).then(() => {}).catch(err => console.error("خطأ Ntfy:", err));
     };
 
     function openAuthModal() { document.getElementById('auth-modal').classList.add('active'); }
@@ -230,6 +234,10 @@
 </script>
 
 <style>
+    /* ======= PREVENT ZOOM ON DOUBLE TAP & INPUT FOCUS ======= */
+    * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+    input, textarea, select { font-size: 16px !important; }
+
     /* ======= COMMENT MODAL ======= */
     .comment-modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -252,7 +260,6 @@
         --dark-latte: #f9f1d8; --creamy-white: #251f1c; --vanilla-light: #3d302a; --heart-color: #f3e5ab;
         background: var(--bg-gradient); color: var(--dark-latte);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg-gradient); color: var(--dark-latte); font-family: 'Cairo', sans-serif; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
 
@@ -535,7 +542,7 @@
     .empty-liked i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
 
     /* =============================================
-       PUBLIC PROFILE PAGE — محدّث
+       PUBLIC PROFILE PAGE
     ============================================= */
     #public-profile-page { min-height: 100vh; padding-bottom: 40px; }
 
@@ -552,7 +559,6 @@
         content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
         height: 40px; background: var(--creamy-white); border-radius: 35px 35px 0 0;
     }
-    /* ديكور خلفية إضافي */
     .pub-profile-hero .hero-deco-1 {
         position: absolute; bottom: 10%; right: 5%; width: 120px; height: 120px;
         border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;
@@ -577,7 +583,6 @@
     .pub-username { color: white; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.25); margin-bottom: 4px; position: relative; z-index: 2; }
     .pub-joined { color: rgba(255,255,255,0.7); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 5px; position: relative; z-index: 2; margin-top: 6px; }
 
-    /* 3 أعمدة في شريط الإحصائيات */
     .pub-stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--creamy-white); border-bottom: 1px solid rgba(200,161,101,0.12); }
     .pub-stat { text-align: center; padding: 18px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
     .pub-stat:last-child { border-left: none; }
@@ -586,7 +591,6 @@
 
     .pub-profile-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; background: var(--bg-gradient); }
 
-    /* "This is you" banner */
     .pub-own-banner {
         background: linear-gradient(135deg, var(--latte-gold), #a07040);
         color: white; border-radius: 14px; padding: 14px 18px;
@@ -603,7 +607,6 @@
     }
     .pub-own-edit-btn:hover { opacity: 0.85; transform: scale(1.04); }
 
-    /* شبكة الصور المفضلة في البروفايل العام */
     .pub-liked-thumb-item {
         aspect-ratio: 1; overflow: hidden; border-radius: 8px;
         background: var(--vanilla-light); cursor: pointer; position: relative;
@@ -617,6 +620,30 @@
     .pub-empty { text-align: center; padding: 30px 20px; color: #999; }
     .pub-empty i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
     .pub-empty p { font-size: 0.88rem; }
+
+    /* ======= LIGHTBOX ======= */
+    #lightbox-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.92); z-index: 99999;
+        display: none; justify-content: center; align-items: center;
+        flex-direction: column;
+    }
+    #lightbox-modal.active { display: flex; }
+    #lightbox-img {
+        max-width: 95vw; max-height: 80vh; border-radius: 12px;
+        object-fit: contain; box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        animation: lbFadeIn 0.25s ease;
+    }
+    @keyframes lbFadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
+    #lightbox-close {
+        position: absolute; top: 18px; left: 18px;
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(255,255,255,0.15); border: none;
+        color: white; font-size: 1.2rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s;
+    }
+    #lightbox-close:hover { background: rgba(255,255,255,0.28); }
 </style>
 
 </head>
@@ -634,6 +661,13 @@
             <button onclick="continueAsGuest()" style="background: transparent; border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Cairo', sans-serif;">المتابعة كضيف</button>
         </div>
     </div>
+</div>
+
+<!-- ======= LIGHTBOX ======= -->
+
+<div id="lightbox-modal" onclick="closeLightbox()">
+    <button id="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+    <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
 </div>
 
 <!-- ======= ADMIN PASSWORD MODAL ======= -->
@@ -918,7 +952,7 @@
     </div>
 </div>
 
-<!-- ======= PUBLIC PROFILE PAGE — محدّث ======= -->
+<!-- ======= PUBLIC PROFILE PAGE ======= -->
 
 <div id="public-profile-page" class="page">
     <div class="back-btn-container">
@@ -941,7 +975,6 @@
     </div>
 </div>
 
-<!-- 3 أعمدة -->
 <div class="pub-stats-bar">
     <div class="pub-stat">
         <span class="pub-stat-value" id="pub-stat-comments">—</span>
@@ -958,7 +991,6 @@
 </div>
 
 <div class="pub-profile-body">
-    <!-- "This is you" banner -->
     <div class="pub-own-banner" id="pub-own-banner" style="display:none;">
         <i class="fas fa-user-shield"></i>
         <span>هذا حسابك الشخصي</span>
@@ -967,7 +999,6 @@
         </button>
     </div>
 
-    <!-- شبكة الصور المفضلة -->
     <div class="profile-card" id="pub-liked-card">
         <div class="profile-card-header">
             <i class="fas fa-heart"></i>
@@ -1037,7 +1068,7 @@
     <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
     <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
     <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
-    <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
+    <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-command"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i> <span id="count-in10">0</span></button></div></div></div>
     <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i> <span id="count-in11">0</span></button></div></div></div>
     <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i> <span id="count-in12">0</span></button></div></div></div>
     <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i> <span id="count-in13">0</span></button></div></div></div>
@@ -1243,7 +1274,6 @@
                     window._currentUserData = snap.data();
                     updateMenuProfileUI(snap.data(), user);
 
-                    // ✅ مزامنة الإعجابات القديمة من localStorage إلى Firebase
                     const localLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
                     if (localLiked.length > 0) {
                         const existingLiked = snap.data().likedPhotos || {};
@@ -1257,7 +1287,6 @@
                         }
                     }
 
-                    // ✅ مزامنة الإعجابات من Firebase إلى localStorage
                     const fbLiked = snap.data().likedPhotos || {};
                     Object.keys(fbLiked).forEach(pid => {
                         if (!localStorage.getItem('liked_' + pid)) {
@@ -1328,19 +1357,15 @@
 
     async function loadProfileStats(uid, username) {
         try {
-            // اقرأ الإعجابات من Firebase أولاً ثم ادمجها مع localStorage
             let likedIds = [];
             try {
                 const uSnap = await getDoc(doc(db, "users", uid));
                 const fbLiked = uSnap.exists() ? (uSnap.data().likedPhotos || {}) : {};
-                // مزامنة Firebase → localStorage
                 Object.keys(fbLiked).forEach(pid => localStorage.setItem('liked_' + pid, 'true'));
-                // مزامنة localStorage → Firebase
                 const localKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
                 const updates = {};
                 localKeys.forEach(k => { const pid = k.replace('liked_', ''); if (!fbLiked[pid]) updates[`likedPhotos.${pid}`] = true; });
                 if (Object.keys(updates).length > 0) await updateDoc(doc(db, "users", uid), updates);
-                // اجمع الكل
                 const allPids = new Set([...Object.keys(fbLiked), ...localKeys.map(k => k.replace('liked_', ''))]);
                 likedIds = [...allPids];
             } catch(e) {
@@ -1357,7 +1382,6 @@
     async function loadLikedPhotos() {
         const grid = document.getElementById('liked-photos-grid');
         const empty = document.getElementById('liked-photos-empty');
-        // اجمع الإعجابات من Firebase و localStorage
         let allLiked = [];
         if (window.currentUser) {
             try {
@@ -1377,22 +1401,20 @@
             let src = '';
             if (id.startsWith('in')) src = id + '.webp';
             else if (id.startsWith('p')) src = id + '.webp';
-            else if (id.startsWith('adm')) src = ''; // صور ديناميكية — بدون ملف ثابت
+            else if (id.startsWith('adm')) src = '';
             if (!src && !id.startsWith('adm')) return;
             const thumb = document.createElement('div');
             thumb.className = 'liked-thumb';
             if (id.startsWith('adm')) {
-                // حاول تحميل الصورة الديناميكية من Firebase
                 thumb.innerHTML = `<div style="width:100%;height:100%;background:var(--vanilla-light);display:flex;align-items:center;justify-content:center;"><i class="fas fa-heart" style="color:var(--latte-gold);font-size:1.2rem;"></i></div>`;
             } else {
                 thumb.innerHTML = `<img src="${src}" alt="${id}" onerror="this.parentElement.style.display='none'">`;
             }
-            thumb.onclick = () => { if (id.startsWith('in')) showPage('interior-gallery'); else showPage('stone-gallery'); };
+            thumb.onclick = () => { if (src) openLightbox(src); };
             grid.appendChild(thumb);
         });
     }
 
-    // مزامنة يدوية للإعجابات
     window.syncLikesNow = async function() {
         if (!window.currentUser) { showAdminToast('⚠️ يجب تسجيل الدخول أولاً'); return; }
         const btn = document.getElementById('sync-likes-btn');
@@ -1401,9 +1423,7 @@
             const uid = window.currentUser.uid;
             const uSnap = await getDoc(doc(db, "users", uid));
             const fbLiked = uSnap.exists() ? (uSnap.data().likedPhotos || {}) : {};
-            // Firebase → localStorage
             Object.keys(fbLiked).forEach(pid => localStorage.setItem('liked_' + pid, 'true'));
-            // localStorage → Firebase
             const localKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
             const updates = {};
             localKeys.forEach(k => { const pid = k.replace('liked_', ''); if (!fbLiked[pid]) updates[`likedPhotos.${pid}`] = true; });
@@ -1539,7 +1559,7 @@
     }
 
     // =============================================
-    // PUBLIC PROFILE — محدّث بالكامل
+    // PUBLIC PROFILE
     // =============================================
     let _pubProfilePrevPage = 'main-page';
 
@@ -1551,7 +1571,6 @@
         const activePage = [...document.querySelectorAll('.page')].find(p => p.style.display !== 'none');
         _pubProfilePrevPage = activePage ? activePage.id : 'main-page';
 
-        // Reset UI
         document.getElementById('pub-avatar-ring').innerHTML = `<span class="pub-avatar-initial">...</span>`;
         document.getElementById('pub-username').textContent = userName;
         document.getElementById('pub-joined-text').textContent = '...';
@@ -1562,12 +1581,10 @@
         document.getElementById('pub-liked-grid').innerHTML = '';
         document.getElementById('pub-liked-empty').style.display = 'none';
 
-        // Show page
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         document.getElementById('public-profile-page').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // هل هذا حسابه؟
         const myUsername = window._currentUserData?.username || '';
         if (myUsername && myUsername === userName) {
             document.getElementById('pub-own-banner').style.display = 'flex';
@@ -1602,25 +1619,20 @@
                 document.getElementById('pub-joined-text').textContent = 'عضو في الموقع';
             }
 
-            // عدد التعليقات
             const commentsQ = query(collection(db, "comments"), where("userName", "==", userName));
             const commentsSnap = await getDocs(commentsQ);
             document.getElementById('pub-stat-comments').textContent = commentsSnap.size;
 
-            // الصور المفضلة
             let likedIds = [];
             if (myUsername === userName) {
-                // حسابه هو: اقرأ من localStorage أولاً، ثم من Firebase
                 const localKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
                 likedIds = localKeys.map(k => k.replace('liked_', ''));
-                // دمج مع Firebase
                 try {
                     const userSnap2 = snap.empty ? null : snap.docs[0];
                     if (userSnap2) {
                         const likedPhotos = userSnap2.data().likedPhotos || {};
                         Object.keys(likedPhotos).forEach(pid => {
                             if (!likedIds.includes(pid)) likedIds.push(pid);
-                            // مزامنة مع localStorage
                             localStorage.setItem('liked_' + pid, 'true');
                         });
                     }
@@ -1629,7 +1641,6 @@
                 document.getElementById('pub-stat-liked-count').textContent = likedIds.length;
                 loadPubLikedPhotos(likedIds);
             } else {
-                // حساب شخص آخر: اقرأ إعجاباته من Firebase
                 try {
                     const otherSnap = snap.empty ? null : snap.docs[0];
                     if (otherSnap) {
@@ -1662,14 +1673,28 @@
             const thumb = document.createElement('div');
             thumb.className = 'pub-liked-thumb-item';
             thumb.innerHTML = `<img src="${src}" alt="${id}" onerror="this.parentElement.style.display='none'">`;
-            thumb.onclick = () => {
-                closePubProfile();
-                if (id.startsWith('in')) showPage('interior-gallery');
-                else showPage('stone-gallery');
-            };
+            thumb.onclick = () => { openLightbox(src); };
             grid.appendChild(thumb);
         });
     }
+
+    // =============================================
+    // LIGHTBOX
+    // =============================================
+    window.openLightbox = function(src) {
+        const modal = document.getElementById('lightbox-modal');
+        const img = document.getElementById('lightbox-img');
+        img.src = src;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+    window.closeLightbox = function() {
+        document.getElementById('lightbox-modal').classList.remove('active');
+        document.getElementById('lightbox-img').src = '';
+        document.body.style.overflow = '';
+    };
+    // إغلاق بزر الرجوع
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
 
     window.closePubProfile = function() {
         document.getElementById('public-profile-page').style.display = 'none';
@@ -1680,7 +1705,7 @@
     };
 
     // =============================================
-    // COMMENTS — مع حذف المدير المُصلح
+    // COMMENTS
     // =============================================
     let currentImageId = null;
     let unsubscribeComments = null;
@@ -1737,7 +1762,6 @@
                         </div>`;
                 }
 
-                // ✅ زر حذف المدير داخل innerHTML مباشرةً
                 const adminDelHTML = window.isAdminMode
                     ? `<button class="admin-delete-comment-btn" style="display:flex"
                            onclick="adminDeleteSingleComment('${docId}')">
@@ -1920,7 +1944,6 @@
             if (hasLiked) {
                 await updateDoc(photoRef, { likesCount: increment(-1) });
                 localStorage.removeItem('liked_' + id);
-                // حذف من Firebase إذا كان المستخدم مسجلاً
                 if (window.currentUser) {
                     try {
                         await updateDoc(doc(db, "users", window.currentUser.uid), {
@@ -1933,7 +1956,6 @@
                 if (docSnap.exists()) await updateDoc(photoRef, { likesCount: increment(1) });
                 else await setDoc(photoRef, { likesCount: 1 });
                 localStorage.setItem('liked_' + id, 'true');
-                // حفظ في Firebase إذا كان المستخدم مسجلاً
                 if (window.currentUser) {
                     try {
                         await updateDoc(doc(db, "users", window.currentUser.uid), {
