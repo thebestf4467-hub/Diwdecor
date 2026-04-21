@@ -467,14 +467,9 @@
        MY PROFILE PAGE
     ============================================= */
     #profile-page { min-height: 100vh; padding-bottom: 40px; }
-
-    .profile-hero {
-        background: linear-gradient(135deg, var(--latte-gold) 0%, #8a5e30 100%);
-        padding: 50px 20px 75px; text-align: center; position: relative; overflow: hidden;
-    }
+    .profile-hero { background: linear-gradient(135deg, var(--latte-gold) 0%, #8a5e30 100%); padding: 50px 20px 75px; text-align: center; position: relative; overflow: hidden; }
     .profile-hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.1) 0%, transparent 60%); pointer-events: none; }
     .profile-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 35px; background: var(--creamy-white); border-radius: 30px 30px 0 0; }
-
     .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 15px; }
     .profile-avatar { width: 105px; height: 105px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.95); object-fit: cover; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.3s; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
     .profile-avatar:hover { transform: scale(1.05); }
@@ -486,20 +481,17 @@
     .profile-name { color: white; font-size: 1.5rem; font-weight: 900; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.25); }
     .profile-email { color: rgba(255,255,255,0.75); font-size: 0.8rem; margin-bottom: 6px; }
     .profile-joined { color: rgba(255,255,255,0.65); font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 5px; }
-
     .profile-stats-bar { display: flex; background: var(--creamy-white); border-bottom: 1px solid rgba(200,161,101,0.12); position: relative; z-index: 2; }
     .profile-stat { flex: 1; text-align: center; padding: 20px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
     .profile-stat:last-child { border-left: none; }
     .profile-stat-value { font-size: 1.5rem; font-weight: 900; color: var(--latte-gold); display: block; }
     .profile-stat-label { font-size: 0.65rem; color: #999; font-weight: 600; }
-
     .profile-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; background: var(--bg-gradient); min-height: 200px; }
     .profile-card { background: var(--creamy-white); border-radius: 18px; border: 1px solid rgba(200,161,101,0.15); overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.04); }
     .profile-card-header { padding: 14px 18px; border-bottom: 1px solid rgba(200,161,101,0.12); display: flex; align-items: center; gap: 10px; background: var(--vanilla-light); }
     .profile-card-header i { color: var(--latte-gold); font-size: 1rem; }
     .profile-card-header span { font-weight: bold; font-size: 0.9rem; color: var(--dark-latte); }
     .profile-card-body { padding: 18px; }
-
     .edit-field-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(200,161,101,0.08); }
     .edit-field-row:last-child { border-bottom: none; padding-bottom: 0; }
     .edit-field-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -509,12 +501,10 @@
     .edit-field-value { font-size: 0.95rem; color: var(--dark-latte); font-weight: bold; }
     .edit-btn { background: var(--vanilla-light); border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; font-family: 'Cairo', sans-serif; transition: 0.2s; white-space: nowrap; }
     .edit-btn:hover { background: var(--latte-gold); color: white; }
-
     #edit-username-modal { background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); z-index: 10002; }
     #edit-username-modal .comment-content { max-width: 340px; padding: 30px 24px; text-align: center; }
     .edit-input { width: 100%; padding: 13px 16px; border-radius: 14px; border: 2px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 1rem; text-align: center; outline: none; margin: 15px 0; transition: border-color 0.2s; }
     .edit-input:focus { border-color: #a07840; }
-
     #avatar-upload-modal { background: rgba(0,0,0,0.65); backdrop-filter: blur(7px); z-index: 10003; }
     #avatar-upload-modal .comment-content { max-width: 360px; padding: 0; overflow: hidden; }
     .avatar-upload-header { background: var(--latte-gold); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
@@ -528,10 +518,8 @@
     .avatar-save-btn { width: 100%; padding: 13px; background: var(--latte-gold); border: none; border-radius: 14px; color: white; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
     .avatar-save-btn:hover { opacity: 0.88; }
     .avatar-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .profile-logout-btn { width: 100%; padding: 15px; background: transparent; border: 2px solid #e74c3c; border-radius: 14px; color: #e74c3c; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
     .profile-logout-btn:hover { background: #e74c3c; color: white; }
-
     .menu-profile-preview { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--vanilla-light); border-radius: 14px; margin-bottom: 20px; cursor: pointer; border: 1px solid rgba(200,161,101,0.2); transition: 0.2s; }
     .menu-profile-preview:hover { background: rgba(200,161,101,0.12); }
     .menu-profile-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--latte-gold); overflow: hidden; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -539,7 +527,6 @@
     .menu-avatar-placeholder { font-size: 1.2rem; color: var(--latte-gold); font-weight: bold; }
     .menu-profile-name { font-weight: bold; font-size: 0.95rem; color: var(--dark-latte); }
     .menu-profile-sub { font-size: 0.72rem; color: var(--latte-gold); }
-
     .liked-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
     .liked-thumb { aspect-ratio: 1; overflow: hidden; border-radius: 6px; cursor: pointer; }
     .liked-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
@@ -548,34 +535,51 @@
     .empty-liked i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
 
     /* =============================================
-       PUBLIC PROFILE PAGE
+       PUBLIC PROFILE PAGE — محدّث
     ============================================= */
     #public-profile-page { min-height: 100vh; padding-bottom: 40px; }
 
     .pub-profile-hero {
-        background: linear-gradient(135deg, #7a5c3a 0%, var(--latte-gold) 55%, #b8874a 100%);
-        padding: 50px 20px 75px; text-align: center; position: relative; overflow: hidden;
+        background: linear-gradient(145deg, #5a3e28 0%, var(--latte-gold) 50%, #7a5030 100%);
+        padding: 55px 20px 80px; text-align: center; position: relative; overflow: hidden;
     }
-    .pub-profile-hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 35% 65%, rgba(255,255,255,0.12) 0%, transparent 55%); pointer-events: none; }
-    .pub-profile-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 35px; background: var(--creamy-white); border-radius: 30px 30px 0 0; }
+    .pub-profile-hero::before {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle at 35% 65%, rgba(255,255,255,0.12) 0%, transparent 55%);
+        pointer-events: none;
+    }
+    .pub-profile-hero::after {
+        content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+        height: 40px; background: var(--creamy-white); border-radius: 35px 35px 0 0;
+    }
+    /* ديكور خلفية إضافي */
+    .pub-profile-hero .hero-deco-1 {
+        position: absolute; bottom: 10%; right: 5%; width: 120px; height: 120px;
+        border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;
+    }
+    .pub-profile-hero .hero-deco-2 {
+        position: absolute; top: 15%; left: 8%; width: 70px; height: 70px;
+        border-radius: 50%; background: rgba(255,255,255,0.05); pointer-events: none;
+    }
 
     .pub-avatar-ring {
-        width: 100px; height: 100px; border-radius: 50%;
-        border: 4px solid rgba(255,255,255,0.9);
+        width: 110px; height: 110px; border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.95);
         overflow: hidden; display: inline-flex;
         align-items: center; justify-content: center;
         background: rgba(255,255,255,0.2);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        margin-bottom: 14px; position: relative; z-index: 2;
+        box-shadow: 0 8px 35px rgba(0,0,0,0.35);
+        margin-bottom: 16px; position: relative; z-index: 2;
     }
     .pub-avatar-ring img { width: 100%; height: 100%; object-fit: cover; }
     .pub-avatar-initial { font-size: 2.8rem; color: white; font-weight: 900; }
 
     .pub-username { color: white; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.25); margin-bottom: 4px; position: relative; z-index: 2; }
-    .pub-joined { color: rgba(255,255,255,0.7); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 5px; position: relative; z-index: 2; margin-top: 4px; }
+    .pub-joined { color: rgba(255,255,255,0.7); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 5px; position: relative; z-index: 2; margin-top: 6px; }
 
-    .pub-stats-bar { display: flex; background: var(--creamy-white); border-bottom: 1px solid rgba(200,161,101,0.12); }
-    .pub-stat { flex: 1; text-align: center; padding: 18px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
+    /* 3 أعمدة في شريط الإحصائيات */
+    .pub-stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--creamy-white); border-bottom: 1px solid rgba(200,161,101,0.12); }
+    .pub-stat { text-align: center; padding: 18px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
     .pub-stat:last-child { border-left: none; }
     .pub-stat-value { font-size: 1.4rem; font-weight: 900; color: var(--latte-gold); display: block; }
     .pub-stat-label { font-size: 0.62rem; color: #999; font-weight: 600; }
@@ -599,28 +603,20 @@
     }
     .pub-own-edit-btn:hover { opacity: 0.85; transform: scale(1.04); }
 
-    /* Public comments list */
-    .pub-comments-list { display: flex; flex-direction: column; gap: 10px; }
-    .pub-comment-item {
-        background: var(--creamy-white); border-radius: 14px;
-        border-right: 3px solid var(--latte-gold); padding: 12px 15px;
-        font-size: 0.88rem; color: var(--dark-latte);
-        animation: slideIn 0.3s ease-out;
+    /* شبكة الصور المفضلة في البروفايل العام */
+    .pub-liked-thumb-item {
+        aspect-ratio: 1; overflow: hidden; border-radius: 8px;
+        background: var(--vanilla-light); cursor: pointer; position: relative;
     }
-    .pub-comment-meta {
-        font-size: 0.68rem; color: var(--latte-gold); font-weight: bold;
-        margin-bottom: 5px; display: flex; align-items: center; gap: 5px;
+    .pub-liked-thumb-item img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.3s; display: block;
     }
-    .pub-comment-text { line-height: 1.5; }
+    .pub-liked-thumb-item:hover img { transform: scale(1.08); }
+
     .pub-empty { text-align: center; padding: 30px 20px; color: #999; }
     .pub-empty i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
     .pub-empty p { font-size: 0.88rem; }
-
-    /* Liked photos in public profile */
-    .pub-liked-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
-    .pub-liked-thumb { aspect-ratio: 1; overflow: hidden; border-radius: 6px; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; }
-    .pub-liked-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-    .pub-liked-thumb:hover img { transform: scale(1.1); }
 </style>
 
 </head>
@@ -768,36 +764,31 @@
 
 <div class="side-menu" id="sideMenu">
     <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
-
-```
-<div class="menu-profile-preview" id="menu-profile-preview" onclick="goToProfile()" style="display:none;">
-    <div class="menu-profile-avatar" id="menu-avatar-wrap">
-        <span class="menu-avatar-placeholder" id="menu-avatar-placeholder">?</span>
+    <div class="menu-profile-preview" id="menu-profile-preview" onclick="goToProfile()" style="display:none;">
+        <div class="menu-profile-avatar" id="menu-avatar-wrap">
+            <span class="menu-avatar-placeholder" id="menu-avatar-placeholder">?</span>
+        </div>
+        <div class="menu-profile-info">
+            <div class="menu-profile-name" id="menu-profile-name">—</div>
+            <div class="menu-profile-sub">عرض ملفك الشخصي ←</div>
+        </div>
     </div>
-    <div class="menu-profile-info">
-        <div class="menu-profile-name" id="menu-profile-name">—</div>
-        <div class="menu-profile-sub">عرض ملفك الشخصي ←</div>
+    <div class="menu-section">
+        <h3>من نحن</h3>
+        <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم.</p>
     </div>
-</div>
-
-<div class="menu-section">
-    <h3>من نحن</h3>
-    <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم.</p>
-</div>
-<div class="menu-section">
-    <h3>تواصل معنا</h3>
-    <div class="social-links">
-        <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
-        <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
-        <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
+    <div class="menu-section">
+        <h3>تواصل معنا</h3>
+        <div class="social-links">
+            <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
+            <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
+            <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
+        </div>
     </div>
-</div>
-<div class="menu-section">
-    <h3>الحساب</h3>
-    <button onclick="logoutUser()" style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer; font-family:'Cairo',sans-serif;">تسجيل الخروج</button>
-</div>
-```
-
+    <div class="menu-section">
+        <h3>الحساب</h3>
+        <button onclick="logoutUser()" style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer; font-family:'Cairo',sans-serif;">تسجيل الخروج</button>
+    </div>
 </div>
 
 <!-- ======= HEADER ======= -->
@@ -924,7 +915,7 @@
     </div>
 </div>
 
-<!-- ======= PUBLIC PROFILE PAGE ======= -->
+<!-- ======= PUBLIC PROFILE PAGE — محدّث ======= -->
 
 <div id="public-profile-page" class="page">
     <div class="back-btn-container">
@@ -932,46 +923,64 @@
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
     </div>
-    <div class="pub-profile-hero">
-        <div class="pub-avatar-ring" id="pub-avatar-ring">
-            <span class="pub-avatar-initial" id="pub-avatar-initial">?</span>
-        </div>
-        <div class="pub-username" id="pub-username">—</div>
-        <div class="pub-joined"><i class="fas fa-calendar-alt"></i><span id="pub-joined-text">—</span></div>
+
+```
+<div class="pub-profile-hero">
+    <div class="hero-deco-1"></div>
+    <div class="hero-deco-2"></div>
+    <div class="pub-avatar-ring" id="pub-avatar-ring">
+        <span class="pub-avatar-initial" id="pub-avatar-initial">?</span>
     </div>
-    <div class="pub-stats-bar">
-        <div class="pub-stat">
-            <span class="pub-stat-value" id="pub-stat-comments">0</span>
-            <span class="pub-stat-label">💬 تعليق</span>
-        </div>
-        <div class="pub-stat">
-            <span class="pub-stat-value" id="pub-stat-joined-days">—</span>
-            <span class="pub-stat-label">📅 يوم عضوية</span>
-        </div>
+    <div class="pub-username" id="pub-username">—</div>
+    <div class="pub-joined">
+        <i class="fas fa-calendar-alt"></i>
+        <span id="pub-joined-text">—</span>
     </div>
-    <div class="pub-profile-body">
-        <div class="pub-own-banner" id="pub-own-banner" style="display:none;">
-            <i class="fas fa-user-shield"></i>
-            <span>هذا حسابك الشخصي</span>
-            <button class="pub-own-edit-btn" onclick="closePubProfile(); showPage('profile-page');">
-                <i class="fas fa-pen"></i> تعديل
-            </button>
+</div>
+
+<!-- 3 أعمدة -->
+<div class="pub-stats-bar">
+    <div class="pub-stat">
+        <span class="pub-stat-value" id="pub-stat-comments">—</span>
+        <span class="pub-stat-label">💬 تعليق</span>
+    </div>
+    <div class="pub-stat">
+        <span class="pub-stat-value" id="pub-stat-liked-count">—</span>
+        <span class="pub-stat-label">❤️ إعجاب</span>
+    </div>
+    <div class="pub-stat">
+        <span class="pub-stat-value" id="pub-stat-joined-days">—</span>
+        <span class="pub-stat-label">📅 يوم عضوية</span>
+    </div>
+</div>
+
+<div class="pub-profile-body">
+    <!-- "This is you" banner -->
+    <div class="pub-own-banner" id="pub-own-banner" style="display:none;">
+        <i class="fas fa-user-shield"></i>
+        <span>هذا حسابك الشخصي</span>
+        <button class="pub-own-edit-btn" onclick="closePubProfile(); showPage('profile-page');">
+            <i class="fas fa-pen"></i> تعديل
+        </button>
+    </div>
+
+    <!-- شبكة الصور المفضلة -->
+    <div class="profile-card" id="pub-liked-card">
+        <div class="profile-card-header">
+            <i class="fas fa-heart"></i>
+            <span id="pub-liked-title">الصور المفضلة</span>
         </div>
-        <div class="profile-card">
-            <div class="profile-card-header">
-                <i class="fas fa-comment-dots"></i>
-                <span id="pub-comments-title">آخر التعليقات</span>
+        <div class="profile-card-body" style="padding:14px;">
+            <div id="pub-liked-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;"></div>
+            <div id="pub-liked-empty" style="display:none;text-align:center;padding:25px 10px;color:#999;">
+                <i class="far fa-heart" style="font-size:2rem;color:rgba(200,161,101,0.3);display:block;margin-bottom:8px;"></i>
+                <p style="font-size:0.82rem;">لم يعجبه أي تصميم بعد</p>
             </div>
-            <div class="profile-card-body" style="padding: 14px;">
-                <div id="pub-comments-list" class="pub-comments-list">
-                    <div class="pub-empty">
-                        <i class="fas fa-circle-notch fa-spin" style="font-size:1.5rem; color:var(--latte-gold);"></i>
-                        <p style="margin-top:8px;">جاري التحميل...</p>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
+</div>
+```
+
 </div>
 
 <!-- ======= COMMENTS MODAL ======= -->
@@ -996,24 +1005,20 @@
     <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
     <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
     <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
-
-```
-<div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
-<div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
-<div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
-<div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p04')"><i class="far fa-comment"></i></button><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i> <span id="count-p04">0</span></button></div></div></div>
-<div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div></div>
-<div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div></div>
-<div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div></div>
-<div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
-<div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div></div>
-<div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div></div>
-<div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
-<div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
-<div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
-<div id="stone-dynamic-photos"></div>
-```
-
+    <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i> <span id="count-p01">0</span></button></div></div></div>
+    <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p02')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i> <span id="count-p02">0</span></button></div></div></div>
+    <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i> <span id="count-p03">0</span></button></div></div></div>
+    <div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p04')"><i class="far fa-comment"></i></button><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i> <span id="count-p04">0</span></button></div></div></div>
+    <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div></div>
+    <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div></div>
+    <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div></div>
+    <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
+    <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div></div>
+    <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div></div>
+    <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
+    <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
+    <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
+    <div id="stone-dynamic-photos"></div>
 </div>
 
 <!-- ======= INTERIOR GALLERY ======= -->
@@ -1025,7 +1030,7 @@
     <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
     <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div></div>
     <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div></div>
-    <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-command"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
+    <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
     <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
     <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
     <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
@@ -1165,11 +1170,7 @@
         const username = prompt("اكتب اسم المستخدم:");
         if (!username) return askForUsername(uid, email);
         await setDoc(doc(db, "users", uid), {
-            username,
-            email,
-            createdAt: serverTimestamp(),
-            avatarUrl: '',
-            avatarBase64: ''
+            username, email, createdAt: serverTimestamp(), avatarUrl: '', avatarBase64: ''
         });
         sendAdminNotification(username, email);
         sendTG("🆕 مستخدم جديد\n👤 " + username + "\n📧 " + email + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
@@ -1280,7 +1281,7 @@
             document.getElementById('info-username').textContent = username;
             document.getElementById('info-email').textContent = user.email || '';
             if (data.createdAt) {
-                const d = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                const d = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt.seconds * 1000);
                 document.getElementById('profile-joined-date').textContent = 'عضو منذ ' + d.toLocaleDateString('ar-IQ', { year:'numeric', month:'long' });
             }
             const av = data.avatarBase64 || data.avatarUrl || '';
@@ -1339,11 +1340,9 @@
         document.getElementById('edit-username-modal').classList.add('active');
         setTimeout(() => document.getElementById('new-username-input').focus(), 150);
     };
-
     window.closeEditUsernameModal = function() {
         document.getElementById('edit-username-modal').classList.remove('active');
     };
-
     window.saveNewUsername = async function() {
         const newName = document.getElementById('new-username-input').value.trim();
         if (!newName || newName.length < 2) { alert('الاسم يجب أن يكون حرفين على الأقل'); return; }
@@ -1380,7 +1379,6 @@
     // AVATAR UPLOAD
     // =============================================
     window._avatarBase64 = null;
-
     window.openAvatarUploadModal = function() {
         if (!window.currentUser) { document.getElementById('auth-modal').classList.add('active'); return; }
         window._avatarBase64 = null;
@@ -1389,15 +1387,12 @@
         document.getElementById('avatar-save-btn').disabled = true;
         document.getElementById('avatar-upload-modal').classList.add('active');
     };
-
     window.closeAvatarUploadModal = function() {
         document.getElementById('avatar-upload-modal').classList.remove('active');
     };
-
     window.triggerAvatarInput = function() {
         document.getElementById('avatar-file-input').click();
     };
-
     window.handleAvatarFileSelect = async function(input) {
         if (!input.files.length) return;
         const file = input.files[0];
@@ -1413,7 +1408,6 @@
             document.getElementById('avatar-save-btn').disabled = false;
         } catch(e) { alert("خطأ في قراءة الصورة"); }
     };
-
     window.saveAvatar = async function() {
         if (!window._avatarBase64 || !window.currentUser) return;
         const btn = document.getElementById('avatar-save-btn');
@@ -1441,7 +1435,6 @@
     // AVATAR CACHE
     // =============================================
     const _avatarCache = {};
-
     async function getUserAvatar(userName) {
         if (_avatarCache[userName] !== undefined) return _avatarCache[userName];
         try {
@@ -1459,7 +1452,7 @@
     }
 
     // =============================================
-    // PUBLIC PROFILE
+    // PUBLIC PROFILE — محدّث بالكامل
     // =============================================
     let _pubProfilePrevPage = 'main-page';
 
@@ -1468,36 +1461,31 @@
             document.getElementById('auth-modal').classList.add('active');
             return;
         }
-
-        // Save current page to go back
         const activePage = [...document.querySelectorAll('.page')].find(p => p.style.display !== 'none');
         _pubProfilePrevPage = activePage ? activePage.id : 'main-page';
 
-        // Reset UI to loading state
+        // Reset UI
         document.getElementById('pub-avatar-ring').innerHTML = `<span class="pub-avatar-initial">...</span>`;
         document.getElementById('pub-username').textContent = userName;
         document.getElementById('pub-joined-text').textContent = '...';
         document.getElementById('pub-stat-comments').textContent = '—';
+        document.getElementById('pub-stat-liked-count').textContent = '—';
         document.getElementById('pub-stat-joined-days').textContent = '—';
         document.getElementById('pub-own-banner').style.display = 'none';
-        document.getElementById('pub-comments-list').innerHTML = `
-            <div class="pub-empty">
-                <i class="fas fa-circle-notch fa-spin" style="font-size:1.5rem; color:var(--latte-gold);"></i>
-                <p style="margin-top:8px;">جاري التحميل...</p>
-            </div>`;
+        document.getElementById('pub-liked-grid').innerHTML = '';
+        document.getElementById('pub-liked-empty').style.display = 'none';
 
         // Show page
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         document.getElementById('public-profile-page').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Is this the current user's own profile?
+        // هل هذا حسابه؟
         const myUsername = window._currentUserData?.username || '';
         if (myUsername && myUsername === userName) {
             document.getElementById('pub-own-banner').style.display = 'flex';
         }
 
-        // Fetch user data
         try {
             const q = query(collection(db, "users"), where("username", "==", userName));
             const snap = await getDocs(q);
@@ -1506,65 +1494,70 @@
             if (!snap.empty) {
                 const data = snap.docs[0].data();
                 const av = data.avatarBase64 || data.avatarUrl || '';
-                if (av) {
-                    ring.innerHTML = `<img src="${av}" alt="${userName}">`;
-                } else {
-                    ring.innerHTML = `<span class="pub-avatar-initial">${userName[0].toUpperCase()}</span>`;
-                }
+                ring.innerHTML = av
+                    ? `<img src="${av}" alt="${userName}" style="width:100%;height:100%;object-fit:cover;">`
+                    : `<span class="pub-avatar-initial">${userName[0].toUpperCase()}</span>`;
+
                 if (data.createdAt) {
-                    const d = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                    const d = data.createdAt.toDate
+                        ? data.createdAt.toDate()
+                        : new Date(data.createdAt.seconds * 1000);
                     document.getElementById('pub-joined-text').textContent =
                         'عضو منذ ' + d.toLocaleDateString('ar-IQ', { year: 'numeric', month: 'long' });
                     const days = Math.floor((Date.now() - d.getTime()) / 86400000);
                     document.getElementById('pub-stat-joined-days').textContent = days;
+                } else {
+                    document.getElementById('pub-joined-text').textContent = 'عضو في الموقع';
+                    document.getElementById('pub-stat-joined-days').textContent = '—';
                 }
             } else {
                 ring.innerHTML = `<span class="pub-avatar-initial">${userName[0].toUpperCase()}</span>`;
                 document.getElementById('pub-joined-text').textContent = 'عضو في الموقع';
             }
 
-            // Load comments by this user (ordered by newest first)
-            const commentsQ = query(
-                collection(db, "comments"),
-                where("userName", "==", userName),
-                orderBy("createdAt", "desc")
-            );
+            // عدد التعليقات
+            const commentsQ = query(collection(db, "comments"), where("userName", "==", userName));
             const commentsSnap = await getDocs(commentsQ);
             document.getElementById('pub-stat-comments').textContent = commentsSnap.size;
-            document.getElementById('pub-comments-title').textContent = `آخر التعليقات (${commentsSnap.size})`;
 
-            const listEl = document.getElementById('pub-comments-list');
-            if (commentsSnap.empty) {
-                listEl.innerHTML = `<div class="pub-empty"><i class="far fa-comment-dots"></i><p>لا توجد تعليقات بعد</p></div>`;
-                return;
+            // الصور المفضلة — تظهر فقط إذا كان هذا حسابه
+            if (myUsername === userName) {
+                const likedKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
+                document.getElementById('pub-stat-liked-count').textContent = likedKeys.length;
+                loadPubLikedPhotos(likedKeys.map(k => k.replace('liked_', '')));
+            } else {
+                document.getElementById('pub-stat-liked-count').textContent = '—';
+                document.getElementById('pub-liked-empty').style.display = 'block';
             }
-
-            listEl.innerHTML = '';
-            commentsSnap.docs.slice(0, 20).forEach(d => {
-                const data = d.data();
-                const item = document.createElement('div');
-                item.className = 'pub-comment-item';
-                const imgLabel = data.imageId || '';
-                const timeStr = data.createdAt?.toDate
-                    ? data.createdAt.toDate().toLocaleDateString('ar-IQ', { year:'numeric', month:'short', day:'numeric' })
-                    : '';
-                item.innerHTML = `
-                    <div class="pub-comment-meta">
-                        <i class="fas fa-image"></i>
-                        <span>${imgLabel}</span>
-                        ${timeStr ? `<span style="margin-right:auto; font-weight:normal; opacity:0.7;">${timeStr}</span>` : ''}
-                    </div>
-                    <div class="pub-comment-text">${data.text || ''}</div>
-                `;
-                listEl.appendChild(item);
-            });
 
         } catch(e) {
             console.error('خطأ في تحميل البروفايل:', e);
-            document.getElementById('pub-comments-list').innerHTML =
-                `<div class="pub-empty"><i class="fas fa-exclamation-circle" style="color:var(--admin-red);"></i><p>تعذر تحميل البيانات</p></div>`;
+            document.getElementById('pub-liked-empty').style.display = 'block';
+            document.getElementById('pub-liked-empty').innerHTML = `
+                <i class="fas fa-exclamation-circle" style="font-size:2rem;color:var(--admin-red);display:block;margin-bottom:8px;"></i>
+                <p style="font-size:0.82rem;">تعذر تحميل البيانات</p>`;
         }
     };
+
+    function loadPubLikedPhotos(ids) {
+        const grid = document.getElementById('pub-liked-grid');
+        const empty = document.getElementById('pub-liked-empty');
+        grid.innerHTML = '';
+        if (!ids || ids.length === 0) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+        ids.forEach(id => {
+            const src = id + '.webp';
+            const thumb = document.createElement('div');
+            thumb.className = 'pub-liked-thumb-item';
+            thumb.innerHTML = `<img src="${src}" alt="${id}" onerror="this.parentElement.style.display='none'">`;
+            thumb.onclick = () => {
+                closePubProfile();
+                if (id.startsWith('in')) showPage('interior-gallery');
+                else showPage('stone-gallery');
+            };
+            grid.appendChild(thumb);
+        });
+    }
 
     window.closePubProfile = function() {
         document.getElementById('public-profile-page').style.display = 'none';
@@ -1575,92 +1568,91 @@
     };
 
     // =============================================
-    // COMMENTS — with edit & delete for owner
+    // COMMENTS — مع حذف المدير المُصلح
     // =============================================
     let currentImageId = null;
     let unsubscribeComments = null;
 
     window.openComments = (id) => {
-    if (!window.currentUser) {
-        alert("يجب تسجيل الدخول للتعليق");
-        document.getElementById('auth-modal').classList.add('active');
-        return;
-    }
-    currentImageId = id;
-    document.getElementById('comments-modal').classList.add('active');
-    const list = document.getElementById('comments-list');
-    list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
-
-    const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
-    unsubscribeComments = onSnapshot(q, async (snapshot) => {
-        list.innerHTML = '';
-        if (snapshot.empty) {
-            list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
+        if (!window.currentUser) {
+            alert("يجب تسجيل الدخول للتعليق");
+            document.getElementById('auth-modal').classList.add('active');
             return;
         }
-        for (const d of snapshot.docs) {
-            const data = d.data();
-            const docId = d.id;
-            const userName = data.userName || 'مستخدم';
-            const isOwner = window.currentUser && data.userId === window.currentUser.uid;
+        currentImageId = id;
+        document.getElementById('comments-modal').classList.add('active');
+        const list = document.getElementById('comments-list');
+        list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
 
-            let avatarSrc;
-            if (isOwner && window._currentUserData?.avatarBase64) {
-                avatarSrc = window._currentUserData.avatarBase64;
-            } else {
-                avatarSrc = await getUserAvatar(userName);
+        const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
+        unsubscribeComments = onSnapshot(q, async (snapshot) => {
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
+                return;
             }
+            for (const d of snapshot.docs) {
+                const data = d.data();
+                const docId = d.id;
+                const userName = data.userName || 'مستخدم';
+                const isOwner = window.currentUser && data.userId === window.currentUser.uid;
 
-            const item = document.createElement('div');
-            item.className = 'comment-item';
-            item.dataset.docId = docId;
+                let avatarSrc;
+                if (isOwner && window._currentUserData?.avatarBase64) {
+                    avatarSrc = window._currentUserData.avatarBase64;
+                } else {
+                    avatarSrc = await getUserAvatar(userName);
+                }
 
-            let avatarHTML = avatarSrc
-                ? `<img src="${avatarSrc}" alt="${userName}">`
-                : `<span class="avatar-initials">${userName[0].toUpperCase()}</span>`;
+                const item = document.createElement('div');
+                item.className = 'comment-item';
+                item.dataset.docId = docId;
 
-            let actionsHTML = '';
-            if (isOwner) {
-                actionsHTML = `
-                    <div class="comment-actions">
-                        <button class="comment-action-btn" onclick="startEditComment('${docId}', this)">
-                            <i class="fas fa-pen"></i> تعديل
-                        </button>
-                        <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>
-                    </div>`;
-            }
+                let avatarHTML = avatarSrc
+                    ? `<img src="${avatarSrc}" alt="${userName}">`
+                    : `<span class="avatar-initials">${userName[0].toUpperCase()}</span>`;
 
-            // زر حذف المدير
-            const adminDelHTML = window.isAdminMode
-                ? `<button class="admin-delete-comment-btn" style="display:flex" 
-                       onclick="adminDeleteSingleComment('${docId}')">
-                       <i class="fas fa-times"></i>
-                   </button>`
-                : '';
+                let actionsHTML = '';
+                if (isOwner) {
+                    actionsHTML = `
+                        <div class="comment-actions">
+                            <button class="comment-action-btn" onclick="startEditComment('${docId}', this)">
+                                <i class="fas fa-pen"></i> تعديل
+                            </button>
+                            <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>`;
+                }
 
-            item.innerHTML = `
-                ${adminDelHTML}
-                <div class="comment-avatar-row">
-                    <div class="comment-user-avatar" onclick="viewUserProfile('${userName}')">
-                        ${avatarHTML}
-                    </div>
-                    <div class="comment-content-box">
-                        <div class="comment-username-link" onclick="viewUserProfile('${userName}')">
-                            <i class="fas fa-user" style="font-size:0.6rem;"></i> ${userName}
+                // ✅ زر حذف المدير داخل innerHTML مباشرةً
+                const adminDelHTML = window.isAdminMode
+                    ? `<button class="admin-delete-comment-btn" style="display:flex"
+                           onclick="adminDeleteSingleComment('${docId}')">
+                           <i class="fas fa-times"></i>
+                       </button>`
+                    : '';
+
+                item.innerHTML = `
+                    ${adminDelHTML}
+                    <div class="comment-avatar-row">
+                        <div class="comment-user-avatar" onclick="viewUserProfile('${userName}')">
+                            ${avatarHTML}
                         </div>
-                        <div class="comment-text-content" id="text-${docId}">${data.text}</div>
-                        ${actionsHTML}
-                    </div>
-                </div>`;
+                        <div class="comment-content-box">
+                            <div class="comment-username-link" onclick="viewUserProfile('${userName}')">
+                                <i class="fas fa-user" style="font-size:0.6rem;"></i> ${userName}
+                            </div>
+                            <div class="comment-text-content" id="text-${docId}">${data.text}</div>
+                            ${actionsHTML}
+                        </div>
+                    </div>`;
 
-            list.appendChild(item);
-        }
-        list.scrollTop = list.scrollHeight;
-    });
-};
-
+                list.appendChild(item);
+            }
+            list.scrollTop = list.scrollHeight;
+        });
+    };
 
     window.startEditComment = function(docId, btn) {
         const textEl = document.getElementById('text-' + docId);
@@ -1724,7 +1716,6 @@
         } catch(e) { alert("خطأ في الحذف: " + e.message); }
     };
 
-    // ── clicking username opens public profile ──
     window.viewUserProfile = async function(userName) {
         if (!window.currentUser) return;
         document.getElementById('comments-modal').classList.remove('active');
@@ -1759,8 +1750,10 @@
     window.adminDeleteSingleComment = async (docId) => {
         if (!window.isAdminMode) return;
         if (!confirm("حذف هذا التعليق؟")) return;
-        try { await deleteDoc(doc(db, "comments", docId)); showAdminToast('✅ تم حذف التعليق'); }
-        catch(e) { alert("خطأ: " + e.message); }
+        try {
+            await deleteDoc(doc(db, "comments", docId));
+            showAdminToast('✅ تم حذف التعليق');
+        } catch(e) { alert("خطأ: " + e.message); }
     };
 
     window.adminDeleteLikes = async (id) => {
@@ -1840,34 +1833,29 @@
     window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
 
     // =============================================
-    // ADMIN STATS — FIXED & ENHANCED
+    // ADMIN STATS
     // =============================================
     window.loadAdminStats = async () => {
         const body = document.getElementById('stats-body');
         const refreshBtn = document.getElementById('stats-refresh');
         if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...'; }
-
         body.innerHTML = `<div class="stats-loading-spinner"><i class="fas fa-circle-notch"></i><p style="margin-top:10px;font-size:0.82rem;color:var(--latte-gold);">جاري تحميل البيانات...</p></div>`;
 
         try {
-            // — Users count —
             let usersCount = 0;
             try {
                 const usersSnap = await getCountFromServer(collection(db, "users"));
                 usersCount = usersSnap.data().count;
             } catch(e) {
-                // fallback: getDocs if getCountFromServer fails
                 const usersSnap2 = await getDocs(collection(db, "users"));
                 usersCount = usersSnap2.size;
             }
 
-            // — Comments count —
             let commentsCount = 0;
             let allCommentDocs = [];
             try {
                 const cs = await getCountFromServer(collection(db, "comments"));
                 commentsCount = cs.data().count;
-                // Still need docs for per-image breakdown
                 const allCommentsSnap = await getDocs(collection(db, "comments"));
                 allCommentDocs = allCommentsSnap.docs;
             } catch(e) {
@@ -1876,9 +1864,7 @@
                 commentsCount = allCommentDocs.length;
             }
 
-            // — Photos (likes) —
             let totalLikes = 0;
-            let topLikedPhoto = { id: '—', likes: 0 };
             let allLikesArr = [];
             try {
                 const photosSnap = await getDocs(collection(db, "photos"));
@@ -1886,11 +1872,9 @@
                     const likes = d.data().likesCount || 0;
                     totalLikes += likes;
                     allLikesArr.push({ id: d.id, likes });
-                    if (likes > topLikedPhoto.likes) topLikedPhoto = { id: d.id, likes };
                 });
             } catch(e) {}
 
-            // — Top commented photo —
             const commentMap = {};
             const userCommentMap = {};
             allCommentDocs.forEach(d => {
@@ -1900,37 +1884,19 @@
                 userCommentMap[uName] = (userCommentMap[uName] || 0) + 1;
             });
 
-            let topCommented = { id: '—', count: 0 };
-            Object.entries(commentMap).forEach(([id, count]) => {
-                if (count > topCommented.count) topCommented = { id, count };
-            });
-
-            // — Most active commenter —
             let topCommenter = { name: '—', count: 0 };
             Object.entries(userCommentMap).forEach(([name, count]) => {
                 if (count > topCommenter.count) topCommenter = { name, count };
             });
 
-            // — Top 3 liked photos —
             const top3Liked = allLikesArr.sort((a,b) => b.likes - a.likes).slice(0, 3);
+            const top3Commented = Object.entries(commentMap).sort((a,b) => b[1] - a[1]).slice(0, 3).map(([id, count]) => ({ id, count }));
 
-            // — Top 3 commented photos —
-            const top3Commented = Object.entries(commentMap)
-                .sort((a,b) => b[1] - a[1])
-                .slice(0, 3)
-                .map(([id, count]) => ({ id, count }));
-
-            // ── Build stats HTML ──
             body.innerHTML = `
-                <!-- Main numbers -->
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div>
-                        <div class="stat-label">عدد المسجلين</div>
-                        <div class="stat-value">${usersCount}</div>
-                    </div>
+                    <div><div class="stat-label">عدد المسجلين</div><div class="stat-value">${usersCount}</div></div>
                 </div>
-
                 <div class="stats-grid">
                     <div class="stat-card-sm">
                         <div class="stat-icon"><i class="fas fa-heart"></i></div>
@@ -1943,8 +1909,6 @@
                         <div class="stat-label">إجمالي التعليقات</div>
                     </div>
                 </div>
-
-                <!-- Active user -->
                 <div class="stat-card">
                     <div class="stat-icon" style="background:#e67e22;"><i class="fas fa-fire"></i></div>
                     <div>
@@ -1954,8 +1918,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Top liked photos -->
                 <div class="stats-section-title">🏆 أكثر الصور لايكات</div>
                 <div class="stats-leaderboard">
                     ${top3Liked.length === 0
@@ -1963,15 +1925,10 @@
                         : top3Liked.map((p, i) => `
                             <div class="stat-top-row">
                                 <div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div>
-                                <div>
-                                    <div class="stat-top-name">${p.id}</div>
-                                    <div class="stat-top-sub">${p.likes} ❤️ لايك</div>
-                                </div>
+                                <div><div class="stat-top-name">${p.id}</div><div class="stat-top-sub">${p.likes} ❤️ لايك</div></div>
                             </div>`).join('')
                     }
                 </div>
-
-                <!-- Top commented photos -->
                 <div class="stats-section-title">💬 أكثر الصور تعليقات</div>
                 <div class="stats-leaderboard">
                     ${top3Commented.length === 0
@@ -1979,18 +1936,13 @@
                         : top3Commented.map((p, i) => `
                             <div class="stat-top-row">
                                 <div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div>
-                                <div>
-                                    <div class="stat-top-name">${p.id}</div>
-                                    <div class="stat-top-sub">${p.count} 💬 تعليق</div>
-                                </div>
+                                <div><div class="stat-top-name">${p.id}</div><div class="stat-top-sub">${p.count} 💬 تعليق</div></div>
                             </div>`).join('')
                     }
                 </div>
-
                 <div style="text-align:center; font-size:0.68rem; opacity:0.45; padding-top:4px;">
                     آخر تحديث: ${new Date().toLocaleTimeString('ar-IQ')}
-                </div>
-            `;
+                </div>`;
 
         } catch(e) {
             console.error("Stats error:", e);
