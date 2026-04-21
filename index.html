@@ -1581,84 +1581,86 @@
     let unsubscribeComments = null;
 
     window.openComments = (id) => {
-        if (!window.currentUser) {
-            alert("يجب تسجيل الدخول للتعليق");
-            document.getElementById('auth-modal').classList.add('active');
+    if (!window.currentUser) {
+        alert("يجب تسجيل الدخول للتعليق");
+        document.getElementById('auth-modal').classList.add('active');
+        return;
+    }
+    currentImageId = id;
+    document.getElementById('comments-modal').classList.add('active');
+    const list = document.getElementById('comments-list');
+    list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
+
+    const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
+    unsubscribeComments = onSnapshot(q, async (snapshot) => {
+        list.innerHTML = '';
+        if (snapshot.empty) {
+            list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
             return;
         }
-        currentImageId = id;
-        document.getElementById('comments-modal').classList.add('active');
-        const list = document.getElementById('comments-list');
-        list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
+        for (const d of snapshot.docs) {
+            const data = d.data();
+            const docId = d.id;
+            const userName = data.userName || 'مستخدم';
+            const isOwner = window.currentUser && data.userId === window.currentUser.uid;
 
-        const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
-        unsubscribeComments = onSnapshot(q, async (snapshot) => {
-            list.innerHTML = '';
-            if (snapshot.empty) {
-                list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
-                return;
+            let avatarSrc;
+            if (isOwner && window._currentUserData?.avatarBase64) {
+                avatarSrc = window._currentUserData.avatarBase64;
+            } else {
+                avatarSrc = await getUserAvatar(userName);
             }
-            for (const d of snapshot.docs) {
-                const data = d.data();
-                const docId = d.id;
-                const userName = data.userName || 'مستخدم';
-                const isOwner = window.currentUser && data.userId === window.currentUser.uid;
 
-                let avatarSrc;
-                if (isOwner && window._currentUserData?.avatarBase64) {
-                    avatarSrc = window._currentUserData.avatarBase64;
-                } else {
-                    avatarSrc = await getUserAvatar(userName);
-                }
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            item.dataset.docId = docId;
 
-                const item = document.createElement('div');
-                item.className = 'comment-item';
-                item.dataset.docId = docId;
+            let avatarHTML = avatarSrc
+                ? `<img src="${avatarSrc}" alt="${userName}">`
+                : `<span class="avatar-initials">${userName[0].toUpperCase()}</span>`;
 
-                let avatarHTML = avatarSrc
-                    ? `<img src="${avatarSrc}" alt="${userName}">`
-                    : `<span class="avatar-initials">${userName[0].toUpperCase()}</span>`;
-
-                let actionsHTML = '';
-                if (isOwner) {
-                    actionsHTML = `
-                        <div class="comment-actions">
-                            <button class="comment-action-btn" onclick="startEditComment('${docId}', this)">
-                                <i class="fas fa-pen"></i> تعديل
-                            </button>
-                            <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')">
-                                <i class="fas fa-trash"></i> حذف
-                            </button>
-                        </div>`;
-                }
-
-                item.innerHTML = `
-                    <div class="comment-avatar-row">
-                        <div class="comment-user-avatar" onclick="viewUserProfile('${userName}')">
-                            ${avatarHTML}
-                        </div>
-                        <div class="comment-content-box">
-                            <div class="comment-username-link" onclick="viewUserProfile('${userName}')">
-                                <i class="fas fa-user" style="font-size:0.6rem;"></i> ${userName}
-                            </div>
-                            <div class="comment-text-content" id="text-${docId}">${data.text}</div>
-                            ${actionsHTML}
-                        </div>
+            let actionsHTML = '';
+            if (isOwner) {
+                actionsHTML = `
+                    <div class="comment-actions">
+                        <button class="comment-action-btn" onclick="startEditComment('${docId}', this)">
+                            <i class="fas fa-pen"></i> تعديل
+                        </button>
+                        <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
                     </div>`;
-
-                if (window.isAdminMode) {
-                    const delBtn = document.createElement('button');
-                    delBtn.className = 'admin-delete-comment-btn';
-                    delBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    delBtn.style.display = 'flex';
-                    delBtn.onclick = () => adminDeleteSingleComment(docId);
-                    item.appendChild(delBtn);
-                }
-                list.appendChild(item);
             }
-            list.scrollTop = list.scrollHeight;
-        });
-    };
+
+            // زر حذف المدير
+            const adminDelHTML = window.isAdminMode
+                ? `<button class="admin-delete-comment-btn" style="display:flex" 
+                       onclick="adminDeleteSingleComment('${docId}')">
+                       <i class="fas fa-times"></i>
+                   </button>`
+                : '';
+
+            item.innerHTML = `
+                ${adminDelHTML}
+                <div class="comment-avatar-row">
+                    <div class="comment-user-avatar" onclick="viewUserProfile('${userName}')">
+                        ${avatarHTML}
+                    </div>
+                    <div class="comment-content-box">
+                        <div class="comment-username-link" onclick="viewUserProfile('${userName}')">
+                            <i class="fas fa-user" style="font-size:0.6rem;"></i> ${userName}
+                        </div>
+                        <div class="comment-text-content" id="text-${docId}">${data.text}</div>
+                        ${actionsHTML}
+                    </div>
+                </div>`;
+
+            list.appendChild(item);
+        }
+        list.scrollTop = list.scrollHeight;
+    });
+};
+
 
     window.startEditComment = function(docId, btn) {
         const textEl = document.getElementById('text-' + docId);
