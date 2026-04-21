@@ -49,7 +49,8 @@
 
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-        document.getElementById(pageId).style.display = 'block';
+        var el = document.getElementById(pageId);
+        if (el) el.style.display = 'block';
         if (document.getElementById('sideMenu').classList.contains('open')) toggleMenu();
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(applyReveal, 100);
@@ -180,7 +181,9 @@
     function toggleAdminStats() {
         var panel = document.getElementById('admin-stats-panel');
         panel.classList.toggle('active');
-        if (panel.classList.contains('active')) loadAdminStats();
+        if (panel.classList.contains('active')) {
+            if (typeof window.loadAdminStats === 'function') window.loadAdminStats();
+        }
     }
 
     function closeAdminStats() { document.getElementById('admin-stats-panel').classList.remove('active'); }
@@ -340,7 +343,6 @@
     }
     @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 
-    /* Comment avatar row */
     .comment-avatar-row { display: flex; align-items: flex-start; gap: 10px; }
     .comment-user-avatar {
         width: 33px; height: 33px; border-radius: 50%;
@@ -354,54 +356,27 @@
     .avatar-initials { font-size: 0.7rem; font-weight: bold; color: var(--latte-gold); }
     .comment-content-box { flex: 1; min-width: 0; }
     .comment-username-link { cursor: pointer; color: var(--latte-gold); font-weight: bold; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 3px; margin-bottom: 3px; transition: opacity 0.2s; }
-    .comment-username-link:hover { opacity: 0.7; }
+    .comment-username-link:hover { opacity: 0.7; text-decoration: underline; }
     .comment-text-content { font-size: 0.9rem; color: var(--dark-latte); word-break: break-word; }
 
-    /* ── Comment action buttons (edit/delete for owner) ── */
-    .comment-actions {
-        display: flex;
-        gap: 6px;
-        margin-top: 7px;
-        justify-content: flex-end;
-    }
+    .comment-actions { display: flex; gap: 6px; margin-top: 7px; justify-content: flex-end; }
     .comment-action-btn {
-        background: transparent;
-        border: 1px solid rgba(200,161,101,0.4);
-        color: var(--latte-gold);
-        border-radius: 20px;
-        padding: 3px 10px;
-        font-size: 0.7rem;
-        font-family: 'Cairo', sans-serif;
-        font-weight: bold;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        transition: all 0.2s;
+        background: transparent; border: 1px solid rgba(200,161,101,0.4);
+        color: var(--latte-gold); border-radius: 20px; padding: 3px 10px;
+        font-size: 0.7rem; font-family: 'Cairo', sans-serif; font-weight: bold;
+        cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;
     }
     .comment-action-btn:hover { background: var(--latte-gold); color: white; }
     .comment-action-btn.delete-btn:hover { background: var(--admin-red); border-color: var(--admin-red); color: white; }
 
-    /* Inline edit textarea */
     .comment-edit-area {
-        width: 100%;
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1.5px solid var(--latte-gold);
-        background: var(--creamy-white);
-        color: var(--dark-latte);
-        font-family: 'Cairo', sans-serif;
-        font-size: 0.9rem;
-        resize: none;
-        outline: none;
-        margin-top: 6px;
-        transition: border-color 0.2s;
-        min-height: 60px;
+        width: 100%; padding: 8px 10px; border-radius: 10px;
+        border: 1.5px solid var(--latte-gold); background: var(--creamy-white);
+        color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 0.9rem;
+        resize: none; outline: none; margin-top: 6px; transition: border-color 0.2s; min-height: 60px;
     }
     .comment-edit-area:focus { border-color: #a07840; }
-    .comment-edit-actions {
-        display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end;
-    }
+    .comment-edit-actions { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
     .comment-save-btn {
         background: var(--latte-gold); color: white; border: none;
         border-radius: 20px; padding: 5px 14px; font-size: 0.75rem;
@@ -417,15 +392,16 @@
     }
     .comment-cancel-btn:hover { background: rgba(200,161,101,0.12); }
 
-    /* Admin delete buttons */
     .admin-delete-comment-btn { display: none; position: absolute; top: 6px; left: 8px; background: var(--admin-red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; align-items: center; justify-content: center; line-height: 1; padding: 0; z-index: 10; transition: transform 0.2s; }
     .admin-delete-comment-btn:hover { transform: scale(1.15); }
     .admin-delete-like { display: none; background: var(--admin-red); color: white; border: none; border-radius: 50px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer; align-items: center; gap: 5px; font-family: 'Cairo', sans-serif; font-weight: bold; transition: 0.2s; }
     .admin-delete-like:hover { opacity: 0.85; transform: scale(1.05); }
+
     #admin-pass-modal { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
     #admin-pass-modal .comment-content { padding: 30px 25px; text-align: center; }
     #admin-pass-input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 1.1rem; text-align: center; letter-spacing: 3px; outline: none; margin: 15px 0; transition: border-color 0.3s; }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
     #admin-fab { display: none; position: fixed; bottom: 25px; left: 25px; flex-direction: column; align-items: flex-start; gap: 10px; z-index: 8000; }
     .admin-fab-btn { width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s; font-family: 'Cairo', sans-serif; }
     .admin-fab-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.28); }
@@ -434,12 +410,16 @@
     #fab-exit { background: var(--admin-red); color: white; font-size: 0.9rem; }
     .fab-wrap { display: flex; align-items: center; gap: 10px; }
     .fab-label { background: var(--creamy-white); color: var(--dark-latte); border: 1px solid var(--latte-gold); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    #admin-stats-panel { display: none; position: fixed; bottom: 100px; left: 15px; width: calc(100vw - 30px); max-width: 360px; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.18); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+
+    /* ======= ADMIN STATS PANEL ======= */
+    #admin-stats-panel { display: none; position: fixed; bottom: 100px; left: 15px; width: calc(100vw - 30px); max-width: 380px; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.22); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
     #admin-stats-panel.active { display: block; }
     @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .stats-header { background: var(--latte-gold); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
+    .stats-header { background: linear-gradient(135deg, var(--latte-gold), #a07040); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
     .stats-close { cursor: pointer; font-size: 1.1rem; opacity: 0.85; }
-    .stats-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+    .stats-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 65vh; overflow-y: auto; }
+    .stats-body::-webkit-scrollbar { width: 4px; }
+    .stats-body::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
     .stat-card { display: flex; align-items: center; gap: 14px; background: var(--vanilla-light); border-radius: 14px; padding: 14px 16px; border-right: 3px solid var(--latte-gold); }
     .stat-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--latte-gold); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
     .stat-label { font-size: 0.75rem; color: #888; font-weight: 600; }
@@ -449,8 +429,20 @@
     .stat-card-sm .stat-icon { width: 36px; height: 36px; font-size: 0.95rem; margin-bottom: 6px; }
     .stat-card-sm .stat-value { font-size: 1.3rem; }
     .stat-card-sm .stat-label { font-size: 0.7rem; }
-    #stats-loading { text-align: center; padding: 20px; color: var(--latte-gold); font-size: 0.9rem; }
-    #stats-refresh { margin: 0 18px 14px; width: calc(100% - 36px); background: var(--latte-gold); color: white; border: none; border-radius: 12px; padding: 10px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .stats-section-title { font-size: 0.75rem; font-weight: 900; color: var(--latte-gold); letter-spacing: 0.5px; padding: 4px 0 0; border-top: 1px solid rgba(200,161,101,0.2); margin-top: 4px; }
+    .stat-top-row { display: flex; align-items: center; gap: 8px; background: var(--vanilla-light); border-radius: 12px; padding: 10px 14px; }
+    .stat-top-num { font-size: 1.4rem; font-weight: 900; color: var(--latte-gold); min-width: 36px; }
+    .stat-top-name { font-size: 0.82rem; font-weight: bold; color: var(--dark-latte); }
+    .stat-top-sub { font-size: 0.68rem; color: #999; }
+    .stats-leaderboard { display: flex; flex-direction: column; gap: 8px; }
+    .stats-loading-spinner { text-align: center; padding: 30px 20px; }
+    .stats-loading-spinner i { font-size: 2rem; color: var(--latte-gold); animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .stats-error { text-align: center; padding: 20px; color: var(--admin-red); font-size: 0.85rem; }
+    #stats-refresh { margin: 0 16px 14px; width: calc(100% - 32px); background: var(--latte-gold); color: white; border: none; border-radius: 12px; padding: 10px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
+    #stats-refresh:hover { opacity: 0.88; }
+    #stats-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
     #admin-toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 30px; font-size: 0.85rem; font-weight: bold; opacity: 0; transition: all 0.4s; z-index: 9999; pointer-events: none; white-space: nowrap; }
     #admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -472,70 +464,36 @@
     .upload-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* =============================================
-       PROFILE PAGE STYLES
+       MY PROFILE PAGE
     ============================================= */
     #profile-page { min-height: 100vh; padding-bottom: 40px; }
 
     .profile-hero {
         background: linear-gradient(135deg, var(--latte-gold) 0%, #8a5e30 100%);
-        padding: 50px 20px 75px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
+        padding: 50px 20px 75px; text-align: center; position: relative; overflow: hidden;
     }
-    .profile-hero::before {
-        content: '';
-        position: absolute; top: -50%; left: -50%;
-        width: 200%; height: 200%;
-        background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.1) 0%, transparent 60%);
-        pointer-events: none;
-    }
-    .profile-hero::after {
-        content: '';
-        position: absolute; bottom: -1px; left: 0; right: 0;
-        height: 35px;
-        background: var(--creamy-white);
-        border-radius: 30px 30px 0 0;
-    }
+    .profile-hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.1) 0%, transparent 60%); pointer-events: none; }
+    .profile-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 35px; background: var(--creamy-white); border-radius: 30px 30px 0 0; }
 
     .avatar-wrapper { position: relative; display: inline-block; margin-bottom: 15px; }
-    .profile-avatar {
-        width: 105px; height: 105px; border-radius: 50%;
-        border: 4px solid rgba(255,255,255,0.95);
-        object-fit: cover; overflow: hidden;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        cursor: pointer; transition: transform 0.3s;
-        background: rgba(255,255,255,0.2);
-        display: flex; align-items: center; justify-content: center;
-    }
+    .profile-avatar { width: 105px; height: 105px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.95); object-fit: cover; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.3s; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
     .profile-avatar:hover { transform: scale(1.05); }
     .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-placeholder-text { font-size: 2.8rem; color: rgba(255,255,255,0.95); font-weight: 900; }
-    .avatar-edit-badge {
-        position: absolute; bottom: 3px; left: 3px;
-        width: 30px; height: 30px; background: white; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        transition: transform 0.2s;
-    }
+    .avatar-edit-badge { position: absolute; bottom: 3px; left: 3px; width: 30px; height: 30px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.2); transition: transform 0.2s; }
     .avatar-edit-badge:hover { transform: scale(1.15); }
     .avatar-edit-badge i { color: var(--latte-gold); font-size: 0.78rem; }
     .profile-name { color: white; font-size: 1.5rem; font-weight: 900; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.25); }
     .profile-email { color: rgba(255,255,255,0.75); font-size: 0.8rem; margin-bottom: 6px; }
     .profile-joined { color: rgba(255,255,255,0.65); font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 5px; }
 
-    .profile-stats-bar {
-        display: flex; background: var(--creamy-white);
-        border-bottom: 1px solid rgba(200,161,101,0.12);
-        position: relative; z-index: 2;
-    }
+    .profile-stats-bar { display: flex; background: var(--creamy-white); border-bottom: 1px solid rgba(200,161,101,0.12); position: relative; z-index: 2; }
     .profile-stat { flex: 1; text-align: center; padding: 20px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
     .profile-stat:last-child { border-left: none; }
     .profile-stat-value { font-size: 1.5rem; font-weight: 900; color: var(--latte-gold); display: block; }
     .profile-stat-label { font-size: 0.65rem; color: #999; font-weight: 600; }
 
     .profile-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; background: var(--bg-gradient); min-height: 200px; }
-
     .profile-card { background: var(--creamy-white); border-radius: 18px; border: 1px solid rgba(200,161,101,0.15); overflow: hidden; box-shadow: 0 3px 12px rgba(0,0,0,0.04); }
     .profile-card-header { padding: 14px 18px; border-bottom: 1px solid rgba(200,161,101,0.12); display: flex; align-items: center; gap: 10px; background: var(--vanilla-light); }
     .profile-card-header i { color: var(--latte-gold); font-size: 1rem; }
@@ -552,13 +510,11 @@
     .edit-btn { background: var(--vanilla-light); border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; font-family: 'Cairo', sans-serif; transition: 0.2s; white-space: nowrap; }
     .edit-btn:hover { background: var(--latte-gold); color: white; }
 
-    /* Edit Username Modal */
     #edit-username-modal { background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); z-index: 10002; }
     #edit-username-modal .comment-content { max-width: 340px; padding: 30px 24px; text-align: center; }
     .edit-input { width: 100%; padding: 13px 16px; border-radius: 14px; border: 2px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 1rem; text-align: center; outline: none; margin: 15px 0; transition: border-color 0.2s; }
     .edit-input:focus { border-color: #a07840; }
 
-    /* Avatar Upload Modal */
     #avatar-upload-modal { background: rgba(0,0,0,0.65); backdrop-filter: blur(7px); z-index: 10003; }
     #avatar-upload-modal .comment-content { max-width: 360px; padding: 0; overflow: hidden; }
     .avatar-upload-header { background: var(--latte-gold); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
@@ -573,11 +529,9 @@
     .avatar-save-btn:hover { opacity: 0.88; }
     .avatar-save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Logout button */
     .profile-logout-btn { width: 100%; padding: 15px; background: transparent; border: 2px solid #e74c3c; border-radius: 14px; color: #e74c3c; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
     .profile-logout-btn:hover { background: #e74c3c; color: white; }
 
-    /* Menu profile preview */
     .menu-profile-preview { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--vanilla-light); border-radius: 14px; margin-bottom: 20px; cursor: pointer; border: 1px solid rgba(200,161,101,0.2); transition: 0.2s; }
     .menu-profile-preview:hover { background: rgba(200,161,101,0.12); }
     .menu-profile-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--latte-gold); overflow: hidden; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -586,7 +540,6 @@
     .menu-profile-name { font-weight: bold; font-size: 0.95rem; color: var(--dark-latte); }
     .menu-profile-sub { font-size: 0.72rem; color: var(--latte-gold); }
 
-    /* Liked gallery in profile */
     .liked-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
     .liked-thumb { aspect-ratio: 1; overflow: hidden; border-radius: 6px; cursor: pointer; }
     .liked-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
@@ -594,15 +547,80 @@
     .empty-liked { text-align: center; padding: 30px 20px; color: #999; }
     .empty-liked i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
 
-    /* ── Updating-profile overlay inside comment list ── */
-    .updating-overlay {
-        text-align: center;
-        padding: 14px;
-        color: var(--latte-gold);
-        font-size: 0.82rem;
-        font-weight: bold;
-        opacity: 0.8;
+    /* =============================================
+       PUBLIC PROFILE PAGE
+    ============================================= */
+    #public-profile-page { min-height: 100vh; padding-bottom: 40px; }
+
+    .pub-profile-hero {
+        background: linear-gradient(135deg, #7a5c3a 0%, var(--latte-gold) 55%, #b8874a 100%);
+        padding: 50px 20px 75px; text-align: center; position: relative; overflow: hidden;
     }
+    .pub-profile-hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 35% 65%, rgba(255,255,255,0.12) 0%, transparent 55%); pointer-events: none; }
+    .pub-profile-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 35px; background: var(--creamy-white); border-radius: 30px 30px 0 0; }
+
+    .pub-avatar-ring {
+        width: 100px; height: 100px; border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.9);
+        overflow: hidden; display: inline-flex;
+        align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.2);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        margin-bottom: 14px; position: relative; z-index: 2;
+    }
+    .pub-avatar-ring img { width: 100%; height: 100%; object-fit: cover; }
+    .pub-avatar-initial { font-size: 2.8rem; color: white; font-weight: 900; }
+
+    .pub-username { color: white; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.25); margin-bottom: 4px; position: relative; z-index: 2; }
+    .pub-joined { color: rgba(255,255,255,0.7); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 5px; position: relative; z-index: 2; margin-top: 4px; }
+
+    .pub-stats-bar { display: flex; background: var(--creamy-white); border-bottom: 1px solid rgba(200,161,101,0.12); }
+    .pub-stat { flex: 1; text-align: center; padding: 18px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
+    .pub-stat:last-child { border-left: none; }
+    .pub-stat-value { font-size: 1.4rem; font-weight: 900; color: var(--latte-gold); display: block; }
+    .pub-stat-label { font-size: 0.62rem; color: #999; font-weight: 600; }
+
+    .pub-profile-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; background: var(--bg-gradient); }
+
+    /* "This is you" banner */
+    .pub-own-banner {
+        background: linear-gradient(135deg, var(--latte-gold), #a07040);
+        color: white; border-radius: 14px; padding: 14px 18px;
+        display: flex; align-items: center; gap: 12px;
+        font-size: 0.88rem; font-weight: bold;
+        box-shadow: 0 4px 15px rgba(200,161,101,0.3);
+    }
+    .pub-own-banner i { font-size: 1.3rem; flex-shrink: 0; }
+    .pub-own-edit-btn {
+        margin-right: auto; background: white; color: var(--latte-gold);
+        border: none; border-radius: 20px; padding: 7px 16px;
+        font-family: 'Cairo', sans-serif; font-size: 0.8rem; font-weight: bold;
+        cursor: pointer; transition: 0.2s; white-space: nowrap;
+    }
+    .pub-own-edit-btn:hover { opacity: 0.85; transform: scale(1.04); }
+
+    /* Public comments list */
+    .pub-comments-list { display: flex; flex-direction: column; gap: 10px; }
+    .pub-comment-item {
+        background: var(--creamy-white); border-radius: 14px;
+        border-right: 3px solid var(--latte-gold); padding: 12px 15px;
+        font-size: 0.88rem; color: var(--dark-latte);
+        animation: slideIn 0.3s ease-out;
+    }
+    .pub-comment-meta {
+        font-size: 0.68rem; color: var(--latte-gold); font-weight: bold;
+        margin-bottom: 5px; display: flex; align-items: center; gap: 5px;
+    }
+    .pub-comment-text { line-height: 1.5; }
+    .pub-empty { text-align: center; padding: 30px 20px; color: #999; }
+    .pub-empty i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
+    .pub-empty p { font-size: 0.88rem; }
+
+    /* Liked photos in public profile */
+    .pub-liked-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; }
+    .pub-liked-thumb { aspect-ratio: 1; overflow: hidden; border-radius: 6px; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; }
+    .pub-liked-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .pub-liked-thumb:hover img { transform: scale(1.1); }
 </style>
 
 </head>
@@ -734,8 +752,12 @@
         <span>📊 إحصائيات الموقع</span>
         <span class="stats-close" onclick="closeAdminStats()"><i class="fas fa-times"></i></span>
     </div>
-    <div class="stats-body" id="stats-body"><div id="stats-loading">⏳ جاري تحميل البيانات...</div></div>
-    <button id="stats-refresh" onclick="loadAdminStats()"><i class="fas fa-sync-alt"></i> تحديث</button>
+    <div class="stats-body" id="stats-body">
+        <div class="stats-loading-spinner"><i class="fas fa-circle-notch"></i><p style="margin-top:10px;font-size:0.82rem;color:var(--latte-gold);">جاري تحميل البيانات...</p></div>
+    </div>
+    <button id="stats-refresh" onclick="window.loadAdminStats && window.loadAdminStats()">
+        <i class="fas fa-sync-alt"></i> تحديث البيانات
+    </button>
 </div>
 
 <div id="admin-toast"></div>
@@ -748,7 +770,6 @@
     <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
 
 ```
-<!-- Profile Preview in Menu -->
 <div class="menu-profile-preview" id="menu-profile-preview" onclick="goToProfile()" style="display:none;">
     <div class="menu-profile-avatar" id="menu-avatar-wrap">
         <span class="menu-avatar-placeholder" id="menu-avatar-placeholder">?</span>
@@ -819,101 +840,138 @@
     </section>
 </div>
 
-<!-- ======= PROFILE PAGE ======= -->
+<!-- ======= MY PROFILE PAGE ======= -->
 
 <div id="profile-page" class="page">
     <div class="back-btn-container">
         <button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button>
     </div>
-
-```
-<!-- Hero -->
-<div class="profile-hero">
-    <div class="avatar-wrapper">
-        <div class="profile-avatar" onclick="openAvatarUploadModal()" id="profile-avatar-display">
-            <span class="avatar-placeholder-text" id="profile-avatar-placeholder">?</span>
+    <div class="profile-hero">
+        <div class="avatar-wrapper">
+            <div class="profile-avatar" onclick="openAvatarUploadModal()" id="profile-avatar-display">
+                <span class="avatar-placeholder-text" id="profile-avatar-placeholder">?</span>
+            </div>
+            <div class="avatar-edit-badge" onclick="openAvatarUploadModal()">
+                <i class="fas fa-camera"></i>
+            </div>
         </div>
-        <div class="avatar-edit-badge" onclick="openAvatarUploadModal()">
-            <i class="fas fa-camera"></i>
+        <div class="profile-name" id="profile-display-name">—</div>
+        <div class="profile-email" id="profile-display-email">—</div>
+        <div class="profile-joined"><i class="fas fa-calendar-alt"></i> <span id="profile-joined-date">—</span></div>
+    </div>
+    <div class="profile-stats-bar">
+        <div class="profile-stat">
+            <span class="profile-stat-value" id="profile-stat-likes">0</span>
+            <span class="profile-stat-label">❤️ لايكات</span>
+        </div>
+        <div class="profile-stat">
+            <span class="profile-stat-value" id="profile-stat-comments">0</span>
+            <span class="profile-stat-label">💬 تعليقات</span>
+        </div>
+        <div class="profile-stat">
+            <span class="profile-stat-value" id="profile-stat-liked">0</span>
+            <span class="profile-stat-label">💛 أعجبني</span>
         </div>
     </div>
-    <div class="profile-name" id="profile-display-name">—</div>
-    <div class="profile-email" id="profile-display-email">—</div>
-    <div class="profile-joined"><i class="fas fa-calendar-alt"></i> <span id="profile-joined-date">—</span></div>
+    <div class="profile-body">
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <i class="fas fa-user-cog"></i>
+                <span>معلوماتي الشخصية</span>
+            </div>
+            <div class="profile-card-body">
+                <div class="edit-field-row">
+                    <div class="edit-field-icon"><i class="fas fa-user"></i></div>
+                    <div class="edit-field-info">
+                        <div class="edit-field-label">اسم المستخدم</div>
+                        <div class="edit-field-value" id="info-username">—</div>
+                    </div>
+                    <button class="edit-btn" onclick="openEditUsernameModal()"><i class="fas fa-pen"></i> تعديل</button>
+                </div>
+                <div class="edit-field-row">
+                    <div class="edit-field-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="edit-field-info">
+                        <div class="edit-field-label">البريد الإلكتروني</div>
+                        <div class="edit-field-value" id="info-email" style="font-weight:normal; font-size:0.85rem;">—</div>
+                    </div>
+                </div>
+                <div class="edit-field-row">
+                    <div class="edit-field-icon"><i class="fas fa-image"></i></div>
+                    <div class="edit-field-info">
+                        <div class="edit-field-label">الصورة الشخصية</div>
+                        <div class="edit-field-value" style="font-weight:normal; font-size:0.82rem; color:#999;">تظهر مع تعليقاتك</div>
+                    </div>
+                    <button class="edit-btn" onclick="openAvatarUploadModal()"><i class="fas fa-camera"></i> تغيير</button>
+                </div>
+            </div>
+        </div>
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <i class="fas fa-heart"></i>
+                <span>الصور التي أعجبتني</span>
+            </div>
+            <div class="profile-card-body" style="padding: 14px;">
+                <div id="liked-photos-grid" class="liked-grid"></div>
+                <div id="liked-photos-empty" class="empty-liked" style="display:none;">
+                    <i class="far fa-heart"></i>
+                    <p>لم تعجبك أي صورة بعد</p>
+                </div>
+            </div>
+        </div>
+        <button class="profile-logout-btn" onclick="logoutUser()">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+    </div>
 </div>
 
-<!-- Stats bar -->
-<div class="profile-stats-bar">
-    <div class="profile-stat">
-        <span class="profile-stat-value" id="profile-stat-likes">0</span>
-        <span class="profile-stat-label">❤️ لايكات</span>
-    </div>
-    <div class="profile-stat">
-        <span class="profile-stat-value" id="profile-stat-comments">0</span>
-        <span class="profile-stat-label">💬 تعليقات</span>
-    </div>
-    <div class="profile-stat">
-        <span class="profile-stat-value" id="profile-stat-liked">0</span>
-        <span class="profile-stat-label">💛 أعجبني</span>
-    </div>
-</div>
+<!-- ======= PUBLIC PROFILE PAGE ======= -->
 
-<div class="profile-body">
-    <!-- Edit Info Card -->
-    <div class="profile-card">
-        <div class="profile-card-header">
-            <i class="fas fa-user-cog"></i>
-            <span>معلوماتي الشخصية</span>
+<div id="public-profile-page" class="page">
+    <div class="back-btn-container">
+        <button class="back-btn" id="pub-back-btn" onclick="closePubProfile()">
+            <i class="fas fa-arrow-right"></i> رجوع
+        </button>
+    </div>
+    <div class="pub-profile-hero">
+        <div class="pub-avatar-ring" id="pub-avatar-ring">
+            <span class="pub-avatar-initial" id="pub-avatar-initial">?</span>
         </div>
-        <div class="profile-card-body">
-            <div class="edit-field-row">
-                <div class="edit-field-icon"><i class="fas fa-user"></i></div>
-                <div class="edit-field-info">
-                    <div class="edit-field-label">اسم المستخدم</div>
-                    <div class="edit-field-value" id="info-username">—</div>
+        <div class="pub-username" id="pub-username">—</div>
+        <div class="pub-joined"><i class="fas fa-calendar-alt"></i><span id="pub-joined-text">—</span></div>
+    </div>
+    <div class="pub-stats-bar">
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-comments">0</span>
+            <span class="pub-stat-label">💬 تعليق</span>
+        </div>
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-joined-days">—</span>
+            <span class="pub-stat-label">📅 يوم عضوية</span>
+        </div>
+    </div>
+    <div class="pub-profile-body">
+        <div class="pub-own-banner" id="pub-own-banner" style="display:none;">
+            <i class="fas fa-user-shield"></i>
+            <span>هذا حسابك الشخصي</span>
+            <button class="pub-own-edit-btn" onclick="closePubProfile(); showPage('profile-page');">
+                <i class="fas fa-pen"></i> تعديل
+            </button>
+        </div>
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <i class="fas fa-comment-dots"></i>
+                <span id="pub-comments-title">آخر التعليقات</span>
+            </div>
+            <div class="profile-card-body" style="padding: 14px;">
+                <div id="pub-comments-list" class="pub-comments-list">
+                    <div class="pub-empty">
+                        <i class="fas fa-circle-notch fa-spin" style="font-size:1.5rem; color:var(--latte-gold);"></i>
+                        <p style="margin-top:8px;">جاري التحميل...</p>
+                    </div>
                 </div>
-                <button class="edit-btn" onclick="openEditUsernameModal()"><i class="fas fa-pen"></i> تعديل</button>
-            </div>
-            <div class="edit-field-row">
-                <div class="edit-field-icon"><i class="fas fa-envelope"></i></div>
-                <div class="edit-field-info">
-                    <div class="edit-field-label">البريد الإلكتروني</div>
-                    <div class="edit-field-value" id="info-email" style="font-weight:normal; font-size:0.85rem;">—</div>
-                </div>
-            </div>
-            <div class="edit-field-row">
-                <div class="edit-field-icon"><i class="fas fa-image"></i></div>
-                <div class="edit-field-info">
-                    <div class="edit-field-label">الصورة الشخصية</div>
-                    <div class="edit-field-value" style="font-weight:normal; font-size:0.82rem; color:#999;">تظهر مع تعليقاتك</div>
-                </div>
-                <button class="edit-btn" onclick="openAvatarUploadModal()"><i class="fas fa-camera"></i> تغيير</button>
             </div>
         </div>
     </div>
-
-    <!-- Liked Photos -->
-    <div class="profile-card">
-        <div class="profile-card-header">
-            <i class="fas fa-heart"></i>
-            <span>الصور التي أعجبتني</span>
-        </div>
-        <div class="profile-card-body" style="padding: 14px;">
-            <div id="liked-photos-grid" class="liked-grid"></div>
-            <div id="liked-photos-empty" class="empty-liked" style="display:none;">
-                <i class="far fa-heart"></i>
-                <p>لم تعجبك أي صورة بعد</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Logout -->
-    <button class="profile-logout-btn" onclick="logoutUser()">
-        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-    </button>
-</div>
-```
-
 </div>
 
 <!-- ======= COMMENTS MODAL ======= -->
@@ -967,7 +1025,7 @@
     <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in03')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i> <span id="count-in03">0</span></button></div></div></div>
     <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in04')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i> <span id="count-in04">0</span></button></div></div></div>
     <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i> <span id="count-in05">0</span></button></div></div></div>
-    <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
+    <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-command"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i> <span id="count-in06">0</span></button></div></div></div>
     <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i> <span id="count-in07">0</span></button></div></div></div>
     <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i> <span id="count-in08">0</span></button></div></div></div>
     <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i> <span id="count-in09">0</span></button></div></div></div>
@@ -1192,11 +1250,7 @@
         const preview = document.getElementById('menu-profile-preview');
         const nameEl = document.getElementById('menu-profile-name');
         const avatarWrap = document.getElementById('menu-avatar-wrap');
-
-        if (!userData || !user) {
-            preview.style.display = 'none';
-            return;
-        }
+        if (!userData || !user) { preview.style.display = 'none'; return; }
         preview.style.display = 'flex';
         nameEl.textContent = userData.username || user.email.split('@')[0];
         const av = userData.avatarBase64 || userData.avatarUrl || '';
@@ -1209,10 +1263,7 @@
     }
 
     window.goToProfile = function() {
-        if (!window.currentUser) {
-            document.getElementById('auth-modal').classList.add('active');
-            return;
-        }
+        if (!window.currentUser) { document.getElementById('auth-modal').classList.add('active'); return; }
         showPage('profile-page');
     };
 
@@ -1223,18 +1274,15 @@
             const snap = await getDoc(doc(db, "users", user.uid));
             const data = snap.exists() ? snap.data() : {};
             window._currentUserData = data;
-
             const username = data.username || user.email.split('@')[0];
             document.getElementById('profile-display-name').textContent = username;
             document.getElementById('profile-display-email').textContent = user.email || '';
             document.getElementById('info-username').textContent = username;
             document.getElementById('info-email').textContent = user.email || '';
-
             if (data.createdAt) {
                 const d = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
                 document.getElementById('profile-joined-date').textContent = 'عضو منذ ' + d.toLocaleDateString('ar-IQ', { year:'numeric', month:'long' });
             }
-
             const av = data.avatarBase64 || data.avatarUrl || '';
             setProfileAvatarDisplay(av, username);
             loadProfileStats(user.uid, username);
@@ -1267,36 +1315,23 @@
         const grid = document.getElementById('liked-photos-grid');
         const empty = document.getElementById('liked-photos-empty');
         const allLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_')).map(k => k.replace('liked_', ''));
-
-        if (allLiked.length === 0) {
-            grid.style.display = 'none';
-            empty.style.display = 'block';
-            return;
-        }
-        grid.style.display = 'grid';
-        empty.style.display = 'none';
-        grid.innerHTML = '';
-
+        if (allLiked.length === 0) { grid.style.display = 'none'; empty.style.display = 'block'; return; }
+        grid.style.display = 'grid'; empty.style.display = 'none'; grid.innerHTML = '';
         allLiked.forEach(id => {
             let src = '';
             if (id.startsWith('in')) src = id + '.webp';
             else if (id.startsWith('p')) src = id + '.webp';
-            else src = '';
-
             if (!src) return;
             const thumb = document.createElement('div');
             thumb.className = 'liked-thumb';
             thumb.innerHTML = `<img src="${src}" alt="${id}" onerror="this.parentElement.style.display='none'">`;
-            thumb.onclick = () => {
-                if (id.startsWith('in')) showPage('interior-gallery');
-                else showPage('stone-gallery');
-            };
+            thumb.onclick = () => { if (id.startsWith('in')) showPage('interior-gallery'); else showPage('stone-gallery'); };
             grid.appendChild(thumb);
         });
     }
 
     // =============================================
-    // EDIT USERNAME — now updates all comments too
+    // EDIT USERNAME
     // =============================================
     window.openEditUsernameModal = function() {
         const current = document.getElementById('info-username').textContent;
@@ -1314,17 +1349,11 @@
         if (!newName || newName.length < 2) { alert('الاسم يجب أن يكون حرفين على الأقل'); return; }
         if (newName.length > 20) { alert('الاسم طويل جداً (20 حرف كحد أقصى)'); return; }
         if (!window.currentUser) return;
-
         const saveBtn = document.querySelector('#edit-username-modal .back-btn');
         if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ جاري الحفظ...'; }
-
         try {
             const uid = window.currentUser.uid;
-
-            // 1. Update user document
             await updateDoc(doc(db, "users", uid), { username: newName });
-
-            // 2. Update ALL comments by this user (using userId field for reliability)
             const commentsQ = query(collection(db, "comments"), where("userId", "==", uid));
             const commentsSnap = await getDocs(commentsQ);
             if (!commentsSnap.empty) {
@@ -1332,18 +1361,11 @@
                 commentsSnap.forEach(d => batch.update(d.ref, { userName: newName }));
                 await batch.commit();
             }
-
-            // 3. Invalidate avatar cache for old name
-            if (window._currentUserData?.username) {
-                delete _avatarCache[window._currentUserData.username];
-            }
-
-            // 4. Update local state & UI
+            if (window._currentUserData?.username) delete _avatarCache[window._currentUserData.username];
             if (window._currentUserData) window._currentUserData.username = newName;
             document.getElementById('profile-display-name').textContent = newName;
             document.getElementById('info-username').textContent = newName;
             updateMenuProfileUI(window._currentUserData, window.currentUser);
-
             closeEditUsernameModal();
             showAdminToast('✅ تم تغيير الاسم وتحديث جميع تعليقاتك');
             sendTG("✏️ تغيير اسم\n👤 " + newName + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
@@ -1355,7 +1377,7 @@
     };
 
     // =============================================
-    // AVATAR UPLOAD — now refreshes open comment list too
+    // AVATAR UPLOAD
     // =============================================
     window._avatarBase64 = null;
 
@@ -1397,22 +1419,14 @@
         const btn = document.getElementById('avatar-save-btn');
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
-
         try {
-            await updateDoc(doc(db, "users", window.currentUser.uid), {
-                avatarBase64: window._avatarBase64
-            });
-
+            await updateDoc(doc(db, "users", window.currentUser.uid), { avatarBase64: window._avatarBase64 });
             if (window._currentUserData) window._currentUserData.avatarBase64 = window._avatarBase64;
-
-            // Invalidate avatar cache so comments reload fresh avatar
             const username = window._currentUserData?.username || '';
             if (username) delete _avatarCache[username];
-
             const usernameForDisplay = window._currentUserData?.username || window.currentUser.email.split('@')[0];
             setProfileAvatarDisplay(window._avatarBase64, usernameForDisplay);
             updateMenuProfileUI(window._currentUserData, window.currentUser);
-
             closeAvatarUploadModal();
             showAdminToast('✅ تم تحديث الصورة — ستظهر في تعليقاتك الجديدة');
         } catch(e) {
@@ -1424,7 +1438,7 @@
     };
 
     // =============================================
-    // HELPER: Get user avatar (with cache)
+    // AVATAR CACHE
     // =============================================
     const _avatarCache = {};
 
@@ -1443,6 +1457,122 @@
         _avatarCache[userName] = '';
         return '';
     }
+
+    // =============================================
+    // PUBLIC PROFILE
+    // =============================================
+    let _pubProfilePrevPage = 'main-page';
+
+    window.openPublicProfile = async function(userName) {
+        if (!window.currentUser) {
+            document.getElementById('auth-modal').classList.add('active');
+            return;
+        }
+
+        // Save current page to go back
+        const activePage = [...document.querySelectorAll('.page')].find(p => p.style.display !== 'none');
+        _pubProfilePrevPage = activePage ? activePage.id : 'main-page';
+
+        // Reset UI to loading state
+        document.getElementById('pub-avatar-ring').innerHTML = `<span class="pub-avatar-initial">...</span>`;
+        document.getElementById('pub-username').textContent = userName;
+        document.getElementById('pub-joined-text').textContent = '...';
+        document.getElementById('pub-stat-comments').textContent = '—';
+        document.getElementById('pub-stat-joined-days').textContent = '—';
+        document.getElementById('pub-own-banner').style.display = 'none';
+        document.getElementById('pub-comments-list').innerHTML = `
+            <div class="pub-empty">
+                <i class="fas fa-circle-notch fa-spin" style="font-size:1.5rem; color:var(--latte-gold);"></i>
+                <p style="margin-top:8px;">جاري التحميل...</p>
+            </div>`;
+
+        // Show page
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.getElementById('public-profile-page').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Is this the current user's own profile?
+        const myUsername = window._currentUserData?.username || '';
+        if (myUsername && myUsername === userName) {
+            document.getElementById('pub-own-banner').style.display = 'flex';
+        }
+
+        // Fetch user data
+        try {
+            const q = query(collection(db, "users"), where("username", "==", userName));
+            const snap = await getDocs(q);
+            const ring = document.getElementById('pub-avatar-ring');
+
+            if (!snap.empty) {
+                const data = snap.docs[0].data();
+                const av = data.avatarBase64 || data.avatarUrl || '';
+                if (av) {
+                    ring.innerHTML = `<img src="${av}" alt="${userName}">`;
+                } else {
+                    ring.innerHTML = `<span class="pub-avatar-initial">${userName[0].toUpperCase()}</span>`;
+                }
+                if (data.createdAt) {
+                    const d = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+                    document.getElementById('pub-joined-text').textContent =
+                        'عضو منذ ' + d.toLocaleDateString('ar-IQ', { year: 'numeric', month: 'long' });
+                    const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+                    document.getElementById('pub-stat-joined-days').textContent = days;
+                }
+            } else {
+                ring.innerHTML = `<span class="pub-avatar-initial">${userName[0].toUpperCase()}</span>`;
+                document.getElementById('pub-joined-text').textContent = 'عضو في الموقع';
+            }
+
+            // Load comments by this user (ordered by newest first)
+            const commentsQ = query(
+                collection(db, "comments"),
+                where("userName", "==", userName),
+                orderBy("createdAt", "desc")
+            );
+            const commentsSnap = await getDocs(commentsQ);
+            document.getElementById('pub-stat-comments').textContent = commentsSnap.size;
+            document.getElementById('pub-comments-title').textContent = `آخر التعليقات (${commentsSnap.size})`;
+
+            const listEl = document.getElementById('pub-comments-list');
+            if (commentsSnap.empty) {
+                listEl.innerHTML = `<div class="pub-empty"><i class="far fa-comment-dots"></i><p>لا توجد تعليقات بعد</p></div>`;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            commentsSnap.docs.slice(0, 20).forEach(d => {
+                const data = d.data();
+                const item = document.createElement('div');
+                item.className = 'pub-comment-item';
+                const imgLabel = data.imageId || '';
+                const timeStr = data.createdAt?.toDate
+                    ? data.createdAt.toDate().toLocaleDateString('ar-IQ', { year:'numeric', month:'short', day:'numeric' })
+                    : '';
+                item.innerHTML = `
+                    <div class="pub-comment-meta">
+                        <i class="fas fa-image"></i>
+                        <span>${imgLabel}</span>
+                        ${timeStr ? `<span style="margin-right:auto; font-weight:normal; opacity:0.7;">${timeStr}</span>` : ''}
+                    </div>
+                    <div class="pub-comment-text">${data.text || ''}</div>
+                `;
+                listEl.appendChild(item);
+            });
+
+        } catch(e) {
+            console.error('خطأ في تحميل البروفايل:', e);
+            document.getElementById('pub-comments-list').innerHTML =
+                `<div class="pub-empty"><i class="fas fa-exclamation-circle" style="color:var(--admin-red);"></i><p>تعذر تحميل البيانات</p></div>`;
+        }
+    };
+
+    window.closePubProfile = function() {
+        document.getElementById('public-profile-page').style.display = 'none';
+        const prev = document.getElementById(_pubProfilePrevPage);
+        if (prev) { prev.style.display = 'block'; }
+        else { document.getElementById('main-page').style.display = 'block'; }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     // =============================================
     // COMMENTS — with edit & delete for owner
@@ -1474,7 +1604,6 @@
                 const userName = data.userName || 'مستخدم';
                 const isOwner = window.currentUser && data.userId === window.currentUser.uid;
 
-                // Use current user's live avatar if it's their comment
                 let avatarSrc;
                 if (isOwner && window._currentUserData?.avatarBase64) {
                     avatarSrc = window._currentUserData.avatarBase64;
@@ -1490,7 +1619,6 @@
                     ? `<img src="${avatarSrc}" alt="${userName}">`
                     : `<span class="avatar-initials">${userName[0].toUpperCase()}</span>`;
 
-                // Owner action buttons
                 let actionsHTML = '';
                 if (isOwner) {
                     actionsHTML = `
@@ -1501,8 +1629,7 @@
                             <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')">
                                 <i class="fas fa-trash"></i> حذف
                             </button>
-                        </div>
-                    `;
+                        </div>`;
                 }
 
                 item.innerHTML = `
@@ -1517,10 +1644,8 @@
                             <div class="comment-text-content" id="text-${docId}">${data.text}</div>
                             ${actionsHTML}
                         </div>
-                    </div>
-                `;
+                    </div>`;
 
-                // Admin delete button
                 if (window.isAdminMode) {
                     const delBtn = document.createElement('button');
                     delBtn.className = 'admin-delete-comment-btn';
@@ -1535,13 +1660,10 @@
         });
     };
 
-    // ── Edit comment inline ──
     window.startEditComment = function(docId, btn) {
         const textEl = document.getElementById('text-' + docId);
         if (!textEl) return;
         const originalText = textEl.textContent.trim();
-
-        // Replace text + action buttons with edit UI
         const actionsEl = btn.closest('.comment-actions');
         textEl.style.display = 'none';
         if (actionsEl) actionsEl.style.display = 'none';
@@ -1555,8 +1677,7 @@
         editActions.className = 'comment-edit-actions';
         editActions.innerHTML = `
             <button class="comment-cancel-btn" id="cancel-edit-${docId}">إلغاء</button>
-            <button class="comment-save-btn" id="save-edit-${docId}"><i class="fas fa-check"></i> حفظ</button>
-        `;
+            <button class="comment-save-btn" id="save-edit-${docId}"><i class="fas fa-check"></i> حفظ</button>`;
 
         const box = btn.closest('.comment-content-box');
         box.appendChild(textarea);
@@ -1564,21 +1685,17 @@
         textarea.focus();
         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
 
-        // Cancel
         document.getElementById('cancel-edit-' + docId).onclick = () => {
-            textarea.remove();
-            editActions.remove();
+            textarea.remove(); editActions.remove();
             textEl.style.display = '';
             if (actionsEl) actionsEl.style.display = '';
         };
 
-        // Save
         document.getElementById('save-edit-' + docId).onclick = async () => {
             const newText = textarea.value.trim();
             if (!newText) { alert('التعليق لا يمكن أن يكون فارغاً'); return; }
             if (newText === originalText) {
-                textarea.remove();
-                editActions.remove();
+                textarea.remove(); editActions.remove();
                 textEl.style.display = '';
                 if (actionsEl) actionsEl.style.display = '';
                 return;
@@ -1587,11 +1704,7 @@
             saveBtn2.disabled = true;
             saveBtn2.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             try {
-                await updateDoc(doc(db, "comments", docId), {
-                    text: newText,
-                    editedAt: serverTimestamp()
-                });
-                // onSnapshot will re-render automatically
+                await updateDoc(doc(db, "comments", docId), { text: newText, editedAt: serverTimestamp() });
             } catch(e) {
                 alert("خطأ في التحديث: " + e.message);
                 saveBtn2.disabled = false;
@@ -1600,31 +1713,26 @@
         };
     };
 
-    // ── Delete own comment ──
     window.deleteOwnComment = async function(docId) {
         if (!window.currentUser) return;
         if (!confirm('هل تريد حذف تعليقك نهائياً؟')) return;
         try {
             await deleteDoc(doc(db, "comments", docId));
             showAdminToast('🗑️ تم حذف تعليقك');
-        } catch(e) {
-            alert("خطأ في الحذف: " + e.message);
-        }
+        } catch(e) { alert("خطأ في الحذف: " + e.message); }
     };
 
+    // ── clicking username opens public profile ──
     window.viewUserProfile = async function(userName) {
         if (!window.currentUser) return;
-        const myData = window._currentUserData;
-        if (myData && myData.username === userName) {
-            document.getElementById('comments-modal').classList.remove('active');
-            if (unsubscribeComments) unsubscribeComments();
-            showPage('profile-page');
-        }
+        document.getElementById('comments-modal').classList.remove('active');
+        if (unsubscribeComments) { unsubscribeComments(); unsubscribeComments = null; }
+        await window.openPublicProfile(userName);
     };
 
     window.closeComments = () => {
         document.getElementById('comments-modal').classList.remove('active');
-        if (unsubscribeComments) unsubscribeComments();
+        if (unsubscribeComments) { unsubscribeComments(); unsubscribeComments = null; }
     };
 
     window.sendComment = async () => {
@@ -1639,7 +1747,7 @@
             await addDoc(collection(db, "comments"), {
                 imageId: currentImageId,
                 userName,
-                userId: window.currentUser.uid,   // always store userId for ownership checks
+                userId: window.currentUser.uid,
                 text,
                 createdAt: serverTimestamp()
             });
@@ -1730,40 +1838,172 @@
     window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
 
     // =============================================
-    // ADMIN STATS
+    // ADMIN STATS — FIXED & ENHANCED
     // =============================================
     window.loadAdminStats = async () => {
         const body = document.getElementById('stats-body');
-        body.innerHTML = '<div id="stats-loading">⏳ جاري تحميل البيانات...</div>';
-        try {
-            const usersSnap = await getCountFromServer(collection(db, "users"));
-            const commentsSnap = await getCountFromServer(collection(db, "comments"));
-            const photosSnap = await getDocs(collection(db, "photos"));
-            let totalLikes = 0, topPhoto = { id: '-', likes: 0 };
-            photosSnap.forEach(d => {
-                const likes = d.data().likesCount || 0;
-                totalLikes += likes;
-                if (likes > topPhoto.likes) topPhoto = { id: d.id, likes };
-            });
-            const allComments = await getDocs(collection(db, "comments"));
-            const commentMap = {};
-            allComments.forEach(d => {
-                const imgId = d.data().imageId;
-                commentMap[imgId] = (commentMap[imgId] || 0) + 1;
-            });
-            let topCommented = { id: '-', count: 0 };
-            Object.entries(commentMap).forEach(([id, count]) => { if (count > topCommented.count) topCommented = { id, count }; });
+        const refreshBtn = document.getElementById('stats-refresh');
+        if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...'; }
 
+        body.innerHTML = `<div class="stats-loading-spinner"><i class="fas fa-circle-notch"></i><p style="margin-top:10px;font-size:0.82rem;color:var(--latte-gold);">جاري تحميل البيانات...</p></div>`;
+
+        try {
+            // — Users count —
+            let usersCount = 0;
+            try {
+                const usersSnap = await getCountFromServer(collection(db, "users"));
+                usersCount = usersSnap.data().count;
+            } catch(e) {
+                // fallback: getDocs if getCountFromServer fails
+                const usersSnap2 = await getDocs(collection(db, "users"));
+                usersCount = usersSnap2.size;
+            }
+
+            // — Comments count —
+            let commentsCount = 0;
+            let allCommentDocs = [];
+            try {
+                const cs = await getCountFromServer(collection(db, "comments"));
+                commentsCount = cs.data().count;
+                // Still need docs for per-image breakdown
+                const allCommentsSnap = await getDocs(collection(db, "comments"));
+                allCommentDocs = allCommentsSnap.docs;
+            } catch(e) {
+                const allCommentsSnap = await getDocs(collection(db, "comments"));
+                allCommentDocs = allCommentsSnap.docs;
+                commentsCount = allCommentDocs.length;
+            }
+
+            // — Photos (likes) —
+            let totalLikes = 0;
+            let topLikedPhoto = { id: '—', likes: 0 };
+            let allLikesArr = [];
+            try {
+                const photosSnap = await getDocs(collection(db, "photos"));
+                photosSnap.forEach(d => {
+                    const likes = d.data().likesCount || 0;
+                    totalLikes += likes;
+                    allLikesArr.push({ id: d.id, likes });
+                    if (likes > topLikedPhoto.likes) topLikedPhoto = { id: d.id, likes };
+                });
+            } catch(e) {}
+
+            // — Top commented photo —
+            const commentMap = {};
+            const userCommentMap = {};
+            allCommentDocs.forEach(d => {
+                const imgId = d.data().imageId || '—';
+                const uName = d.data().userName || '—';
+                commentMap[imgId] = (commentMap[imgId] || 0) + 1;
+                userCommentMap[uName] = (userCommentMap[uName] || 0) + 1;
+            });
+
+            let topCommented = { id: '—', count: 0 };
+            Object.entries(commentMap).forEach(([id, count]) => {
+                if (count > topCommented.count) topCommented = { id, count };
+            });
+
+            // — Most active commenter —
+            let topCommenter = { name: '—', count: 0 };
+            Object.entries(userCommentMap).forEach(([name, count]) => {
+                if (count > topCommenter.count) topCommenter = { name, count };
+            });
+
+            // — Top 3 liked photos —
+            const top3Liked = allLikesArr.sort((a,b) => b.likes - a.likes).slice(0, 3);
+
+            // — Top 3 commented photos —
+            const top3Commented = Object.entries(commentMap)
+                .sort((a,b) => b[1] - a[1])
+                .slice(0, 3)
+                .map(([id, count]) => ({ id, count }));
+
+            // ── Build stats HTML ──
             body.innerHTML = `
-                <div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-info"><div class="stat-label">عدد المسجلين</div><div class="stat-value">${usersSnap.data().count}</div></div></div>
-                <div class="stats-grid">
-                    <div class="stat-card-sm"><div class="stat-icon"><i class="fas fa-heart"></i></div><div class="stat-value">${totalLikes}</div><div class="stat-label">إجمالي اللايكات</div></div>
-                    <div class="stat-card-sm"><div class="stat-icon"><i class="fas fa-comment"></i></div><div class="stat-value">${commentsSnap.data().count}</div><div class="stat-label">إجمالي التعليقات</div></div>
+                <!-- Main numbers -->
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div>
+                        <div class="stat-label">عدد المسجلين</div>
+                        <div class="stat-value">${usersCount}</div>
+                    </div>
                 </div>
-                <div class="stat-card"><div class="stat-icon" style="background:#e67e22;"><i class="fas fa-star"></i></div><div class="stat-info"><div class="stat-label">أكثر صورة لايكات</div><div class="stat-value" style="font-size:1rem;">${topPhoto.id} <span style="font-size:0.8rem;opacity:0.7;">(${topPhoto.likes} ❤️)</span></div></div></div>
-                <div class="stat-card"><div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-fire"></i></div><div class="stat-info"><div class="stat-label">أكثر صورة تعليقات</div><div class="stat-value" style="font-size:1rem;">${topCommented.id} <span style="font-size:0.8rem;opacity:0.7;">(${topCommented.count} 💬)</span></div></div></div>
+
+                <div class="stats-grid">
+                    <div class="stat-card-sm">
+                        <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                        <div class="stat-value">${totalLikes}</div>
+                        <div class="stat-label">إجمالي اللايكات</div>
+                    </div>
+                    <div class="stat-card-sm">
+                        <div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-comment"></i></div>
+                        <div class="stat-value">${commentsCount}</div>
+                        <div class="stat-label">إجمالي التعليقات</div>
+                    </div>
+                </div>
+
+                <!-- Active user -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#e67e22;"><i class="fas fa-fire"></i></div>
+                    <div>
+                        <div class="stat-label">أكثر مستخدم تفاعلاً</div>
+                        <div class="stat-value" style="font-size:1rem;">${topCommenter.name}
+                            <span style="font-size:0.75rem;opacity:0.65;">(${topCommenter.count} 💬)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top liked photos -->
+                <div class="stats-section-title">🏆 أكثر الصور لايكات</div>
+                <div class="stats-leaderboard">
+                    ${top3Liked.length === 0
+                        ? `<div style="text-align:center;opacity:0.5;font-size:0.82rem;padding:10px;">لا توجد بيانات بعد</div>`
+                        : top3Liked.map((p, i) => `
+                            <div class="stat-top-row">
+                                <div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div>
+                                <div>
+                                    <div class="stat-top-name">${p.id}</div>
+                                    <div class="stat-top-sub">${p.likes} ❤️ لايك</div>
+                                </div>
+                            </div>`).join('')
+                    }
+                </div>
+
+                <!-- Top commented photos -->
+                <div class="stats-section-title">💬 أكثر الصور تعليقات</div>
+                <div class="stats-leaderboard">
+                    ${top3Commented.length === 0
+                        ? `<div style="text-align:center;opacity:0.5;font-size:0.82rem;padding:10px;">لا توجد بيانات بعد</div>`
+                        : top3Commented.map((p, i) => `
+                            <div class="stat-top-row">
+                                <div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div>
+                                <div>
+                                    <div class="stat-top-name">${p.id}</div>
+                                    <div class="stat-top-sub">${p.count} 💬 تعليق</div>
+                                </div>
+                            </div>`).join('')
+                    }
+                </div>
+
+                <div style="text-align:center; font-size:0.68rem; opacity:0.45; padding-top:4px;">
+                    آخر تحديث: ${new Date().toLocaleTimeString('ar-IQ')}
+                </div>
             `;
-        } catch(e) { body.innerHTML = '<p style="text-align:center;color:red;padding:15px;">خطأ في تحميل البيانات</p>'; }
+
+        } catch(e) {
+            console.error("Stats error:", e);
+            body.innerHTML = `
+                <div class="stats-error">
+                    <i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
+                    <strong>تعذر تحميل البيانات</strong><br>
+                    <small style="opacity:0.7;">${e.message}</small>
+                </div>`;
+        } finally {
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> تحديث البيانات';
+            }
+        }
     };
 
     // =============================================
@@ -1798,8 +2038,7 @@
                     <button class="like-btn" onclick="openComments('${photoId}')"><i class="far fa-comment"></i></button>
                     <button id="btn-${photoId}" class="like-btn" onclick="handleLike('${photoId}')"><i class="fas fa-heart"></i> <span id="count-${photoId}">0</span></button>
                 </div>
-            </div>
-        `;
+            </div>`;
         container.appendChild(section);
         applyReveal();
     }
