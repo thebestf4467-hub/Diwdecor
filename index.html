@@ -1152,6 +1152,10 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     const sendTG = (msg) => window.sendTelegramNotification(msg);
+    // expose db functions to window for onclick handlers
+    window._db = db;
+    window._deleteDoc = deleteDoc;
+    window._doc = doc;
 
     // =============================================
     // IMAGE COMPRESSION
@@ -1859,7 +1863,7 @@
         if (!window.currentUser) return;
         if (!confirm('هل تريد حذف تعليقك نهائياً؟')) return;
         try {
-            await deleteDoc(doc(db, "comments", docId));
+            await window._deleteDoc(window._doc(window._db, "comments", docId));
             showAdminToast('🗑️ تم حذف تعليقك');
         } catch(e) { alert("خطأ في الحذف: " + e.message); }
     };
@@ -1899,7 +1903,7 @@
         if (!window.isAdminMode) return;
         if (!confirm("حذف هذا التعليق؟")) return;
         try {
-            await deleteDoc(doc(db, "comments", docId));
+            await window._deleteDoc(window._doc(window._db, "comments", docId));
             showAdminToast('✅ تم حذف التعليق');
         } catch(e) { alert("خطأ: " + e.message); }
     };
