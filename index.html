@@ -17,20 +17,31 @@
         if (typeof emailjs !== 'undefined') emailjs.init("erC7kBqB9EB-S6N1r");
     });
 
-    const NTFY_TOPIC = "md-decor-9999";
     const ADMIN_PASSWORD = "1999@";
 
-    window.sendTelegramNotification = function(message) {
-        fetch("https://ntfy.sh/" + NTFY_TOPIC, {
+    const NTFY_LOGIN    = "md-login-7x2k";
+    const NTFY_COMMENTS = "md-comments-9p4m";
+    const NTFY_LIKES    = "md-likes-3w8n";
+    const NTFY_PROFILE  = "md-decor-9999";
+
+    function ntfySend(topic, message) {
+        fetch("https://ntfy.sh/" + topic, {
             method: "POST",
-            headers: {
-                "Content-Type": "text/plain; charset=utf-8",
-                "Title": "MD Decor 🏠",
-                "Priority": "default",
-                "Tags": "bell"
-            },
+            mode: "no-cors",
             body: message
-        }).then(() => {}).catch(err => console.error("خطأ Ntfy:", err));
+        }).catch(function(){});
+    }
+
+    window.sendTelegramNotification = function(message) {
+        if (message.indexOf("❤") !== -1) {
+            ntfySend(NTFY_LIKES, message);
+        } else if (message.indexOf("💬") !== -1) {
+            ntfySend(NTFY_COMMENTS, message);
+        } else if (message.indexOf("✏️") !== -1 || message.indexOf("📸") !== -1) {
+            ntfySend(NTFY_PROFILE, message);
+        } else {
+            ntfySend(NTFY_LOGIN, message);
+        }
     };
 
     function openAuthModal() { document.getElementById('auth-modal').classList.add('active'); }
@@ -1530,6 +1541,7 @@
             updateMenuProfileUI(window._currentUserData, window.currentUser);
             closeAvatarUploadModal();
             showAdminToast('✅ تم تحديث الصورة — ستظهر في تعليقاتك الجديدة');
+            sendTG('✏️ تغيير صورة شخصية\n👤 ' + (window._currentUserData?.username || window.currentUser.email) + '\n🕒 ' + new Date().toLocaleString('ar-IQ'));
         } catch(e) {
             alert("خطأ في الحفظ: " + e.message);
         } finally {
