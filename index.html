@@ -909,6 +909,9 @@
                 </div>
             </div>
         </div>
+        <button id="sync-likes-btn" onclick="syncLikesNow()" style="width:100%;padding:14px;background:transparent;border:2px solid var(--latte-gold);border-radius:14px;color:var(--latte-gold);font-family:'Cairo',sans-serif;font-weight:bold;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:0.2s;">
+            <i class="fas fa-sync-alt"></i> مزامنة الإعجابات مع الحساب
+        </button>
         <button class="profile-logout-btn" onclick="logoutUser()">
             <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
         </button>
@@ -1086,7 +1089,7 @@
     import {
         getFirestore, doc, updateDoc, getDoc, setDoc, increment,
         collection, addDoc, query, where, onSnapshot, orderBy,
-        serverTimestamp, getDocs, deleteDoc, writeBatch, getCountFromServer
+        serverTimestamp, getDocs, deleteDoc, writeBatch, getCountFromServer, deleteField
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import {
         getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
@@ -1239,6 +1242,28 @@
                 if (snap.exists()) {
                     window._currentUserData = snap.data();
                     updateMenuProfileUI(snap.data(), user);
+
+                    // ✅ مزامنة الإعجابات القديمة من localStorage إلى Firebase
+                    const localLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
+                    if (localLiked.length > 0) {
+                        const existingLiked = snap.data().likedPhotos || {};
+                        const updates = {};
+                        localLiked.forEach(k => {
+                            const pid = k.replace('liked_', '');
+                            if (!existingLiked[pid]) updates[`likedPhotos.${pid}`] = true;
+                        });
+                        if (Object.keys(updates).length > 0) {
+                            try { await updateDoc(doc(db, "users", user.uid), updates); } catch(e) {}
+                        }
+                    }
+
+                    // ✅ مزامنة الإعجابات من Firebase إلى localStorage
+                    const fbLiked = snap.data().likedPhotos || {};
+                    Object.keys(fbLiked).forEach(pid => {
+                        if (!localStorage.getItem('liked_' + pid)) {
+                            localStorage.setItem('liked_' + pid, 'true');
+                        }
+                    });
                 }
             } catch(e) {}
         }
@@ -1303,33 +1328,95 @@
 
     async function loadProfileStats(uid, username) {
         try {
-            const allKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
-            document.getElementById('profile-stat-liked').textContent = allKeys.length;
+            // اقرأ الإعجابات من Firebase أولاً ثم ادمجها مع localStorage
+            let likedIds = [];
+            try {
+                const uSnap = await getDoc(doc(db, "users", uid));
+                const fbLiked = uSnap.exists() ? (uSnap.data().likedPhotos || {}) : {};
+                // مزامنة Firebase → localStorage
+                Object.keys(fbLiked).forEach(pid => localStorage.setItem('liked_' + pid, 'true'));
+                // مزامنة localStorage → Firebase
+                const localKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
+                const updates = {};
+                localKeys.forEach(k => { const pid = k.replace('liked_', ''); if (!fbLiked[pid]) updates[`likedPhotos.${pid}`] = true; });
+                if (Object.keys(updates).length > 0) await updateDoc(doc(db, "users", uid), updates);
+                // اجمع الكل
+                const allPids = new Set([...Object.keys(fbLiked), ...localKeys.map(k => k.replace('liked_', ''))]);
+                likedIds = [...allPids];
+            } catch(e) {
+                likedIds = Object.keys(localStorage).filter(k => k.startsWith('liked_')).map(k => k.replace('liked_', ''));
+            }
+            document.getElementById('profile-stat-liked').textContent = likedIds.length;
+            document.getElementById('profile-stat-likes').textContent = likedIds.length;
             const commentsQ = query(collection(db, "comments"), where("userId", "==", uid));
             const commentsSnap = await getDocs(commentsQ);
             document.getElementById('profile-stat-comments').textContent = commentsSnap.size;
-            document.getElementById('profile-stat-likes').textContent = allKeys.length;
         } catch(e) {}
     }
 
-    function loadLikedPhotos() {
+    async function loadLikedPhotos() {
         const grid = document.getElementById('liked-photos-grid');
         const empty = document.getElementById('liked-photos-empty');
-        const allLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_')).map(k => k.replace('liked_', ''));
+        // اجمع الإعجابات من Firebase و localStorage
+        let allLiked = [];
+        if (window.currentUser) {
+            try {
+                const uSnap = await getDoc(doc(db, "users", window.currentUser.uid));
+                const fbLiked = uSnap.exists() ? (uSnap.data().likedPhotos || {}) : {};
+                Object.keys(fbLiked).forEach(pid => localStorage.setItem('liked_' + pid, 'true'));
+                allLiked = [...new Set([...Object.keys(fbLiked), ...Object.keys(localStorage).filter(k => k.startsWith('liked_')).map(k => k.replace('liked_', ''))])];
+            } catch(e) {
+                allLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_')).map(k => k.replace('liked_', ''));
+            }
+        } else {
+            allLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_')).map(k => k.replace('liked_', ''));
+        }
         if (allLiked.length === 0) { grid.style.display = 'none'; empty.style.display = 'block'; return; }
         grid.style.display = 'grid'; empty.style.display = 'none'; grid.innerHTML = '';
         allLiked.forEach(id => {
             let src = '';
             if (id.startsWith('in')) src = id + '.webp';
             else if (id.startsWith('p')) src = id + '.webp';
-            if (!src) return;
+            else if (id.startsWith('adm')) src = ''; // صور ديناميكية — بدون ملف ثابت
+            if (!src && !id.startsWith('adm')) return;
             const thumb = document.createElement('div');
             thumb.className = 'liked-thumb';
-            thumb.innerHTML = `<img src="${src}" alt="${id}" onerror="this.parentElement.style.display='none'">`;
+            if (id.startsWith('adm')) {
+                // حاول تحميل الصورة الديناميكية من Firebase
+                thumb.innerHTML = `<div style="width:100%;height:100%;background:var(--vanilla-light);display:flex;align-items:center;justify-content:center;"><i class="fas fa-heart" style="color:var(--latte-gold);font-size:1.2rem;"></i></div>`;
+            } else {
+                thumb.innerHTML = `<img src="${src}" alt="${id}" onerror="this.parentElement.style.display='none'">`;
+            }
             thumb.onclick = () => { if (id.startsWith('in')) showPage('interior-gallery'); else showPage('stone-gallery'); };
             grid.appendChild(thumb);
         });
     }
+
+    // مزامنة يدوية للإعجابات
+    window.syncLikesNow = async function() {
+        if (!window.currentUser) { showAdminToast('⚠️ يجب تسجيل الدخول أولاً'); return; }
+        const btn = document.getElementById('sync-likes-btn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري المزامنة...'; }
+        try {
+            const uid = window.currentUser.uid;
+            const uSnap = await getDoc(doc(db, "users", uid));
+            const fbLiked = uSnap.exists() ? (uSnap.data().likedPhotos || {}) : {};
+            // Firebase → localStorage
+            Object.keys(fbLiked).forEach(pid => localStorage.setItem('liked_' + pid, 'true'));
+            // localStorage → Firebase
+            const localKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
+            const updates = {};
+            localKeys.forEach(k => { const pid = k.replace('liked_', ''); if (!fbLiked[pid]) updates[`likedPhotos.${pid}`] = true; });
+            if (Object.keys(updates).length > 0) await updateDoc(doc(db, "users", uid), updates);
+            const total = new Set([...Object.keys(fbLiked), ...localKeys.map(k => k.replace('liked_', ''))]).size;
+            showAdminToast('✅ تمت المزامنة — ' + total + ' إعجاب');
+            loadProfilePage();
+        } catch(e) {
+            showAdminToast('❌ خطأ في المزامنة');
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-sync-alt"></i> مزامنة الإعجابات'; }
+        }
+    };
 
     // =============================================
     // EDIT USERNAME
@@ -1520,14 +1607,39 @@
             const commentsSnap = await getDocs(commentsQ);
             document.getElementById('pub-stat-comments').textContent = commentsSnap.size;
 
-            // الصور المفضلة — تظهر فقط إذا كان هذا حسابه
+            // الصور المفضلة
+            let likedIds = [];
             if (myUsername === userName) {
-                const likedKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
-                document.getElementById('pub-stat-liked-count').textContent = likedKeys.length;
-                loadPubLikedPhotos(likedKeys.map(k => k.replace('liked_', '')));
+                // حسابه هو: اقرأ من localStorage أولاً، ثم من Firebase
+                const localKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
+                likedIds = localKeys.map(k => k.replace('liked_', ''));
+                // دمج مع Firebase
+                try {
+                    const userSnap2 = snap.empty ? null : snap.docs[0];
+                    if (userSnap2) {
+                        const likedPhotos = userSnap2.data().likedPhotos || {};
+                        Object.keys(likedPhotos).forEach(pid => {
+                            if (!likedIds.includes(pid)) likedIds.push(pid);
+                            // مزامنة مع localStorage
+                            localStorage.setItem('liked_' + pid, 'true');
+                        });
+                    }
+                } catch(e) {}
+                document.getElementById('pub-own-banner').style.display = 'flex';
+                document.getElementById('pub-stat-liked-count').textContent = likedIds.length;
+                loadPubLikedPhotos(likedIds);
             } else {
-                document.getElementById('pub-stat-liked-count').textContent = '—';
-                document.getElementById('pub-liked-empty').style.display = 'block';
+                // حساب شخص آخر: اقرأ إعجاباته من Firebase
+                try {
+                    const otherSnap = snap.empty ? null : snap.docs[0];
+                    if (otherSnap) {
+                        const likedPhotos = otherSnap.data().likedPhotos || {};
+                        likedIds = Object.keys(likedPhotos);
+                    }
+                } catch(e) {}
+                document.getElementById('pub-stat-liked-count').textContent = likedIds.length || '0';
+                if (likedIds.length > 0) loadPubLikedPhotos(likedIds);
+                else document.getElementById('pub-liked-empty').style.display = 'block';
             }
 
         } catch(e) {
@@ -1808,11 +1920,27 @@
             if (hasLiked) {
                 await updateDoc(photoRef, { likesCount: increment(-1) });
                 localStorage.removeItem('liked_' + id);
+                // حذف من Firebase إذا كان المستخدم مسجلاً
+                if (window.currentUser) {
+                    try {
+                        await updateDoc(doc(db, "users", window.currentUser.uid), {
+                            [`likedPhotos.${id}`]: deleteField()
+                        });
+                    } catch(e) {}
+                }
             } else {
                 const docSnap = await getDoc(photoRef);
                 if (docSnap.exists()) await updateDoc(photoRef, { likesCount: increment(1) });
                 else await setDoc(photoRef, { likesCount: 1 });
                 localStorage.setItem('liked_' + id, 'true');
+                // حفظ في Firebase إذا كان المستخدم مسجلاً
+                if (window.currentUser) {
+                    try {
+                        await updateDoc(doc(db, "users", window.currentUser.uid), {
+                            [`likedPhotos.${id}`]: true
+                        });
+                    } catch(e) {}
+                }
             }
             refreshUI(id);
         } catch(e) { console.error(e); } finally { isProcessing = false; }
