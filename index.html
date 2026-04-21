@@ -762,7 +762,6 @@
         100% { transform: scale(1) rotate(0deg);    opacity: 1; }
     }
 
-    /* توهج الأول */
     @keyframes goldGlow {
         0%, 100% { box-shadow: 0 0 22px 7px rgba(255,215,0,0.6), 0 0 55px 18px rgba(255,165,0,0.3); }
         50%       { box-shadow: 0 0 40px 14px rgba(255,215,0,0.85), 0 0 90px 30px rgba(255,165,0,0.48); }
@@ -780,7 +779,6 @@
         50%       { box-shadow: 0 0 0 10px rgba(255,215,0,0.3), 0 8px 35px rgba(0,0,0,0.35); }
     }
 
-    /* المركز الثاني فضي */
     .pub-profile-hero.rank-silver {
         background: linear-gradient(145deg, #3a3a3a 0%, #c0c0c0 45%, #6e6e6e 100%) !important;
     }
@@ -1125,64 +1123,56 @@
             <i class="fas fa-arrow-right"></i> رجوع
         </button>
     </div>
-
-```
-<div class="pub-profile-hero" id="pub-profile-hero">
-    <div class="hero-deco-1"></div>
-    <div class="hero-deco-2"></div>
-    <div class="pub-avatar-ring" id="pub-avatar-ring">
-        <span class="pub-avatar-initial" id="pub-avatar-initial">?</span>
-    </div>
-    <div class="pub-username" id="pub-username">—</div>
-    <!-- شعار الترتيب -->
-    <div class="pub-rank-badge" id="pub-rank-badge"></div>
-    <div class="pub-rank-label" id="pub-rank-label"></div>
-    <div class="pub-joined">
-        <i class="fas fa-calendar-alt"></i>
-        <span id="pub-joined-text">—</span>
-    </div>
-</div>
-
-<div class="pub-stats-bar">
-    <div class="pub-stat">
-        <span class="pub-stat-value" id="pub-stat-comments">—</span>
-        <span class="pub-stat-label">💬 تعليق</span>
-    </div>
-    <div class="pub-stat">
-        <span class="pub-stat-value" id="pub-stat-liked-count">—</span>
-        <span class="pub-stat-label">❤️ إعجاب</span>
-    </div>
-    <div class="pub-stat">
-        <span class="pub-stat-value" id="pub-stat-joined-days">—</span>
-        <span class="pub-stat-label">📅 يوم عضوية</span>
-    </div>
-</div>
-
-<div class="pub-profile-body">
-    <div class="pub-own-banner" id="pub-own-banner" style="display:none;">
-        <i class="fas fa-user-shield"></i>
-        <span>هذا حسابك الشخصي</span>
-        <button class="pub-own-edit-btn" onclick="closePubProfile(); showPage('profile-page');">
-            <i class="fas fa-pen"></i> تعديل
-        </button>
-    </div>
-
-    <div class="profile-card" id="pub-liked-card">
-        <div class="profile-card-header">
-            <i class="fas fa-heart"></i>
-            <span id="pub-liked-title">الصور المفضلة</span>
+    <div class="pub-profile-hero" id="pub-profile-hero">
+        <div class="hero-deco-1"></div>
+        <div class="hero-deco-2"></div>
+        <div class="pub-avatar-ring" id="pub-avatar-ring">
+            <span class="pub-avatar-initial" id="pub-avatar-initial">?</span>
         </div>
-        <div class="profile-card-body" style="padding:14px;">
-            <div id="pub-liked-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;"></div>
-            <div id="pub-liked-empty" style="display:none;text-align:center;padding:25px 10px;color:#999;">
-                <i class="far fa-heart" style="font-size:2rem;color:rgba(200,161,101,0.3);display:block;margin-bottom:8px;"></i>
-                <p style="font-size:0.82rem;">لم يعجبه أي تصميم بعد</p>
+        <div class="pub-username" id="pub-username">—</div>
+        <div class="pub-rank-badge" id="pub-rank-badge"></div>
+        <div class="pub-rank-label" id="pub-rank-label"></div>
+        <div class="pub-joined">
+            <i class="fas fa-calendar-alt"></i>
+            <span id="pub-joined-text">—</span>
+        </div>
+    </div>
+    <div class="pub-stats-bar">
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-comments">—</span>
+            <span class="pub-stat-label">💬 تعليق</span>
+        </div>
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-liked-count">—</span>
+            <span class="pub-stat-label">❤️ إعجاب</span>
+        </div>
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-joined-days">—</span>
+            <span class="pub-stat-label">📅 يوم عضوية</span>
+        </div>
+    </div>
+    <div class="pub-profile-body">
+        <div class="pub-own-banner" id="pub-own-banner" style="display:none;">
+            <i class="fas fa-user-shield"></i>
+            <span>هذا حسابك الشخصي</span>
+            <button class="pub-own-edit-btn" onclick="closePubProfile(); showPage('profile-page');">
+                <i class="fas fa-pen"></i> تعديل
+            </button>
+        </div>
+        <div class="profile-card" id="pub-liked-card">
+            <div class="profile-card-header">
+                <i class="fas fa-heart"></i>
+                <span id="pub-liked-title">الصور المفضلة</span>
+            </div>
+            <div class="profile-card-body" style="padding:14px;">
+                <div id="pub-liked-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;"></div>
+                <div id="pub-liked-empty" style="display:none;text-align:center;padding:25px 10px;color:#999;">
+                    <i class="far fa-heart" style="font-size:2rem;color:rgba(200,161,101,0.3);display:block;margin-bottom:8px;"></i>
+                    <p style="font-size:0.82rem;">لم يعجبه أي تصميم بعد</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-```
-
 </div>
 
 <!-- ======= COMMENTS MODAL ======= -->
@@ -1258,7 +1248,7 @@
     <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div></div>
     <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div></div>
     <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div></div>
-    <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
+    <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-command"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
     <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div></div>
     <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div></div>
     <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
@@ -1788,7 +1778,6 @@
         const activePage = [...document.querySelectorAll('.page')].find(p => p.style.display !== 'none');
         _pubProfilePrevPage = activePage ? activePage.id : 'main-page';
 
-        // إعادة تعيين الواجهة
         document.getElementById('pub-avatar-ring').innerHTML = `<span class="pub-avatar-initial">...</span>`;
         document.getElementById('pub-username').textContent = userName;
         document.getElementById('pub-joined-text').textContent = '...';
@@ -1799,7 +1788,6 @@
         document.getElementById('pub-liked-grid').innerHTML = '';
         document.getElementById('pub-liked-empty').style.display = 'none';
 
-        // إعادة تعيين الترتيب والتوهج
         const heroEl = document.getElementById('pub-profile-hero');
         heroEl.classList.remove('rank-gold', 'rank-silver');
         const badgeEl = document.getElementById('pub-rank-badge');
@@ -1846,12 +1834,12 @@
                 document.getElementById('pub-joined-text').textContent = 'عضو في الموقع';
             }
 
-            // إحصاء التعليقات
+            // إحصاء التعليقات — بدون orderBy لتجنب خطأ الـ index
             const commentsQ = query(collection(db, "comments"), where("userName", "==", userName));
             const commentsSnap = await getDocs(commentsQ);
             document.getElementById('pub-stat-comments').textContent = commentsSnap.size;
 
-            // ===== حساب ترتيب المستخدم =====
+            // حساب ترتيب المستخدم
             try {
                 const allCommentsSnap = await getDocs(collection(db, "comments"));
                 const userCommentMap = {};
@@ -1878,7 +1866,6 @@
                     labelEl.style.display = 'inline-block';
                 }
             } catch(e) {}
-            // ===== نهاية حساب الترتيب =====
 
             let likedIds = [];
             if (myUsername === userName) {
@@ -1961,7 +1948,7 @@
     };
 
     // =============================================
-    // COMMENTS
+    // COMMENTS — الإصلاح الرئيسي هنا
     // =============================================
     let currentImageId = null;
     let unsubscribeComments = null;
@@ -1977,14 +1964,27 @@
         const list = document.getElementById('comments-list');
         list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
 
-        const q = query(collection(db, "comments"), where("imageId", "==", id), orderBy("createdAt", "asc"));
+        // ✅ الإصلاح: حذف orderBy لتجنب خطأ الـ Composite Index
+        const q = query(
+            collection(db, "comments"),
+            where("imageId", "==", id)
+        );
+
         unsubscribeComments = onSnapshot(q, async (snapshot) => {
             list.innerHTML = '';
             if (snapshot.empty) {
-                list.innerHTML = '<p style="text-align:center;opacity:0.6;">لا توجد تعليقات بعد!</p>';
+                list.innerHTML = '<p style="text-align:center;opacity:0.6;padding:20px;">لا توجد تعليقات بعد! كن أول من يعلق ✨</p>';
                 return;
             }
-            for (const d of snapshot.docs) {
+
+            // ترتيب يدوي حسب وقت الإنشاء
+            const docs = snapshot.docs.slice().sort((a, b) => {
+                const ta = a.data().createdAt?.seconds || 0;
+                const tb = b.data().createdAt?.seconds || 0;
+                return ta - tb;
+            });
+
+            for (const d of docs) {
                 const data = d.data();
                 const docId = d.id;
                 const userName = data.userName || 'مستخدم';
@@ -2043,6 +2043,10 @@
                 list.appendChild(item);
             }
             list.scrollTop = list.scrollHeight;
+        }, (error) => {
+            // معالجة الأخطاء بشكل صريح
+            console.error("خطأ في تحميل التعليقات:", error);
+            list.innerHTML = '<p style="text-align:center;color:var(--admin-red);padding:20px;">⚠️ خطأ في تحميل التعليقات</p>';
         });
     };
 
