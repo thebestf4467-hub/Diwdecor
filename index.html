@@ -789,42 +789,6 @@
     .pub-rank-badge.silver-badge {
         filter: drop-shadow(0 3px 8px rgba(150,150,150,0.5));
     }
-/* تنسيق الزر العائم تحت الهدر */
-.new-site-btn-container {
-    position: sticky;
-    top: 70px; /* يظهر مباشرة تحت الهدر الثابت */
-    z-index: 900;
-    display: flex;
-    justify-content: center;
-    padding: 10px;
-    pointer-events: none; /* للسماح بالتفاعل مع العناصر خلف الحاوية */
-}
-
-.new-site-btn {
-    background: var(--latte-gold);
-    color: white;
-    text-decoration: none;
-    padding: 8px 20px;
-    border-radius: 50px;
-    font-weight: bold;
-    font-size: 0.85rem;
-    box-shadow: 0 4px 15px rgba(200, 161, 101, 0.4);
-    pointer-events: auto; /* إعادة التفعيل للزر فقط */
-    transition: transform 0.3s ease, background 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.new-site-btn:hover {
-    transform: translateY(-2px);
-    background: #b08d55;
-}
-
-body.dark-mode .new-site-btn {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
 </style>
 
 </head>
@@ -1028,13 +992,6 @@ body.dark-mode .new-site-btn {
         <i class="fas fa-moon" id="themeIcon"></i>
     </div>
 </header>
-<div class="new-site-btn-container">
-    <a href="new-site.html" class="new-site-btn">
-        <i class="fas fa-external-link-alt"></i>
-        زيارة الموقع المحدث ( تجريبي )
-    </a>
-</div>
-
 
 <!-- ======= MAIN PAGE ======= -->
 
@@ -2780,7 +2737,6 @@ body.dark-mode .new-site-btn {
             showAdminToast('✅ تم استعادة: ' + FIXED_SECTIONS[key].name);
         } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
     };
-
 
 </script>
 
