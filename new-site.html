@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MD Decor</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+window.addEventListener('load',()=>{if(typeof emailjs!=='undefined')emailjs.init("erC7kBqB9EB-S6N1r");});
+const ADMIN_PASSWORD="1999@";
+const NTFY_LOGIN="md-login-7x2k",NTFY_COMMENTS="md-comments-9p4m",NTFY_LIKES="md-likes-3w8n",NTFY_PROFILE="md-decor-9999";
+function ntfySend(t,m){fetch("https://ntfy.sh/"+t,{method:"POST",mode:"no-cors",body:m}).catch(()=>{});}
+window.sendTelegramNotification=function(msg){
+  if(msg.includes("❤"))ntfySend(NTFY_LIKES,msg);
+  else if(msg.includes("💬"))ntfySend(NTFY_COMMENTS,msg);
+  else if(msg.includes("✏️")||msg.includes("📸"))ntfySend(NTFY_PROFILE,msg);
+  else ntfySend(NTFY_LOGIN,msg);
+};
+function openAuthModal(){document.getElementById('auth-modal').classList.add('active');}
+function closeAuthModal(){document.getElementById('auth-modal').classList.remove('active');}
+function continueAsGuest(){
+  window.sendTelegramNotification("👤 دخول كضيف\n🕒 "+new Date().toLocaleString('ar-IQ'));
+  const g=document.getElementById('welcome-gate');g.style.opacity='0';g.style.transition='opacity 0.4s';setTimeout(()=>g.classList.remove('active'),400);
+}
+function navTo(pageId){
+  document.querySelectorAll('.bnav-item').forEach(el=>el.classList.remove('active'));
+  const map={'main-page':'bnav-home','reels-page':'bnav-reels','profile-page':'bnav-profile','about-page':'bnav-about','settings-page':'bnav-settings'};
+  if(map[pageId])document.getElementById(map[pageId])?.classList.add('active');
+  showPage(pageId);
+}
+function showPage(pageId){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  const el=document.getElementById(pageId);if(el)el.style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});setTimeout(applyReveal,100);
+  if(pageId==='profile-page')loadProfilePage();
+  if(pageId==='reels-page')loadReelsPage();
+}
+function toggleTheme(){
+  const icon=document.getElementById('themeIcon');
+  document.body.classList.toggle('dark-mode');
+  if(document.body.classList.contains('dark-mode')){icon.classList.replace('fa-moon','fa-sun');localStorage.setItem('theme','dark');}
+  else{icon.classList.replace('fa-sun','fa-moon');localStorage.setItem('theme','light');}
+  const tog=document.getElementById('dark-mode-toggle');
+  if(tog){document.body.classList.contains('dark-mode')?tog.classList.add('on'):tog.classList.remove('on');}
+}
+var observerOptions={threshold:0.10};
+var observer=new IntersectionObserver(function(entries){entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('active-reveal');else e.target.classList.remove('active-reveal');});},observerOptions);
+function applyReveal(){document.querySelectorAll('.product-section,.service-card,.reveal,.whatsapp-cta').forEach(t=>observer.observe(t));}
+window.addEventListener("scroll",function(){const ws=document.body.scrollTop||document.documentElement.scrollTop;const h=document.documentElement.scrollHeight-document.documentElement.clientHeight;const bar=document.getElementById("myBar");if(bar)bar.style.width=(ws/h*100)+"%";});
+window.addEventListener("load",function(){applyReveal();if(localStorage.getItem('theme')==='dark'){document.body.classList.add('dark-mode');const ic=document.getElementById('themeIcon');if(ic)ic.classList.replace('fa-moon','fa-sun');}});
+window.isAdminMode=false;
+var logoClickCount=0,logoClickTimer=null;
+function handleLogoClick(){logoClickCount++;if(logoClickTimer)clearTimeout(logoClickTimer);if(logoClickCount>=2){logoClickCount=0;promptAdminPassword();}else logoClickTimer=setTimeout(()=>{logoClickCount=0;},500);}
+function promptAdminPassword(){document.getElementById('admin-pass-modal').classList.add('active');setTimeout(()=>document.getElementById('admin-pass-input')?.focus(),100);}
+function closeAdminPassModal(){document.getElementById('admin-pass-modal').classList.remove('active');document.getElementById('admin-pass-input').value='';}
+function checkAdminPassword(){const val=document.getElementById('admin-pass-input').value;if(val===ADMIN_PASSWORD){window.isAdminMode=true;closeAdminPassModal();activateAdminMode();}else{const inp=document.getElementById('admin-pass-input');inp.style.borderColor='#e74c3c';inp.style.animation='shake 0.3s ease';setTimeout(()=>{inp.style.borderColor='var(--latte-gold)';inp.style.animation='';},600);}}
+function activateAdminMode(){document.getElementById('admin-fab').style.display='flex';document.getElementById('admin-badge').style.display='inline-block';showAdminToast('🔐 تم تفعيل وضع الإدارة');updateAdminDeleteButtons();document.querySelectorAll('.custom-section-archive-btn').forEach(el=>el.style.display='block');document.getElementById('reels-add-btn').style.display='flex';fetch('https://diwd-a7709-default-rtdb.firebaseio.com/fixed_sections_archive.json').then(r=>r.json()).then(data=>{if(!data)return;Object.entries(data).forEach(([key,archived])=>{if(archived)document.getElementById('fixed-card-'+key)?.style.setProperty('display','none');});}).catch(()=>{});}
+function deactivateAdminMode(){window.isAdminMode=false;['admin-fab','admin-badge'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('admin-stats-panel').classList.remove('active');document.querySelectorAll('.admin-delete-like,.admin-delete-comment-btn').forEach(el=>el.style.display='none');document.querySelectorAll('.custom-section-archive-btn').forEach(el=>el.style.display='none');document.getElementById('reels-add-btn').style.display='none';showAdminToast('تم إلغاء وضع الإدارة');}
+function updateAdminDeleteButtons(){if(!window.isAdminMode)return;document.querySelectorAll('.admin-delete-like').forEach(el=>el.style.display='flex');}
+function showAdminToast(msg){const t=document.getElementById('admin-toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function toggleAdminStats(){const p=document.getElementById('admin-stats-panel');p.classList.toggle('active');if(p.classList.contains('active')&&typeof window.loadAdminStats==='function')window.loadAdminStats();}
+function closeAdminStats(){document.getElementById('admin-stats-panel').classList.remove('active');}
+function openUploadModal(){document.getElementById('upload-modal').classList.add('active');document.getElementById('upload-preview-area').innerHTML='';document.getElementById('upload-caption').value='';document.getElementById('upload-gallery-select').value='stone-gallery';window._uploadFiles=[];loadCustomSectionsInSelect();}
+function loadCustomSectionsInSelect(){var sel=document.getElementById('upload-gallery-select');var toRemove=[];for(var i=0;i<sel.options.length;i++){if(sel.options[i].value.startsWith('custom_'))toRemove.push(sel.options[i]);}toRemove.forEach(o=>sel.removeChild(o));fetch('https://diwd-a7709-default-rtdb.firebaseio.com/custom_sections.json').then(r=>r.json()).then(data=>{if(!data)return;Object.entries(data).forEach(([key,val])=>{if(!val.archived){const opt=document.createElement('option');opt.value='custom_'+key;opt.id='opt-'+key;opt.textContent=val.name;sel.appendChild(opt);}});}).catch(()=>{});}
+function closeUploadModal(){document.getElementById('upload-modal').classList.remove('active');window._uploadFiles=[];}
+function triggerFileInput(){document.getElementById('upload-file-input').click();}
+function handleFileSelect(input){var files=Array.from(input.files);if(!files.length)return;window._uploadFiles=files;var area=document.getElementById('upload-preview-area');area.innerHTML='';files.forEach((file,i)=>{var reader=new FileReader();reader.onload=e=>{var wrap=document.createElement('div');wrap.style.cssText='position:relative;display:inline-block;';var img=document.createElement('img');img.src=e.target.result;img.style.cssText='width:80px;height:80px;object-fit:cover;border-radius:10px;border:2px solid var(--latte-gold);';var badge=document.createElement('span');badge.textContent=i+1;badge.style.cssText='position:absolute;top:2px;right:2px;background:var(--latte-gold);color:white;border-radius:50%;width:18px;height:18px;font-size:0.65rem;display:flex;align-items:center;justify-content:center;font-weight:bold;';wrap.appendChild(img);wrap.appendChild(badge);area.appendChild(wrap);};reader.readAsDataURL(file);});input.value='';}
+function openReelsUploadModal(){if(!window.isAdminMode)return;document.getElementById('reels-upload-modal').classList.add('active');document.getElementById('reel-title-input').value='';document.getElementById('reel-preview-area').innerHTML='';window._reelFile=null;}
+function closeReelsUploadModal(){document.getElementById('reels-upload-modal').classList.remove('active');window._reelFile=null;}
+function triggerReelInput(){document.getElementById('reel-file-input').click();}
+function handleReelSelect(input){if(!input.files.length)return;window._reelFile=input.files[0];const url=URL.createObjectURL(window._reelFile);document.getElementById('reel-preview-area').innerHTML='<video src="'+url+'" style="width:100%;border-radius:12px;border:2px solid #9b59b6;max-height:200px;" muted playsinline controls></video>';input.value='';}
+function playVideo(){document.getElementById('vidPlaceholder').style.display='none';const v=document.getElementById('main-video');v.style.display='block';v.play();}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+input,textarea,select,button,a{touch-action:manipulation;}
+.product-section img{touch-action:pan-y;}
+input,textarea,select{font-size:16px!important;}
+:root{--latte-gold:#c8a165;--vanilla-light:#f9f1d8;--bg-gradient:linear-gradient(135deg,#fffcf7 0%,#f3e5ab 100%);--dark-latte:#4b3832;--creamy-white:#fffcf9;--heart-color:#c8a165;--admin-red:#e74c3c;--admin-green:#27ae60;--bnav-h:65px;}
+body.dark-mode{--bg-gradient:linear-gradient(135deg,#1a1614 0%,#2d241f 100%);--dark-latte:#f9f1d8;--creamy-white:#251f1c;--vanilla-light:#3d302a;--heart-color:#f3e5ab;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg-gradient);color:var(--dark-latte);font-family:'Cairo',sans-serif;overflow-x:hidden;transition:background .3s,color .3s;padding-bottom:var(--bnav-h);}
+.comment-modal{position:fixed;top:0;left:0;width:100%;height:100%;display:none;justify-content:center;align-items:center;z-index:9999;}
+.comment-modal.active{display:flex;}
+.comment-content{background:var(--creamy-white);border:1px solid var(--latte-gold);border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.2);width:90%;max-width:400px;}
+/* BOTTOM NAV */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;height:var(--bnav-h);background:rgba(255,252,249,.97);border-top:1px solid rgba(200,161,101,.2);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-around;z-index:4000;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 24px rgba(200,161,101,.1);}
+body.dark-mode #bottom-nav{background:rgba(37,31,28,.97);}
+.bnav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:8px 12px;transition:all .25s cubic-bezier(.4,0,.2,1);flex:1;}
+.bnav-item i{font-size:1.3rem;color:#b0a090;transition:all .25s cubic-bezier(.4,0,.2,1);}
+.bnav-item.active i{color:var(--latte-gold);transform:translateY(-2px);}
+.bnav-item.active::after{content:'';position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:var(--latte-gold);animation:dotPop .3s cubic-bezier(.175,.885,.32,1.275) forwards;}
+@keyframes dotPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+#bnav-profile{position:relative;bottom:14px;background:linear-gradient(135deg,var(--latte-gold),#a07040);border-radius:50%;width:56px;height:56px;flex:none;box-shadow:0 6px 20px rgba(200,161,101,.45);border:3px solid var(--creamy-white);transition:all .3s;overflow:hidden;}
+#bnav-profile i{color:white!important;font-size:1.45rem!important;transform:none!important;}
+#bnav-profile.active{box-shadow:0 8px 28px rgba(200,161,101,.6);transform:translateY(-2px) scale(1.05);}
+#bnav-profile.active::after{display:none;}
+#bnav-profile-avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;display:none;}
+/* HEADER */
+.sticky-header{position:sticky;top:0;z-index:1000;background:rgba(255,252,249,.92);border-bottom:1px solid var(--latte-gold);display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(10px);padding:12px 20px;}
+body.dark-mode .sticky-header{background:rgba(37,31,28,.92);}
+.logo-container{text-align:center;flex-grow:1;position:relative;}
+.logo{color:var(--latte-gold);font-size:1.5rem;font-weight:900;cursor:pointer;user-select:none;display:inline-block;}
+.brand-name{color:var(--latte-gold);font-size:.55rem;letter-spacing:2px;}
+.theme-toggle-header{color:var(--latte-gold);font-size:1.3rem;cursor:pointer;width:30px;text-align:left;}
+#admin-badge{display:none;background:var(--admin-red);color:white;font-size:.45rem;padding:2px 6px;border-radius:8px;position:absolute;top:-4px;left:50%;transform:translateX(-50%);letter-spacing:.5px;font-weight:bold;white-space:nowrap;}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--latte-gold);z-index:3000;width:0%;}
+.page{display:none;animation:fadeIn .5s cubic-bezier(.4,0,.2,1);}
+@keyframes fadeIn{from{opacity:0;transform:scale(.99)}to{opacity:1;transform:scale(1)}}
+.reveal,.product-section,.service-card,.whatsapp-cta{opacity:0;transform:translateY(30px);transition:all .8s cubic-bezier(.4,0,.2,1);}
+.active-reveal{opacity:1;transform:translateY(0);}
+.back-btn-container{position:sticky;top:60px;z-index:2000;padding:10px;background:rgba(255,252,249,.8);display:flex;justify-content:center;}
+body.dark-mode .back-btn-container{background:rgba(37,31,28,.8);}
+.back-btn{background:var(--latte-gold);color:#fff;border:none;padding:8px 25px;border-radius:20px;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:10px;font-family:'Cairo',sans-serif;}
+.hero{min-height:40vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(rgba(255,252,249,.6),rgba(255,252,249,.6)),url('p13.webp') center/cover;padding:40px 20px;}
+body.dark-mode .hero{background:linear-gradient(rgba(26,22,20,.8),rgba(26,22,20,.8)),url('p13.webp') center/cover;}
+.hero h2{font-size:1.8rem;color:var(--dark-latte);font-weight:900;}
+.services{padding:20px;display:grid;gap:15px;}
+.service-card{text-align:center;padding:30px 15px;border:1px solid rgba(200,161,101,.15);border-radius:15px;background:var(--creamy-white);cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.03);position:relative;}
+.service-card i{font-size:2.5rem;color:var(--latte-gold);margin-bottom:10px;}
+.service-card h3{color:var(--dark-latte);}
+.service-card p{color:#7a6a67;}
+body.dark-mode .service-card p{color:#ccc;}
+.click-hint{display:block;font-size:.75rem;color:var(--latte-gold);margin-top:8px;font-weight:bold;opacity:.8;}
+.video-box{margin:15px;border:1px dashed var(--latte-gold);border-radius:10px;padding:20px;text-align:center;cursor:pointer;background:var(--creamy-white);}
+#main-video{display:none;width:100%;border-radius:10px;border:1px solid var(--latte-gold);margin-top:10px;}
+.product-section{width:100%;margin-bottom:25px;background:var(--creamy-white);overflow:hidden;box-shadow:0 5px 15px rgba(0,0,0,.04);position:relative;}
+.product-section img{width:100%;display:block;height:auto;transition:transform .6s;cursor:pointer;}
+.product-section:hover img{transform:scale(1.03);}
+.model-tag{background:var(--vanilla-light);border-top:2px solid var(--latte-gold);color:var(--dark-latte);font-weight:bold;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;position:relative;z-index:10;}
+.like-btn{background:transparent;border:none;color:var(--latte-gold);padding:5px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.8rem;transition:.3s;display:flex;align-items:center;gap:5px;}
+@keyframes buttonPulse{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+.btn-pulse{animation:buttonPulse .4s ease-out;}
+.flying-heart{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);color:var(--heart-color);font-size:3.5rem;pointer-events:none;z-index:100;opacity:0;-webkit-text-stroke:1.5px var(--latte-gold);}
+.whatsapp-cta{padding:40px 20px;text-align:center;background:var(--creamy-white);border-top:1px solid rgba(200,161,101,.1);}
+.whatsapp-link{color:#fff;text-decoration:none;font-size:1.1rem;font-weight:bold;padding:15px 30px;background:var(--latte-gold);border-radius:50px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 4px 10px rgba(200,161,101,.3);}
+footer{padding:30px;text-align:center;font-size:.8rem;border-top:1px solid #efe8e1;color:#a39592;background:var(--creamy-white);}
+body.dark-mode footer{border-color:#3d302a;}
+.comment-item{padding:10px 12px;background:var(--vanilla-light);border-radius:14px;border-right:3px solid var(--latte-gold);animation:slideIn .3s ease-out;position:relative;}
+@keyframes slideIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.comment-avatar-row{display:flex;align-items:flex-start;gap:10px;}
+.comment-user-avatar{width:33px;height:33px;border-radius:50%;border:2px solid var(--latte-gold);overflow:hidden;background:var(--vanilla-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s;}
+.comment-user-avatar:hover{transform:scale(1.1);}
+.comment-user-avatar img{width:100%;height:100%;object-fit:cover;}
+.avatar-initials{font-size:.7rem;font-weight:bold;color:var(--latte-gold);}
+.comment-content-box{flex:1;min-width:0;}
+.comment-username-link{cursor:pointer;color:var(--latte-gold);font-weight:bold;font-size:.72rem;display:inline-flex;align-items:center;gap:3px;margin-bottom:3px;}
+.comment-username-link:hover{opacity:.7;text-decoration:underline;}
+.comment-text-content{font-size:.9rem;color:var(--dark-latte);word-break:break-word;}
+.comment-actions{display:flex;gap:6px;margin-top:7px;justify-content:flex-end;}
+.comment-action-btn{background:transparent;border:1px solid rgba(200,161,101,.4);color:var(--latte-gold);border-radius:20px;padding:3px 10px;font-size:.7rem;font-family:'Cairo',sans-serif;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .2s;}
+.comment-action-btn:hover{background:var(--latte-gold);color:white;}
+.comment-action-btn.delete-btn:hover{background:var(--admin-red);border-color:var(--admin-red);color:white;}
+.comment-edit-area{width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--latte-gold);background:var(--creamy-white);color:var(--dark-latte);font-family:'Cairo',sans-serif;font-size:.9rem;resize:none;outline:none;margin-top:6px;min-height:60px;}
+.comment-edit-actions{display:flex;gap:6px;margin-top:6px;justify-content:flex-end;}
+.comment-save-btn{background:var(--latte-gold);color:white;border:none;border-radius:20px;padding:5px 14px;font-size:.75rem;font-family:'Cairo',sans-serif;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.comment-cancel-btn{background:transparent;color:var(--latte-gold);border:1px solid var(--latte-gold);border-radius:20px;padding:5px 14px;font-size:.75rem;font-family:'Cairo',sans-serif;font-weight:bold;cursor:pointer;}
+.admin-delete-comment-btn{display:none;position:absolute;top:6px;left:8px;background:var(--admin-red);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:.7rem;cursor:pointer;align-items:center;justify-content:center;line-height:1;padding:0;z-index:10;}
+.admin-delete-like{display:none;background:var(--admin-red);color:white;border:none;border-radius:50px;padding:4px 10px;font-size:.7rem;cursor:pointer;align-items:center;gap:5px;font-family:'Cairo',sans-serif;font-weight:bold;}
+#admin-pass-modal{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);}
+#admin-pass-input{width:100%;padding:12px;border-radius:12px;border:2px solid var(--latte-gold);background:var(--vanilla-light);color:var(--dark-latte);font-family:'Cairo',sans-serif;font-size:1.1rem;text-align:center;letter-spacing:3px;outline:none;margin:15px 0;transition:border-color .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+#admin-fab{display:none;position:fixed;bottom:calc(var(--bnav-h) + 12px);left:12px;flex-direction:column;align-items:flex-start;gap:8px;z-index:5000;}
+.admin-fab-btn{width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:transform .2s;font-family:'Cairo',sans-serif;}
+.admin-fab-btn:hover{transform:scale(1.1);}
+#fab-stats{background:var(--latte-gold);color:white;}
+#fab-upload{background:var(--admin-green);color:white;}
+#fab-exit{background:var(--admin-red);color:white;}
+.fab-wrap{display:flex;align-items:center;gap:8px;}
+.fab-label{background:var(--creamy-white);color:var(--dark-latte);border:1px solid var(--latte-gold);padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:bold;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+#admin-stats-panel{display:none;position:fixed;bottom:calc(var(--bnav-h) + 75px);left:12px;width:calc(100vw - 24px);max-width:380px;background:var(--creamy-white);border:1.5px solid var(--latte-gold);border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.22);z-index:4900;overflow:hidden;}
+#admin-stats-panel.active{display:block;}
+.stats-header{background:linear-gradient(135deg,var(--latte-gold),#a07040);color:white;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;}
+.stats-body{padding:16px;display:flex;flex-direction:column;gap:12px;max-height:55vh;overflow-y:auto;}
+.stat-card{display:flex;align-items:center;gap:14px;background:var(--vanilla-light);border-radius:14px;padding:14px 16px;border-right:3px solid var(--latte-gold);}
+.stat-icon{width:42px;height:42px;border-radius:50%;background:var(--latte-gold);color:white;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.stat-label{font-size:.75rem;color:#888;font-weight:600;}
+.stat-value{font-size:1.5rem;font-weight:900;color:var(--dark-latte);}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.stat-card-sm{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--vanilla-light);border-radius:14px;padding:14px;text-align:center;}
+.stat-card-sm .stat-icon{width:36px;height:36px;font-size:.95rem;margin-bottom:6px;}
+.stat-card-sm .stat-value{font-size:1.3rem;}
+.stats-section-title{font-size:.75rem;font-weight:900;color:var(--latte-gold);padding:4px 0 0;border-top:1px solid rgba(200,161,101,.2);margin-top:4px;}
+.stat-top-row{display:flex;align-items:center;gap:8px;background:var(--vanilla-light);border-radius:12px;padding:10px 14px;}
+.stat-top-num{font-size:1.4rem;font-weight:900;color:var(--latte-gold);min-width:36px;}
+.stat-top-name{font-size:.82rem;font-weight:bold;color:var(--dark-latte);}
+.stat-top-sub{font-size:.68rem;color:#999;}
+.stats-loading-spinner{text-align:center;padding:30px 20px;}
+.stats-loading-spinner i{font-size:2rem;color:var(--latte-gold);animation:spin 1s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+#stats-refresh{margin:0 16px 14px;width:calc(100% - 32px);background:var(--latte-gold);color:white;border:none;border-radius:12px;padding:10px;font-family:'Cairo',sans-serif;font-weight:bold;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+#admin-toast{position:fixed;bottom:calc(var(--bnav-h) + 16px);left:50%;transform:translateX(-50%) translateY(20px);background:#2c2c2c;color:white;padding:10px 22px;border-radius:30px;font-size:.85rem;font-weight:bold;opacity:0;transition:all .4s;z-index:9999;pointer-events:none;white-space:nowrap;}
+#admin-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#upload-modal,#reels-upload-modal{background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:10000;}
+.upload-drop-zone{border:2.5px dashed var(--latte-gold);border-radius:16px;padding:30px 15px;text-align:center;cursor:pointer;background:var(--vanilla-light);margin-bottom:14px;}
+.upload-drop-zone i{font-size:2.8rem;color:var(--latte-gold);display:block;margin-bottom:8px;}
+#upload-preview-area{display:flex;flex-wrap:wrap;gap:8px;min-height:30px;margin-bottom:14px;}
+.upload-field{width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--latte-gold);background:var(--vanilla-light);color:var(--dark-latte);font-family:'Cairo',sans-serif;font-size:.95rem;outline:none;margin-bottom:10px;}
+select.upload-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8a165' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;padding-left:32px;}
+#upload-progress-wrap{display:none;margin-bottom:10px;}
+#upload-progress-bar-outer{background:var(--vanilla-light);border-radius:20px;height:10px;overflow:hidden;border:1px solid rgba(200,161,101,.3);margin-bottom:5px;}
+#upload-progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--latte-gold),#e8c07a);border-radius:20px;width:0%;transition:width .3s;}
+#upload-progress-text{font-size:.78rem;color:var(--latte-gold);text-align:center;font-weight:bold;}
+.upload-submit-btn{width:100%;padding:13px;background:var(--admin-green);color:white;border:none;border-radius:14px;font-family:'Cairo',sans-serif;font-weight:bold;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.upload-submit-btn:disabled{opacity:.5;cursor:not-allowed;}
+/* REELS */
+#reels-page{min-height:100vh;background:var(--bg-gradient);padding-bottom:20px;}
+.reels-header{padding:20px 20px 10px;display:flex;justify-content:space-between;align-items:center;}
+.reels-header h2{color:var(--latte-gold);font-size:1.2rem;font-weight:900;display:flex;align-items:center;gap:8px;}
+.reels-add-btn{background:linear-gradient(135deg,var(--latte-gold),#a07040);color:white;border:none;border-radius:20px;padding:8px 18px;font-family:'Cairo',sans-serif;font-weight:bold;font-size:.85rem;cursor:pointer;display:none;align-items:center;gap:6px;box-shadow:0 4px 12px rgba(200,161,101,.3);}
+.reels-grid{padding:0 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.reel-card{border-radius:16px;overflow:hidden;background:#111;position:relative;cursor:pointer;aspect-ratio:9/16;box-shadow:0 4px 18px rgba(0,0,0,.15);}
+.reel-card video{width:100%;height:100%;object-fit:cover;}
+.reel-card-overlay{position:absolute;bottom:0;left:0;right:0;padding:10px 8px 8px;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,transparent 100%);}
+.reel-card-title{color:white;font-size:.76rem;font-weight:bold;}
+.reel-card-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:42px;height:42px;background:rgba(255,255,255,.22);border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);border:2px solid rgba(255,255,255,.45);transition:.2s;}
+.reel-card-play i{color:white;font-size:1rem;margin-right:-2px;}
+.reel-card:hover .reel-card-play{background:rgba(200,161,101,.55);}
+.reel-admin-del{position:absolute;top:7px;left:7px;background:var(--admin-red);color:white;border:none;border-radius:50%;width:26px;height:26px;font-size:.7rem;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:10;}
+.reels-empty{text-align:center;padding:60px 20px;grid-column:1/-1;}
+.reels-empty i{font-size:4rem;color:rgba(200,161,101,.2);display:block;margin-bottom:16px;}
+.reels-empty p{color:#999;font-size:.9rem;}
+#reel-player-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:99999;display:none;flex-direction:column;}
+#reel-player-modal.active{display:flex;}
+#reel-player-video{width:100%;flex:1;object-fit:contain;background:#000;}
+#reel-player-close{position:absolute;top:18px;left:18px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+#reel-player-title{position:absolute;bottom:calc(var(--bnav-h) + 20px);right:0;left:0;padding:0 20px;color:white;font-size:.95rem;font-weight:bold;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.6);}
+#reel-progress-wrap{display:none;margin-bottom:10px;}
+#reel-progress-outer{background:var(--vanilla-light);border-radius:20px;height:10px;overflow:hidden;border:1px solid rgba(153,91,182,.3);margin-bottom:5px;}
+#reel-progress-inner{height:100%;background:linear-gradient(90deg,#9b59b6,#c39bd3);border-radius:20px;width:0%;transition:width .3s;}
+#reel-progress-text{font-size:.78rem;color:#9b59b6;text-align:center;font-weight:bold;}
+/* ABOUT */
+#about-page{min-height:100vh;background:var(--bg-gradient);padding-bottom:30px;}
+.about-hero{background:linear-gradient(145deg,#5a3e28 0%,var(--latte-gold) 50%,#8a5e30 100%);padding:55px 20px 70px;text-align:center;position:relative;overflow:hidden;}
+.about-hero::before{content:'';position:absolute;top:-40%;left:-40%;width:180%;height:180%;background:radial-gradient(circle at 65% 35%,rgba(255,255,255,.1) 0%,transparent 55%);pointer-events:none;}
+.about-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:35px;background:var(--creamy-white);border-radius:30px 30px 0 0;}
+.about-logo-circle{width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.8);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative;z-index:2;}
+.about-logo-circle span{font-size:2.2rem;color:white;font-weight:900;}
+.about-hero h2{color:white;font-size:1.5rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.2);position:relative;z-index:2;margin-bottom:6px;}
+.about-hero p{color:rgba(255,255,255,.8);font-size:.85rem;position:relative;z-index:2;}
+.about-body{padding:18px;display:flex;flex-direction:column;gap:14px;}
+.about-card{background:var(--creamy-white);border-radius:18px;border:1px solid rgba(200,161,101,.15);overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.04);}
+.about-card-header{padding:14px 18px;border-bottom:1px solid rgba(200,161,101,.12);display:flex;align-items:center;gap:10px;background:var(--vanilla-light);}
+.about-card-header i{color:var(--latte-gold);font-size:1rem;}
+.about-card-header span{font-weight:bold;font-size:.9rem;color:var(--dark-latte);}
+.about-card-body{padding:18px;}
+.about-info-text{font-size:.88rem;line-height:2;color:var(--dark-latte);opacity:.85;}
+.about-stat-row{display:flex;gap:10px;margin-top:14px;}
+.about-stat-box{flex:1;background:var(--vanilla-light);border-radius:14px;padding:14px 10px;text-align:center;border:1px solid rgba(200,161,101,.1);}
+.about-stat-num{font-size:1.6rem;font-weight:900;color:var(--latte-gold);display:block;}
+.about-stat-lbl{font-size:.65rem;color:#999;font-weight:600;}
+.social-link-row{display:flex;flex-direction:column;gap:12px;}
+.social-link-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--vanilla-light);border-radius:14px;cursor:pointer;text-decoration:none;border:1px solid rgba(200,161,101,.12);transition:all .2s;}
+.social-link-item:hover{background:rgba(200,161,101,.1);transform:translateX(-3px);}
+.social-link-icon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem;color:white;}
+.social-link-name{font-weight:bold;font-size:.9rem;color:var(--dark-latte);}
+.social-link-sub{font-size:.72rem;color:var(--latte-gold);margin-top:2px;}
+.social-link-arrow{margin-right:auto;color:var(--latte-gold);font-size:.8rem;opacity:.6;}
+/* SETTINGS */
+#settings-page{min-height:100vh;background:var(--bg-gradient);padding-bottom:30px;}
+.settings-header{padding:30px 20px 10px;}
+.settings-header h2{color:var(--latte-gold);font-size:1.2rem;font-weight:900;display:flex;align-items:center;gap:8px;}
+.settings-body{padding:14px;display:flex;flex-direction:column;gap:12px;}
+.settings-card{background:var(--creamy-white);border-radius:18px;overflow:hidden;border:1px solid rgba(200,161,101,.15);box-shadow:0 3px 12px rgba(0,0,0,.04);}
+.settings-item{display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid rgba(200,161,101,.08);cursor:pointer;transition:background .2s;}
+.settings-item:last-child{border-bottom:none;}
+.settings-item:hover{background:rgba(200,161,101,.05);}
+.settings-item-icon{width:38px;height:38px;border-radius:50%;background:var(--vanilla-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.settings-item-icon i{color:var(--latte-gold);font-size:.9rem;}
+.settings-item-info{flex:1;}
+.settings-item-title{font-size:.9rem;font-weight:bold;color:var(--dark-latte);}
+.settings-item-sub{font-size:.72rem;color:#999;margin-top:2px;}
+.settings-item-arrow{color:var(--latte-gold);font-size:.8rem;opacity:.5;}
+.settings-toggle{width:44px;height:24px;border-radius:12px;background:#ddd;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;border:none;}
+.settings-toggle.on{background:var(--latte-gold);}
+.settings-toggle::after{content:'';position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:white;transition:transform .3s;box-shadow:0 2px 4px rgba(0,0,0,.2);}
+.settings-toggle.on::after{transform:translateX(-20px);}
+.coming-soon-badge{background:rgba(200,161,101,.15);color:var(--latte-gold);font-size:.62rem;font-weight:bold;padding:3px 8px;border-radius:10px;border:1px solid rgba(200,161,101,.3);}
+/* PROFILE */
+#profile-page{min-height:100vh;padding-bottom:40px;}
+.profile-hero{background:linear-gradient(135deg,var(--latte-gold) 0%,#8a5e30 100%);padding:50px 20px 75px;text-align:center;position:relative;overflow:hidden;}
+.profile-hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 60% 40%,rgba(255,255,255,.1) 0%,transparent 60%);pointer-events:none;}
+.profile-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:35px;background:var(--creamy-white);border-radius:30px 30px 0 0;}
+.avatar-wrapper{position:relative;display:inline-block;margin-bottom:15px;}
+.profile-avatar{width:105px;height:105px;border-radius:50%;border:4px solid rgba(255,255,255,.95);overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.3);cursor:pointer;transition:transform .3s;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;}
+.profile-avatar:hover{transform:scale(1.05);}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;}
+.avatar-placeholder-text{font-size:2.8rem;color:rgba(255,255,255,.95);font-weight:900;}
+.avatar-edit-badge{position:absolute;bottom:3px;left:3px;width:30px;height:30px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.2);}
+.avatar-edit-badge i{color:var(--latte-gold);font-size:.78rem;}
+.profile-name{color:white;font-size:1.5rem;font-weight:900;margin-bottom:4px;text-shadow:0 2px 8px rgba(0,0,0,.25);}
+.profile-email{color:rgba(255,255,255,.75);font-size:.8rem;margin-bottom:6px;}
+.profile-joined{color:rgba(255,255,255,.65);font-size:.72rem;display:flex;align-items:center;justify-content:center;gap:5px;}
+.profile-stats-bar{display:flex;background:var(--creamy-white);border-bottom:1px solid rgba(200,161,101,.12);position:relative;z-index:2;}
+.profile-stat{flex:1;text-align:center;padding:20px 10px;border-left:1px solid rgba(200,161,101,.12);}
+.profile-stat:last-child{border-left:none;}
+.profile-stat-value{font-size:1.5rem;font-weight:900;color:var(--latte-gold);display:block;}
+.profile-stat-label{font-size:.65rem;color:#999;font-weight:600;}
+.profile-body{padding:18px;display:flex;flex-direction:column;gap:16px;background:var(--bg-gradient);}
+.profile-card{background:var(--creamy-white);border-radius:18px;border:1px solid rgba(200,161,101,.15);overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.04);}
+.profile-card-header{padding:14px 18px;border-bottom:1px solid rgba(200,161,101,.12);display:flex;align-items:center;gap:10px;background:var(--vanilla-light);}
+.profile-card-header i{color:var(--latte-gold);font-size:1rem;}
+.profile-card-header span{font-weight:bold;font-size:.9rem;color:var(--dark-latte);}
+.profile-card-body{padding:18px;}
+.edit-field-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(200,161,101,.08);}
+.edit-field-row:last-child{border-bottom:none;padding-bottom:0;}
+.edit-field-icon{width:36px;height:36px;border-radius:50%;background:var(--vanilla-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.edit-field-icon i{color:var(--latte-gold);font-size:.85rem;}
+.edit-field-info{flex:1;}
+.edit-field-label{font-size:.7rem;color:#999;font-weight:600;margin-bottom:2px;}
+.edit-field-value{font-size:.95rem;color:var(--dark-latte);font-weight:bold;}
+.edit-btn{background:var(--vanilla-light);border:1px solid var(--latte-gold);color:var(--latte-gold);padding:6px 14px;border-radius:20px;font-size:.75rem;font-weight:bold;cursor:pointer;font-family:'Cairo',sans-serif;transition:.2s;white-space:nowrap;}
+.edit-btn:hover{background:var(--latte-gold);color:white;}
+.edit-input{width:100%;padding:13px 16px;border-radius:14px;border:2px solid var(--latte-gold);background:var(--vanilla-light);color:var(--dark-latte);font-family:'Cairo',sans-serif;font-size:1rem;text-align:center;outline:none;margin:15px 0;}
+.profile-logout-btn{width:100%;padding:15px;background:transparent;border:2px solid #e74c3c;border-radius:14px;color:#e74c3c;font-family:'Cairo',sans-serif;font-weight:bold;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:.2s;}
+.profile-logout-btn:hover{background:#e74c3c;color:white;}
+.liked-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;}
+.liked-thumb{aspect-ratio:1;overflow:hidden;border-radius:6px;cursor:pointer;}
+.liked-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.liked-thumb:hover img{transform:scale(1.1);}
+.empty-liked{text-align:center;padding:30px 20px;color:#999;}
+.empty-liked i{font-size:2.5rem;color:rgba(200,161,101,.3);display:block;margin-bottom:10px;}
+#avatar-upload-modal{background:rgba(0,0,0,.65);backdrop-filter:blur(7px);z-index:10003;}
+#avatar-upload-modal .comment-content{max-width:360px;padding:0;overflow:hidden;}
+.avatar-upload-header{background:var(--latte-gold);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;font-weight:bold;}
+.avatar-upload-body{padding:22px;display:flex;flex-direction:column;gap:14px;align-items:center;}
+.avatar-preview-circle{width:110px;height:110px;border-radius:50%;border:3px solid var(--latte-gold);overflow:hidden;background:var(--vanilla-light);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.avatar-preview-circle i{font-size:2.8rem;color:var(--latte-gold);}
+.avatar-pick-btn{width:100%;padding:13px;background:var(--vanilla-light);border:2px dashed var(--latte-gold);border-radius:14px;color:var(--latte-gold);font-family:'Cairo',sans-serif;font-weight:bold;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.avatar-save-btn{width:100%;padding:13px;background:var(--latte-gold);border:none;border-radius:14px;color:white;font-family:'Cairo',sans-serif;font-weight:bold;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.avatar-save-btn:disabled{opacity:.5;cursor:not-allowed;}
+#edit-username-modal{background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:10002;}
+#edit-username-modal .comment-content{max-width:340px;padding:30px 24px;text-align:center;}
+/* PUBLIC PROFILE */
+#public-profile-page{min-height:100vh;padding-bottom:40px;}
+.pub-profile-hero{background:linear-gradient(145deg,#5a3e28 0%,var(--latte-gold) 50%,#7a5030 100%);padding:55px 20px 80px;text-align:center;position:relative;overflow:hidden;}
+.pub-profile-hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 35% 65%,rgba(255,255,255,.12) 0%,transparent 55%);pointer-events:none;}
+.pub-profile-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:40px;background:var(--creamy-white);border-radius:35px 35px 0 0;}
+.pub-avatar-ring{width:110px;height:110px;border-radius:50%;border:4px solid rgba(255,255,255,.95);overflow:hidden;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2);box-shadow:0 8px 35px rgba(0,0,0,.35);margin-bottom:16px;position:relative;z-index:2;}
+.pub-avatar-ring img{width:100%;height:100%;object-fit:cover;}
+.pub-avatar-initial{font-size:2.8rem;color:white;font-weight:900;}
+.pub-username{color:white;font-size:1.5rem;font-weight:900;text-shadow:0 2px 8px rgba(0,0,0,.25);margin-bottom:4px;position:relative;z-index:2;}
+.pub-joined{color:rgba(255,255,255,.7);font-size:.75rem;display:flex;align-items:center;justify-content:center;gap:5px;position:relative;z-index:2;margin-top:6px;}
+.pub-rank-badge{display:none;position:relative;z-index:2;margin:10px auto 0;font-size:4rem;line-height:1;}
+.pub-rank-label{display:none;position:relative;z-index:2;margin-top:8px;background:rgba(255,255,255,.22);color:white;font-size:.8rem;font-weight:900;padding:5px 18px;border-radius:20px;}
+.pub-stats-bar{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--creamy-white);border-bottom:1px solid rgba(200,161,101,.12);}
+.pub-stat{text-align:center;padding:18px 10px;border-left:1px solid rgba(200,161,101,.12);}
+.pub-stat:last-child{border-left:none;}
+.pub-stat-value{font-size:1.4rem;font-weight:900;color:var(--latte-gold);display:block;}
+.pub-stat-label{font-size:.62rem;color:#999;font-weight:600;}
+.pub-profile-body{padding:18px;display:flex;flex-direction:column;gap:16px;background:var(--bg-gradient);}
+.pub-own-banner{background:linear-gradient(135deg,var(--latte-gold),#a07040);color:white;border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;font-size:.88rem;font-weight:bold;}
+.pub-own-banner i{font-size:1.3rem;flex-shrink:0;}
+.pub-own-edit-btn{margin-right:auto;background:white;color:var(--latte-gold);border:none;border-radius:20px;padding:7px 16px;font-family:'Cairo',sans-serif;font-size:.8rem;font-weight:bold;cursor:pointer;}
+.pub-liked-thumb-item{aspect-ratio:1;overflow:hidden;border-radius:8px;background:var(--vanilla-light);cursor:pointer;}
+.pub-liked-thumb-item img{width:100%;height:100%;object-fit:cover;transition:transform .3s;display:block;}
+.pub-liked-thumb-item:hover img{transform:scale(1.08);}
+.pub-profile-hero.rank-gold{background:linear-gradient(145deg,#7a5500 0%,#f5c518 45%,#c8860a 100%)!important;}
+.pub-profile-hero.rank-silver{background:linear-gradient(145deg,#3a3a3a 0%,#c0c0c0 45%,#6e6e6e 100%)!important;}
+#dynamic-sections-container{padding:0 20px 10px;display:flex;flex-direction:column;gap:15px;}
+.custom-section-card{text-align:center;padding:30px 15px;border:1px solid rgba(200,161,101,.15);border-radius:15px;background:var(--creamy-white);cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.03);animation:fadeIn .5s ease;position:relative;}
+.custom-section-card i{font-size:2.5rem;color:var(--latte-gold);margin-bottom:10px;}
+.custom-section-card h3{color:var(--dark-latte);margin-bottom:6px;}
+.custom-section-card p{color:#7a6a67;font-size:.88rem;}
+body.dark-mode .custom-section-card p{color:#ccc;}
+.custom-section-archive-btn{position:absolute;top:10px;left:10px;background:rgba(200,161,101,.15);border:1px solid var(--latte-gold);color:var(--latte-gold);border-radius:20px;padding:4px 10px;font-size:.7rem;font-family:'Cairo',sans-serif;font-weight:bold;cursor:pointer;display:none;}
+#add-section-modal,#archive-modal{background:rgba(0,0,0,.6);backdrop-filter:blur(6px);z-index:10000;}
+.dynamic-section-page{min-height:50vh;}
+.archive-item{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--vanilla-light);border-radius:12px;border-right:3px solid var(--latte-gold);margin-bottom:10px;}
+.archive-restore-btn{background:var(--admin-green);color:white;border:none;border-radius:20px;padding:6px 14px;font-size:.75rem;font-family:'Cairo',sans-serif;font-weight:bold;cursor:pointer;}
+#lightbox-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.92);z-index:99999;display:none;justify-content:center;align-items:center;flex-direction:column;}
+#lightbox-modal.active{display:flex;}
+#lightbox-img{max-width:95vw;max-height:80vh;border-radius:12px;object-fit:contain;box-shadow:0 8px 40px rgba(0,0,0,.6);}
+#lightbox-close{position:absolute;top:18px;left:18px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:white;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* تنسيق الزر في الموقع الجديد - نسخة حل مشكلة القص */
+.new-site-btn-container {
+    position: relative;
+    z-index: 1001; /* رفع الطبقة ليكون فوق كل شيء */
+    display: flex;
+    justify-content: center;
+    margin: 20px 0; /* استبدال الـ margin السالب بمسافة حقيقية لمنع القص */
+    padding: 0 15px;
+    clear: both; /* لضمان عدم تداخله مع العناصر العائمة */
+}
+
+.new-site-btn {
+    background: linear-gradient(135deg, #444444, #222222); 
+    color: #fff !important;
+    text-decoration: none !important;
+    padding: 12px 30px; /* زيادة مساحة اللمس */
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    display: inline-flex; /* التغيير لـ inline-flex لضبط الأبعاد */
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.new-site-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+</style>
+</head>
+<body>
+<!-- WELCOME GATE -->
+<div id="welcome-gate" class="comment-modal active" style="z-index:10000;background:var(--bg-gradient);">
+  <div class="comment-content" style="height:auto;text-align:center;padding:40px 20px;">
+    <div class="logo" style="font-size:3rem;margin-bottom:10px;">MD</div>
+    <h2 style="color:var(--latte-gold);margin-bottom:15px;">أهلاً بكم في عالم الفخامة</h2>
+    <p style="font-size:.9rem;margin-bottom:30px;">سجل دخولك للتفاعل، أو تصفح كضيف.</p>
+    <div style="display:flex;flex-direction:column;gap:15px;">
+      <button class="back-btn" onclick="openAuthModal()" style="width:100%;padding:15px;justify-content:center;">تسجيل الدخول / إنشاء حساب</button>
+      <button onclick="continueAsGuest()" style="background:transparent;border:1px solid var(--latte-gold);color:var(--latte-gold);padding:12px;border-radius:20px;cursor:pointer;font-weight:bold;font-family:'Cairo',sans-serif;">المتابعة كضيف</button>
+    </div>
+  </div>
+</div>
+<!-- LIGHTBOX -->
+<div id="lightbox-modal" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
+</div>
+<!-- REEL PLAYER -->
+<div id="reel-player-modal">
+  <button id="reel-player-close" onclick="closeReelPlayer()"><i class="fas fa-times"></i></button>
+  <video id="reel-player-video" controls playsinline></video>
+  <div id="reel-player-title"></div>
+</div>
+<!-- ADMIN PASS -->
+<div id="admin-pass-modal" class="comment-modal">
+  <div class="comment-content" style="padding:30px 25px;text-align:center;max-width:320px;">
+    <div style="font-size:2.5rem;color:var(--latte-gold);margin-bottom:10px;">🔐</div>
+    <h3 style="color:var(--latte-gold);margin-bottom:5px;">وضع الإدارة</h3>
+    <p style="font-size:.82rem;opacity:.7;margin-bottom:5px;">أدخل الرمز السري</p>
+    <input type="password" id="admin-pass-input" placeholder="••••••" onkeydown="if(event.key==='Enter')checkAdminPassword()">
+    <div style="display:flex;gap:10px;">
+      <button onclick="checkAdminPassword()" class="back-btn" style="flex:1;justify-content:center;">دخول</button>
+      <button onclick="closeAdminPassModal()" style="flex:1;padding:8px;border:1px solid var(--latte-gold);background:transparent;border-radius:20px;cursor:pointer;color:var(--latte-gold);font-family:'Cairo',sans-serif;font-weight:bold;">إلغاء</button>
+    </div>
+  </div>
+</div>
+<!-- EDIT USERNAME -->
+<div id="edit-username-modal" class="comment-modal">
+  <div class="comment-content">
+    <div style="text-align:center;padding:28px 24px;">
+      <div style="font-size:2rem;color:var(--latte-gold);margin-bottom:8px;"><i class="fas fa-user-edit"></i></div>
+      <h3 style="color:var(--latte-gold);margin-bottom:4px;">تغيير اسم المستخدم</h3>
+      <p style="font-size:.8rem;opacity:.6;">سيتم تحديث اسمك في جميع تعليقاتك</p>
+      <input type="text" id="new-username-input" class="edit-input" placeholder="اسم المستخدم الجديد" maxlength="20">
+      <div style="display:flex;gap:10px;">
+        <button onclick="saveNewUsername()" class="back-btn" style="flex:1;justify-content:center;">حفظ</button>
+        <button onclick="closeEditUsernameModal()" style="flex:1;padding:8px;border:1px solid var(--latte-gold);background:transparent;border-radius:20px;cursor:pointer;color:var(--latte-gold);font-family:'Cairo',sans-serif;font-weight:bold;">إلغاء</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- AVATAR UPLOAD -->
+<div id="avatar-upload-modal" class="comment-modal">
+  <div class="comment-content" style="max-width:360px;">
+    <div class="avatar-upload-header"><span><i class="fas fa-camera" style="margin-left:8px;"></i> تغيير الصورة الشخصية</span><i class="fas fa-times" onclick="closeAvatarUploadModal()" style="cursor:pointer;"></i></div>
+    <div class="avatar-upload-body">
+      <div class="avatar-preview-circle" onclick="triggerAvatarInput()" id="avatar-preview-circle">
+        <i class="fas fa-user-circle" id="avatar-preview-placeholder"></i>
+        <img id="avatar-preview-img" style="display:none;width:100%;height:100%;object-fit:cover;" alt="">
+      </div>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarFileSelect(this)">
+      <button class="avatar-pick-btn" onclick="triggerAvatarInput()"><i class="fas fa-image"></i> اختر صورة</button>
+      <button class="avatar-save-btn" id="avatar-save-btn" onclick="saveAvatar()" disabled><i class="fas fa-check"></i> حفظ الصورة</button>
+    </div>
+  </div>
+</div>
+<!-- UPLOAD PHOTO -->
+<div id="upload-modal" class="comment-modal">
+  <div class="comment-content" style="padding:0;overflow:hidden;">
+    <div style="background:var(--admin-green);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:bold;">📸 إضافة صور جديدة</span><i class="fas fa-times" onclick="closeUploadModal()" style="cursor:pointer;"></i></div>
+    <div style="padding:20px;">
+      <div class="upload-drop-zone" onclick="triggerFileInput()"><i class="fas fa-cloud-upload-alt"></i><p>اضغط لاختيار الصور</p><p style="font-size:.75rem;margin-top:4px;color:var(--latte-gold);">يمكن اختيار أكثر من صورة</p></div>
+      <input type="file" id="upload-file-input" accept="image/*" multiple style="display:none;" onchange="handleFileSelect(this)">
+      <div id="upload-preview-area"></div>
+      <input type="text" id="upload-caption" class="upload-field" placeholder="اسم / وصف التصميم (اختياري)">
+      <select id="upload-gallery-select" class="upload-field"><option value="stone-gallery">معرض الواجهات الحجرية</option><option value="interior-gallery">معرض الديكور الداخلي</option></select>
+      <p style="font-size:.75rem;color:var(--latte-gold);text-align:center;margin-top:-6px;">الأقسام المخصصة تظهر تلقائياً</p>
+      <div id="upload-progress-wrap"><div id="upload-progress-bar-outer"><div id="upload-progress-bar-inner"></div></div><div id="upload-progress-text">جاري الرفع...</div></div>
+      <button class="upload-submit-btn" id="upload-submit-btn" onclick="submitUploadedPhotos()"><i class="fas fa-check"></i> رفع الصور</button>
+    </div>
+  </div>
+</div>
+<!-- REELS UPLOAD -->
+<div id="reels-upload-modal" class="comment-modal">
+  <div class="comment-content" style="padding:0;overflow:hidden;max-width:420px;">
+    <div style="background:linear-gradient(135deg,#9b59b6,#6c3483);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:bold;font-size:1rem;">🎬 إضافة ريل جديد</span><i class="fas fa-times" onclick="closeReelsUploadModal()" style="cursor:pointer;"></i></div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <div class="upload-drop-zone" onclick="triggerReelInput()" style="border-color:#9b59b6;"><i class="fas fa-film" style="color:#9b59b6;"></i><p>اضغط لاختيار فيديو</p><p style="font-size:.75rem;margin-top:4px;color:#9b59b6;">MP4, MOV مدعومة</p></div>
+      <input type="file" id="reel-file-input" accept="video/*" style="display:none;" onchange="handleReelSelect(this)">
+      <div id="reel-preview-area"></div>
+      <input type="text" id="reel-title-input" class="upload-field" placeholder="عنوان الريل (اختياري)" style="border-color:#9b59b6;">
+      <div id="reel-progress-wrap"><div id="reel-progress-outer"><div id="reel-progress-inner"></div></div><div id="reel-progress-text">جاري الرفع...</div></div>
+      <button id="reel-submit-btn" onclick="submitReel()" style="width:100%;padding:13px;background:linear-gradient(135deg,#9b59b6,#6c3483);color:white;border:none;border-radius:14px;font-family:'Cairo',sans-serif;font-weight:bold;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-upload"></i> رفع الريل</button>
+    </div>
+  </div>
+</div>
+<!-- ADMIN FAB -->
+<div id="admin-fab">
+  <div class="fab-wrap"><button class="admin-fab-btn" id="fab-stats" onclick="toggleAdminStats()"><i class="fas fa-chart-bar"></i></button><span class="fab-label">إحصائيات</span></div>
+  <div class="fab-wrap"><button class="admin-fab-btn" id="fab-upload" onclick="openUploadModal()"><i class="fas fa-camera"></i></button><span class="fab-label">إضافة صور</span></div>
+  <div class="fab-wrap"><button class="admin-fab-btn" style="background:#9b59b6;color:white;" onclick="openAddSectionModal()"><i class="fas fa-folder-plus"></i></button><span class="fab-label">قسم جديد</span></div>
+  <div class="fab-wrap"><button class="admin-fab-btn" style="background:#7f8c8d;color:white;" onclick="openArchiveModal()"><i class="fas fa-archive"></i></button><span class="fab-label">الأرشيف</span></div>
+  <div class="fab-wrap"><button class="admin-fab-btn" id="fab-exit" onclick="deactivateAdminMode()"><i class="fas fa-sign-out-alt"></i></button><span class="fab-label">إنهاء الإدارة</span></div>
+</div>
+<!-- ADMIN STATS PANEL -->
+<div id="admin-stats-panel">
+  <div class="stats-header"><span>📊 إحصائيات الموقع</span><span onclick="closeAdminStats()" style="cursor:pointer;"><i class="fas fa-times"></i></span></div>
+  <div class="stats-body" id="stats-body"><div class="stats-loading-spinner"><i class="fas fa-circle-notch"></i></div></div>
+  <button id="stats-refresh" onclick="window.loadAdminStats&&window.loadAdminStats()"><i class="fas fa-sync-alt"></i> تحديث البيانات</button>
+</div>
+<div id="admin-toast"></div>
+<div class="progress-bar" id="myBar"></div>
+<!-- HEADER -->
+<header class="sticky-header">
+  <div style="width:30px;"></div>
+  <div class="logo-container">
+    <span id="admin-badge">ADMIN</span>
+    <div class="logo" id="logo-trigger" onclick="handleLogoClick()">MD</div>
+    <div class="brand-name">MOHAMMAD AL-BAAJ</div>
+  </div>
+  <div class="theme-toggle-header" onclick="toggleTheme()"><i class="fas fa-moon" id="themeIcon"></i></div>
+</header>
+<div class="new-site-btn-container">
+    <a href="index.html" class="new-site-btn">
+        <i class="fas fa-arrow-right"></i>
+        العودة للموقع الأصلي
+    </a>
+</div>
+
+
+<!-- MAIN PAGE -->
+<div id="main-page" class="page" style="display:block;">
+  <section class="hero"><h2 class="active-reveal">نصمم الفخامة لذوقكم</h2><p class="active-reveal">خبرة سنوات في فن الديكور، نحول منزلك إلى لوحة فنية.</p></section>
+  <section class="services">
+    <div class="service-card" id="fixed-card-interior" onclick="showPage('interior-gallery')">
+      <button class="custom-section-archive-btn" id="arch-btn-interior" onclick="archiveFixedSection(event,'interior')"><i class="fas fa-archive"></i> أرشفة</button>
+      <i class="fas fa-paint-roller"></i><h3>ديكور داخلي</h3><p>أرقى التصاميم الداخلية.</p><span class="click-hint">اضغط للعرض</span>
+    </div>
+    <div class="service-card" id="fixed-card-stone" onclick="showPage('stone-gallery')">
+      <button class="custom-section-archive-btn" id="arch-btn-stone" onclick="archiveFixedSection(event,'stone')"><i class="fas fa-archive"></i> أرشفة</button>
+      <i class="fas fa-hammer"></i><h3>واجهات حجرية</h3><p>تركيب وتصميم الحجر الطبيعي.</p><span class="click-hint">اضغط للعرض</span>
+    </div>
+  </section>
+  <div id="dynamic-sections-container"></div>
+  <div style="padding:0 20px 20px;">
+    <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360'"><i class="fas fa-comment-dots"></i><h3>استشارات فنية</h3><p>تواصل معنا عبر واتساب</p><span class="click-hint">اضغط للمراسلة</span></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;margin:20px auto;padding:15px;background:var(--vanilla-light);border:1px solid var(--latte-gold);border-radius:15px;max-width:fit-content;">
+    <div style="color:var(--dark-latte);font-family:'Cairo',sans-serif;font-weight:bold;font-size:1rem;margin-bottom:10px;display:flex;align-items:center;gap:8px;"><i class="fas fa-users" style="color:var(--latte-gold);"></i><span>عدد زوار الموقع:</span></div>
+    <div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div>
+    <script src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
+  </div>
+  <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+</div>
+<!-- REELS PAGE -->
+<div id="reels-page" class="page">
+  <div class="reels-header"><h2><i class="fas fa-film" style="color:#9b59b6;"></i> الريلز</h2><button class="reels-add-btn" id="reels-add-btn" onclick="openReelsUploadModal()"><i class="fas fa-plus"></i> إضافة</button></div>
+  <div class="reels-grid" id="reels-grid"><div class="reels-empty"><i class="fas fa-film"></i><p>جاري تحميل الريلز...</p></div></div>
+</div>
+<!-- PROFILE PAGE -->
+<div id="profile-page" class="page">
+  <div class="profile-hero">
+    <div class="avatar-wrapper">
+      <div class="profile-avatar" onclick="openAvatarUploadModal()" id="profile-avatar-display"><span class="avatar-placeholder-text" id="profile-avatar-placeholder">?</span></div>
+      <div class="avatar-edit-badge" onclick="openAvatarUploadModal()"><i class="fas fa-camera"></i></div>
+    </div>
+    <div class="profile-name" id="profile-display-name">—</div>
+    <div class="profile-email" id="profile-display-email">—</div>
+    <div class="profile-joined"><i class="fas fa-calendar-alt"></i><span id="profile-joined-date">—</span></div>
+  </div>
+  <div class="profile-stats-bar">
+    <div class="profile-stat"><span class="profile-stat-value" id="profile-stat-likes">0</span><span class="profile-stat-label">❤️ لايكات</span></div>
+    <div class="profile-stat"><span class="profile-stat-value" id="profile-stat-comments">0</span><span class="profile-stat-label">💬 تعليقات</span></div>
+    <div class="profile-stat"><span class="profile-stat-value" id="profile-stat-liked">0</span><span class="profile-stat-label">💛 أعجبني</span></div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-card">
+      <div class="profile-card-header"><i class="fas fa-user-cog"></i><span>معلوماتي الشخصية</span></div>
+      <div class="profile-card-body">
+        <div class="edit-field-row"><div class="edit-field-icon"><i class="fas fa-user"></i></div><div class="edit-field-info"><div class="edit-field-label">اسم المستخدم</div><div class="edit-field-value" id="info-username">—</div></div><button class="edit-btn" onclick="openEditUsernameModal()"><i class="fas fa-pen"></i> تعديل</button></div>
+        <div class="edit-field-row"><div class="edit-field-icon"><i class="fas fa-envelope"></i></div><div class="edit-field-info"><div class="edit-field-label">البريد الإلكتروني</div><div class="edit-field-value" id="info-email" style="font-weight:normal;font-size:.85rem;">—</div></div></div>
+        <div class="edit-field-row"><div class="edit-field-icon"><i class="fas fa-image"></i></div><div class="edit-field-info"><div class="edit-field-label">الصورة الشخصية</div><div class="edit-field-value" style="font-weight:normal;font-size:.82rem;color:#999;">تظهر مع تعليقاتك</div></div><button class="edit-btn" onclick="openAvatarUploadModal()"><i class="fas fa-camera"></i> تغيير</button></div>
+      </div>
+    </div>
+    <div class="profile-card">
+      <div class="profile-card-header"><i class="fas fa-heart"></i><span>الصور التي أعجبتني</span></div>
+      <div class="profile-card-body" style="padding:14px;">
+        <div id="liked-photos-grid" class="liked-grid"></div>
+        <div id="liked-photos-empty" class="empty-liked" style="display:none;"><i class="far fa-heart"></i><p>لم تعجبك أي صورة بعد</p></div>
+      </div>
+    </div>
+    <button id="sync-likes-btn" onclick="syncLikesNow()" style="width:100%;padding:14px;background:transparent;border:2px solid var(--latte-gold);border-radius:14px;color:var(--latte-gold);font-family:'Cairo',sans-serif;font-weight:bold;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;"><i class="fas fa-sync-alt"></i> مزامنة الإعجابات</button>
+    <button class="profile-logout-btn" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+  </div>
+</div>
+<!-- PUBLIC PROFILE PAGE -->
+<div id="public-profile-page" class="page">
+  <div class="back-btn-container"><button class="back-btn" onclick="closePubProfile()"><i class="fas fa-arrow-right"></i> رجوع</button></div>
+  <div class="pub-profile-hero" id="pub-profile-hero">
+    <div class="pub-avatar-ring" id="pub-avatar-ring"><span class="pub-avatar-initial">?</span></div>
+    <div class="pub-username" id="pub-username">—</div>
+    <div class="pub-rank-badge" id="pub-rank-badge"></div>
+    <div class="pub-rank-label" id="pub-rank-label"></div>
+    <div class="pub-joined"><i class="fas fa-calendar-alt"></i><span id="pub-joined-text">—</span></div>
+  </div>
+  <div class="pub-stats-bar">
+    <div class="pub-stat"><span class="pub-stat-value" id="pub-stat-comments">—</span><span class="pub-stat-label">💬 تعليق</span></div>
+    <div class="pub-stat"><span class="pub-stat-value" id="pub-stat-liked-count">—</span><span class="pub-stat-label">❤️ إعجاب</span></div>
+    <div class="pub-stat"><span class="pub-stat-value" id="pub-stat-joined-days">—</span><span class="pub-stat-label">📅 يوم</span></div>
+  </div>
+  <div class="pub-profile-body">
+    <div class="pub-own-banner" id="pub-own-banner" style="display:none;"><i class="fas fa-user-shield"></i><span>هذا حسابك الشخصي</span><button class="pub-own-edit-btn" onclick="closePubProfile();navTo('profile-page');"><i class="fas fa-pen"></i> تعديل</button></div>
+    <div class="profile-card">
+      <div class="profile-card-header"><i class="fas fa-heart"></i><span id="pub-liked-title">الصور المفضلة</span></div>
+      <div class="profile-card-body" style="padding:14px;">
+        <div id="pub-liked-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;"></div>
+        <div id="pub-liked-empty" style="display:none;text-align:center;padding:25px 10px;color:#999;"><i class="far fa-heart" style="font-size:2rem;color:rgba(200,161,101,.3);display:block;margin-bottom:8px;"></i><p style="font-size:.82rem;">لم يعجبه أي تصميم بعد</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ABOUT PAGE -->
+<div id="about-page" class="page">
+  <div class="about-hero"><div class="about-logo-circle"><span>MD</span></div><h2>محمد البعاج</h2><p>خبراء الديكور والتصميم المعماري</p></div>
+  <div class="about-body">
+    <div class="about-card">
+      <div class="about-card-header"><i class="fas fa-info-circle"></i><span>من نحن</span></div>
+      <div class="about-card-body">
+        <p class="about-info-text">نحن شركة متخصصة في فن الديكور والتصميم المعماري، نمتلك خبرة واسعة منذ عام 2018 وحتى اليوم. نؤمن بأن كل مساحة تحكي قصة، ومهمتنا أن نجعل قصتك استثنائية.</p>
+        <div class="about-stat-row">
+          <div class="about-stat-box"><span class="about-stat-num">7+</span><span class="about-stat-lbl">سنوات خبرة</span></div>
+          <div class="about-stat-box"><span class="about-stat-num">288+</span><span class="about-stat-lbl">مشروع منجز</span></div>
+          <div class="about-stat-box"><span class="about-stat-num">98%</span><span class="about-stat-lbl">رضا العملاء</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="about-card">
+      <div class="about-card-header"><i class="fas fa-share-alt"></i><span>تواصل معنا</span></div>
+      <div class="about-card-body">
+        <div class="social-link-row">
+          <a href="https://wa.me/9647839529360" target="_blank" class="social-link-item"><div class="social-link-icon" style="background:#25D366;"><i class="fab fa-whatsapp"></i></div><div><div class="social-link-name">واتساب</div><div class="social-link-sub">تواصل مباشر معنا</div></div><i class="fas fa-external-link-alt social-link-arrow"></i></a>
+          <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank" class="social-link-item"><div class="social-link-icon" style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);"><i class="fab fa-instagram"></i></div><div><div class="social-link-name">انستجرام — DiwDecor</div><div class="social-link-sub">تصفح أعمالنا الأخيرة</div></div><i class="fas fa-external-link-alt social-link-arrow"></i></a>
+          <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank" class="social-link-item"><div class="social-link-icon" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);"><i class="fab fa-instagram"></i></div><div><div class="social-link-name">محمد البعاج</div><div class="social-link-sub">الحساب الشخصي للمالك</div></div><i class="fas fa-external-link-alt social-link-arrow"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- SETTINGS PAGE -->
+<div id="settings-page" class="page">
+  <div class="settings-header"><h2><i class="fas fa-cog"></i> الإعدادات</h2></div>
+  <div class="settings-body">
+    <div class="settings-card">
+      <div class="settings-item" onclick="toggleTheme()"><div class="settings-item-icon"><i class="fas fa-moon"></i></div><div class="settings-item-info"><div class="settings-item-title">الوضع الليلي</div><div class="settings-item-sub">تغيير مظهر التطبيق</div></div><button class="settings-toggle" id="dark-mode-toggle" onclick="event.stopPropagation();toggleTheme();"></button></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-item" onclick="navTo('profile-page')"><div class="settings-item-icon"><i class="fas fa-user-edit"></i></div><div class="settings-item-info"><div class="settings-item-title">تعديل الملف الشخصي</div><div class="settings-item-sub">الاسم والصورة الشخصية</div></div><i class="fas fa-chevron-left settings-item-arrow"></i></div>
+      <div class="settings-item" onclick="syncLikesNow()"><div class="settings-item-icon"><i class="fas fa-sync-alt"></i></div><div class="settings-item-info"><div class="settings-item-title">مزامنة الإعجابات</div><div class="settings-item-sub">ربط الإعجابات بحسابك</div></div><i class="fas fa-chevron-left settings-item-arrow"></i></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-item"><div class="settings-item-icon" style="background:rgba(200,161,101,.15);"><i class="fas fa-bell" style="color:var(--latte-gold);"></i></div><div class="settings-item-info"><div class="settings-item-title">الإشعارات</div><div class="settings-item-sub">إدارة التنبيهات</div></div><span class="coming-soon-badge">قريباً</span></div>
+      <div class="settings-item"><div class="settings-item-icon" style="background:rgba(200,161,101,.15);"><i class="fas fa-comment-dots" style="color:var(--latte-gold);"></i></div><div class="settings-item-info"><div class="settings-item-title">الدردشة المباشرة</div><div class="settings-item-sub">تواصل مع الإدارة</div></div><span class="coming-soon-badge">قريباً</span></div>
+    </div>
+    <div class="settings-card">
+      <div class="settings-item" onclick="logoutUser()"><div class="settings-item-icon" style="background:rgba(231,76,60,.1);"><i class="fas fa-sign-out-alt" style="color:#e74c3c;"></i></div><div class="settings-item-info"><div class="settings-item-title" style="color:#e74c3c;">تسجيل الخروج</div><div class="settings-item-sub">الخروج من الحساب الحالي</div></div><i class="fas fa-chevron-left settings-item-arrow"></i></div>
+    </div>
+    <p style="text-align:center;font-size:.72rem;color:#999;padding:10px;">MD Decor v2.0 &copy; 2026</p>
+  </div>
+</div>
+<!-- STONE GALLERY -->
+<div id="stone-gallery" class="page">
+  <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
+  <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold);font-size:2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
+  <video id="main-video" controls playsinline><source src="video.mp4" type="video/mp4"></video>
+  <div class="product-section"><img src="p01.webp" ondblclick="handleDoubleTap('p01')"><div class="model-tag"><span>تصميم ملكي فاخر</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p01')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p01')"><i class="far fa-comment"></i></button><button id="btn-p01" class="like-btn" onclick="handleLike('p01')"><i class="fas fa-heart"></i><span id="count-p01">0</span></button></div></div></div>
+  <div class="product-section"><img src="p02.webp" ondblclick="handleDoubleTap('p02')"><div class="model-tag"><span>واجهات حجرية مميزة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p02')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p02')"><i class="far fa-comment"></i></button><button id="btn-p02" class="like-btn" onclick="handleLike('p02')"><i class="fas fa-heart"></i><span id="count-p02">0</span></button></div></div></div>
+  <div class="product-section"><img src="p03.webp" ondblclick="handleDoubleTap('p03')"><div class="model-tag"><span>إبداع التصميم الخارجي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p03')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p03')"><i class="far fa-comment"></i></button><button id="btn-p03" class="like-btn" onclick="handleLike('p03')"><i class="fas fa-heart"></i><span id="count-p03">0</span></button></div></div></div>
+  <div class="product-section"><img src="p04.webp" ondblclick="handleDoubleTap('p04')"><div class="model-tag"><span>فخامة الحجر الطبيعي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p04')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p04')"><i class="far fa-comment"></i></button><button id="btn-p04" class="like-btn" onclick="handleLike('p04')"><i class="fas fa-heart"></i><span id="count-p04">0</span></button></div></div></div>
+  <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p05')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i><span id="count-p05">0</span></button></div></div></div>
+  <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p06')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i><span id="count-p06">0</span></button></div></div></div>
+  <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p07')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i><span id="count-p07">0</span></button></div></div></div>
+  <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i><span id="count-p08">0</span></button></div></div></div>
+  <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p09')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i><span id="count-p09">0</span></button></div></div></div>
+  <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p10')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i><span id="count-p10">0</span></button></div></div></div>
+  <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i><span id="count-p11">0</span></button></div></div></div>
+  <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i><span id="count-p12">0</span></button></div></div></div>
+  <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i><span id="count-p13">0</span></button></div></div></div>
+  <div id="stone-dynamic-photos"></div>
+</div>
+<!-- INTERIOR GALLERY -->
+<div id="interior-gallery" class="page">
+  <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
+  <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in01')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i><span id="count-in01">0</span></button></div></div></div>
+  <div class="product-section"><img src="in02.webp" ondblclick="handleDoubleTap('in02')"><div class="model-tag"><span>فخامة الاستقبال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in02')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in02')"><i class="far fa-comment"></i></button><button id="btn-in02" class="like-btn" onclick="handleLike('in02')"><i class="fas fa-heart"></i><span id="count-in02">0</span></button></div></div></div>
+  <div class="product-section"><img src="in03.webp" ondblclick="handleDoubleTap('in03')"><div class="model-tag"><span>لمسات كلاسيكية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in03')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in03')"><i class="far fa-comment"></i></button><button id="btn-in03" class="like-btn" onclick="handleLike('in03')"><i class="fas fa-heart"></i><span id="count-in03">0</span></button></div></div></div>
+  <div class="product-section"><img src="in04.webp" ondblclick="handleDoubleTap('in04')"><div class="model-tag"><span>ركن الترفيه الذكي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in04')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in04')"><i class="far fa-comment"></i></button><button id="btn-in04" class="like-btn" onclick="handleLike('in04')"><i class="fas fa-heart"></i><span id="count-in04">0</span></button></div></div></div>
+  <div class="product-section"><img src="in05.webp" ondblclick="handleDoubleTap('in05')"><div class="model-tag"><span>سحر الإضاءة الهادئة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in05')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in05')"><i class="far fa-comment"></i></button><button id="btn-in05" class="like-btn" onclick="handleLike('in05')"><i class="fas fa-heart"></i><span id="count-in05">0</span></button></div></div></div>
+  <div class="product-section"><img src="in06.webp" ondblclick="handleDoubleTap('in06')"><div class="model-tag"><span>تناغم الألوان</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in06')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in06')"><i class="far fa-comment"></i></button><button id="btn-in06" class="like-btn" onclick="handleLike('in06')"><i class="fas fa-heart"></i><span id="count-in06">0</span></button></div></div></div>
+  <div class="product-section"><img src="in07.webp" ondblclick="handleDoubleTap('in07')"><div class="model-tag"><span>أناقة الهدوء</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in07')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in07')"><i class="far fa-comment"></i></button><button id="btn-in07" class="like-btn" onclick="handleLike('in07')"><i class="fas fa-heart"></i><span id="count-in07">0</span></button></div></div></div>
+  <div class="product-section"><img src="in08.webp" ondblclick="handleDoubleTap('in08')"><div class="model-tag"><span>تنسيق فني مميز</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in08')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in08')"><i class="far fa-comment"></i></button><button id="btn-in08" class="like-btn" onclick="handleLike('in08')"><i class="fas fa-heart"></i><span id="count-in08">0</span></button></div></div></div>
+  <div class="product-section"><img src="in09.webp" ondblclick="handleDoubleTap('in09')"><div class="model-tag"><span>جمالية الممرات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in09')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in09')"><i class="far fa-comment"></i></button><button id="btn-in09" class="like-btn" onclick="handleLike('in09')"><i class="fas fa-heart"></i><span id="count-in09">0</span></button></div></div></div>
+  <div class="product-section"><img src="in10.webp" ondblclick="handleDoubleTap('in10')"><div class="model-tag"><span>زوايا الراحة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in10')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in10')"><i class="far fa-comment"></i></button><button id="btn-in10" class="like-btn" onclick="handleLike('in10')"><i class="fas fa-heart"></i><span id="count-in10">0</span></button></div></div></div>
+  <div class="product-section"><img src="in11.webp" ondblclick="handleDoubleTap('in11')"><div class="model-tag"><span>بريق الفخامة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in11')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in11')"><i class="far fa-comment"></i></button><button id="btn-in11" class="like-btn" onclick="handleLike('in11')"><i class="fas fa-heart"></i><span id="count-in11">0</span></button></div></div></div>
+  <div class="product-section"><img src="in12.webp" ondblclick="handleDoubleTap('in12')"><div class="model-tag"><span>هندسة الجمال الداخلي</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in12')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in12')"><i class="far fa-comment"></i></button><button id="btn-in12" class="like-btn" onclick="handleLike('in12')"><i class="fas fa-heart"></i><span id="count-in12">0</span></button></div></div></div>
+  <div class="product-section"><img src="in13.webp" ondblclick="handleDoubleTap('in13')"><div class="model-tag"><span>تكامل التصميم</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in13')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in13')"><i class="far fa-comment"></i></button><button id="btn-in13" class="like-btn" onclick="handleLike('in13')"><i class="fas fa-heart"></i><span id="count-in13">0</span></button></div></div></div>
+  <div class="product-section"><img src="in14.webp" ondblclick="handleDoubleTap('in14')"><div class="model-tag"><span>واجهة داخلية ساحرة</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in14')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in14')"><i class="far fa-comment"></i></button><button id="btn-in14" class="like-btn" onclick="handleLike('in14')"><i class="fas fa-heart"></i><span id="count-in14">0</span></button></div></div></div>
+  <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in15')"><i class="fas fa-trash"></i></button><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i><span id="count-in15">0</span></button></div></div></div>
+  <div id="interior-dynamic-photos"></div>
+  <div class="whatsapp-cta"><a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد تواصل واتساب</a></div>
+</div>
+<div id="custom-pages-wrapper"></div>
+<!-- COMMENTS MODAL -->
+<div id="comments-modal" class="comment-modal">
+  <div class="comment-content" style="display:flex;flex-direction:column;max-height:80vh;">
+    <div style="padding:15px;border-bottom:1px solid var(--latte-gold);display:flex;justify-content:space-between;align-items:center;"><h3 style="font-size:1rem;color:var(--latte-gold);">التعليقات</h3><i class="fas fa-times" onclick="closeComments()" style="cursor:pointer;"></i></div>
+    <div id="comments-list" style="flex-grow:1;overflow-y:auto;padding:15px;min-height:200px;display:flex;flex-direction:column;gap:12px;"></div>
+    <div style="padding:15px;border-top:1px solid var(--latte-gold);display:flex;gap:8px;">
+      <input type="text" id="comment-input" placeholder="اكتب تعليقك..." style="flex-grow:1;padding:10px;border-radius:20px;border:1px solid var(--latte-gold);background:var(--vanilla-light);outline:none;color:var(--dark-latte);font-family:'Cairo',sans-serif;">
+      <button onclick="sendComment()" style="background:var(--latte-gold);color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+</div>
+<!-- ADD SECTION MODAL -->
+<div id="add-section-modal" class="comment-modal">
+  <div class="comment-content" style="padding:0;overflow:hidden;">
+    <div style="background:var(--latte-gold);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:bold;">✨ إضافة قسم جديد</span><i class="fas fa-times" onclick="closeAddSectionModal()" style="cursor:pointer;"></i></div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+      <input type="text" id="new-section-name" class="upload-field" placeholder="اسم القسم">
+      <input type="text" id="new-section-desc" class="upload-field" placeholder="وصف القسم (اختياري)">
+      <select id="new-section-icon" class="upload-field">
+        <option value="fas fa-couch">🛋️ أثاث</option><option value="fas fa-bath">🛁 حمامات</option>
+        <option value="fas fa-utensils">🍽️ مطابخ</option><option value="fas fa-bed">🛏️ غرف نوم</option>
+        <option value="fas fa-tree">🌳 خارجي</option><option value="fas fa-building">🏢 مشاريع</option>
+        <option value="fas fa-star">⭐ مميز</option><option value="fas fa-paint-brush">🎨 تصاميم</option>
+        <option value="fas fa-home">🏠 منازل</option><option value="fas fa-layer-group">📦 متنوع</option>
+      </select>
+      <button class="upload-submit-btn" onclick="createNewSection()"><i class="fas fa-plus"></i> إنشاء القسم</button>
+    </div>
+  </div>
+</div>
+<!-- ARCHIVE MODAL -->
+<div id="archive-modal" class="comment-modal">
+  <div class="comment-content" style="padding:0;overflow:hidden;">
+    <div style="background:#7f8c8d;color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;"><span style="font-weight:bold;">📦 الأقسام المؤرشفة</span><i class="fas fa-times" onclick="closeArchiveModal()" style="cursor:pointer;"></i></div>
+    <div id="archive-list" style="padding:16px;max-height:60vh;overflow-y:auto;"><p style="text-align:center;opacity:.5;font-size:.85rem;">لا توجد أقسام مؤرشفة</p></div>
+  </div>
+</div>
+<!-- AUTH MODAL -->
+<div id="auth-modal" class="comment-modal">
+  <div class="comment-content" style="padding:25px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;"><h3 style="color:var(--latte-gold);">تسجيل الدخول</h3><i class="fas fa-times" onclick="closeAuthModal()" style="cursor:pointer;color:var(--latte-gold);"></i></div>
+    <div style="display:flex;flex-direction:column;gap:15px;">
+      <button onclick="loginWithGoogle()" class="back-btn" style="width:100%;justify-content:center;"><i class="fab fa-google"></i> تسجيل عبر Google</button>
+      <input type="email" id="auth-email" placeholder="البريد الإلكتروني" style="padding:12px;border-radius:10px;border:1px solid var(--latte-gold);background:var(--vanilla-light);color:var(--dark-latte);font-family:'Cairo',sans-serif;">
+      <input type="password" id="auth-password" placeholder="كلمة المرور" style="padding:12px;border-radius:10px;border:1px solid var(--latte-gold);background:var(--vanilla-light);color:var(--dark-latte);font-family:'Cairo',sans-serif;">
+      <button onclick="handleEmailAuth()" id="auth-submit-btn" class="back-btn" style="width:100%;border-radius:10px;justify-content:center;">دخول / اشتراك</button>
+      <p style="font-size:.8rem;text-align:center;">سيتم إنشاء حساب تلقائياً للمستخدمين الجدد</p>
+    </div>
+  </div>
+</div>
+<!-- BOTTOM NAV -->
+<nav id="bottom-nav">
+  <div class="bnav-item" id="bnav-settings" onclick="navTo('settings-page')"><i class="fas fa-cog"></i></div>
+  <div class="bnav-item" id="bnav-about" onclick="navTo('about-page')"><i class="fas fa-store"></i></div>
+  <div class="bnav-item" id="bnav-profile" onclick="navTo('profile-page')">
+    <img id="bnav-profile-avatar" src="" alt="">
+    <i class="fas fa-user" id="bnav-profile-icon"></i>
+  </div>
+  <div class="bnav-item" id="bnav-reels" onclick="navTo('reels-page')"><i class="fas fa-film"></i></div>
+  <div class="bnav-item active" id="bnav-home" onclick="navTo('main-page')"><i class="fas fa-home"></i></div>
+</nav>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import{getFirestore,doc,updateDoc,getDoc,setDoc,increment,collection,addDoc,query,where,onSnapshot,serverTimestamp,getDocs,deleteDoc,writeBatch,getCountFromServer,deleteField}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,GoogleAuthProvider,signInWithPopup,signOut}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+const firebaseConfig={apiKey:"AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0",authDomain:"diwd-a7709.firebaseapp.com",databaseURL:"https://diwd-a7709-default-rtdb.firebaseio.com",projectId:"diwd-a7709",storageBucket:"diwd-a7709.firebasestorage.app",messagingSenderId:"190314181686",appId:"1:190314181686:web:97b7f8674522bdbb4d5497"};
+const app=initializeApp(firebaseConfig),db=getFirestore(app),auth=getAuth(app),sendTG=msg=>window.sendTelegramNotification(msg);
+window._db=db;window._deleteDoc=deleteDoc;window._doc=doc;
+const RTDB="https://diwd-a7709-default-rtdb.firebaseio.com";
+async function rtdbSet(p,d){const r=await fetch(RTDB+p+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('RTDB write failed');return r.json();}
+async function rtdbPush(p,d){const r=await fetch(RTDB+p+'.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('RTDB push failed');return r.json();}
+async function rtdbGet(p){const r=await fetch(RTDB+p+'.json');if(!r.ok)throw new Error('RTDB read failed');return r.json();}
+async function rtdbDelete(p){await fetch(RTDB+p+'.json',{method:'DELETE'});}
+function compressImage(file,maxWidth,quality){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=e=>{const img=new Image();img.onerror=reject;img.onload=()=>{const canvas=document.createElement('canvas');let w=img.width,h=img.height;if(w>maxWidth){h=Math.round(h*maxWidth/w);w=maxWidth;}canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);resolve(canvas.toDataURL('image/jpeg',quality));};img.src=e.target.result;};reader.readAsDataURL(file);});}
+// AUTH
+async function sendAdminNotif(name,email){try{await emailjs.send("service_d6z689p","template_7j8sc6u",{user_name:name,user_email:email,date:new Date().toLocaleString('ar-IQ')});}catch(e){}}
+async function askForUsername(uid,email){const username=prompt("اكتب اسم المستخدم:");if(!username)return askForUsername(uid,email);await setDoc(doc(db,"users",uid),{username,email,createdAt:serverTimestamp(),avatarUrl:'',avatarBase64:''});sendAdminNotif(username,email);sendTG("🆕 مستخدم جديد\n👤 "+username+"\n📧 "+email+"\n🕒 "+new Date().toLocaleString('ar-IQ'));alert("تم حفظ اسم المستخدم");document.getElementById('welcome-gate').classList.remove('active');}
+window.loginWithGoogle=async()=>{try{const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});const result=await signInWithPopup(auth,provider);const user=result.user;window.currentUser=user;const userSnap=await getDoc(doc(db,"users",user.uid));if(!userSnap.exists()||!userSnap.data().username){await askForUsername(user.uid,user.email);}else{document.getElementById('welcome-gate').classList.remove('active');document.getElementById('auth-modal').classList.remove('active');}}catch(e){alert(e.message);}};
+window.logoutUser=async()=>{try{await signOut(auth);window.currentUser=null;window._currentUserData=null;updateNavAvatar(null);document.getElementById('welcome-gate').style.opacity='1';document.getElementById('welcome-gate').classList.add('active');document.getElementById('auth-modal').classList.remove('active');document.getElementById('comments-modal').classList.remove('active');navTo('main-page');}catch(e){alert("حدث خطأ أثناء تسجيل الخروج");}};
+window.handleEmailAuth=async()=>{const email=document.getElementById('auth-email').value.trim();const password=document.getElementById('auth-password').value;const btn=document.getElementById('auth-submit-btn');if(!email||!password)return alert("يرجى إدخال كافة البيانات");if(password.length<6)return alert("كلمة المرور يجب أن تكون 6 أحرف على الأقل");btn.innerText="جاري...";btn.disabled=true;try{await signInWithEmailAndPassword(auth,email,password);}catch(error){if(error.code==='auth/user-not-found'||error.code==='auth/invalid-credential'){try{const uc=await createUserWithEmailAndPassword(auth,email,password);await askForUsername(uc.user.uid,uc.user.email);}catch(e){alert("خطأ: "+e.message);}}else{alert("خطأ: "+error.message);}}finally{btn.innerText="دخول / اشتراك";btn.disabled=false;}};
+onAuthStateChanged(auth,async user=>{
+  window.currentUser=user;
+  if(user){
+    sendTG("🔐 دخول\n👤 "+(user.email||user.displayName)+"\n🕒 "+new Date().toLocaleString('ar-IQ'));
+    document.getElementById('welcome-gate').classList.remove('active');
+    document.getElementById('auth-modal').classList.remove('active');
+    try{
+      const snap=await getDoc(doc(db,"users",user.uid));
+      if(snap.exists()){
+        window._currentUserData=snap.data();
+        updateNavAvatar(snap.data());
+        const localLiked=Object.keys(localStorage).filter(k=>k.startsWith('liked_'));
+        if(localLiked.length>0){const fbLiked=snap.data().likedPhotos||{};const updates={};localLiked.forEach(k=>{const pid=k.replace('liked_','');if(!fbLiked[pid])updates[`likedPhotos.${pid}`]=true;});if(Object.keys(updates).length>0){try{await updateDoc(doc(db,"users",user.uid),updates);}catch(e){}}}
+        const fbLiked=snap.data().likedPhotos||{};Object.keys(fbLiked).forEach(pid=>{if(!localStorage.getItem('liked_'+pid))localStorage.setItem('liked_'+pid,'true');});
+      }
+    }catch(e){}
+    if(window.isAdminMode)document.getElementById('reels-add-btn').style.display='flex';
+  }
+});
+function updateNavAvatar(userData){
+  const av=userData?.avatarBase64||userData?.avatarUrl||'';
+  const navAvatar=document.getElementById('bnav-profile-avatar');
+  const navIcon=document.getElementById('bnav-profile-icon');
+  if(av&&navAvatar&&navIcon){navAvatar.src=av;navAvatar.style.display='block';navIcon.style.display='none';}
+  else if(navAvatar&&navIcon){navAvatar.style.display='none';navIcon.style.display='block';}
+}
+// REELS
+window.loadReelsPage=async function(){
+  const grid=document.getElementById('reels-grid');
+  grid.innerHTML='<div class="reels-empty"><i class="fas fa-circle-notch fa-spin" style="font-size:2rem;color:var(--latte-gold);display:block;margin-bottom:12px;"></i><p>جاري التحميل...</p></div>';
+  if(window.isAdminMode)document.getElementById('reels-add-btn').style.display='flex';
+  try{
+    const data=await rtdbGet('/reels');grid.innerHTML='';
+    if(!data||Object.keys(data).length===0){grid.innerHTML='<div class="reels-empty"><i class="fas fa-film"></i><p>لا توجد ريلز بعد</p>'+(window.isAdminMode?'<p style="font-size:.8rem;margin-top:8px;color:var(--latte-gold);">اضغط + لإضافة ريل</p>':'')+'</div>';return;}
+    const entries=Object.entries(data).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+    entries.forEach(([key,val])=>injectReelCard(key,val));
+  }catch(e){grid.innerHTML='<div class="reels-empty"><i class="fas fa-exclamation-circle" style="color:var(--admin-red);"></i><p>خطأ في التحميل</p></div>';}
+};
+function injectReelCard(key,val){
+  const grid=document.getElementById('reels-grid');if(document.getElementById('reel-'+key))return;
+  const card=document.createElement('div');card.className='reel-card';card.id='reel-'+key;
+  card.innerHTML='<video src="'+val.url+'" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video><div class="reel-card-play"><i class="fas fa-play"></i></div><div class="reel-card-overlay"><div class="reel-card-title">'+(val.title||'ريل جديد')+'</div></div><button class="reel-admin-del" id="rdel-'+key+'" onclick="event.stopPropagation();deleteReel(\''+key+'\')"><i class="fas fa-times"></i></button>';
+  card.onclick=()=>openReelPlayer(val.url,val.title||'');
+  if(window.isAdminMode)card.querySelector('.reel-admin-del').style.display='flex';
+  grid.appendChild(card);
+}
+window.openReelPlayer=function(url,title){const modal=document.getElementById('reel-player-modal');const video=document.getElementById('reel-player-video');document.getElementById('reel-player-title').textContent=title;video.src=url;modal.classList.add('active');video.play().catch(()=>{});document.body.style.overflow='hidden';};
+window.closeReelPlayer=function(){const modal=document.getElementById('reel-player-modal');const video=document.getElementById('reel-player-video');video.pause();video.src='';modal.classList.remove('active');document.body.style.overflow='';};
+window.submitReel=async function(){
+  if(!window.isAdminMode)return;if(!window._reelFile){showAdminToast('⚠️ اختر فيديو أولاً');return;}
+  const title=document.getElementById('reel-title-input').value.trim()||'ريل جديد';
+  const btn=document.getElementById('reel-submit-btn');const progressWrap=document.getElementById('reel-progress-wrap');const progressBar=document.getElementById('reel-progress-inner');const progressText=document.getElementById('reel-progress-text');
+  btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري الرفع...';progressWrap.style.display='block';progressBar.style.width='0%';
+  try{
+    progressText.textContent='جاري قراءة الفيديو...';
+    const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=e=>resolve(e.target.result);reader.readAsDataURL(window._reelFile);});
+    progressBar.style.width='60%';progressText.textContent='جاري الحفظ...';
+    const result=await rtdbPush('/reels',{title,url:base64,createdAt:Date.now()});
+    progressBar.style.width='100%';progressText.textContent='✅ تم الرفع!';
+    injectReelCard(result.name,{title,url:base64});
+    sendTG("🎬 ريل جديد\n🏷️ "+title+"\n🕒 "+new Date().toLocaleString('ar-IQ'));
+    showAdminToast('✅ تم رفع الريل بنجاح!');
+    setTimeout(()=>closeReelsUploadModal(),1200);
+  }catch(e){progressText.textContent='❌ خطأ: '+e.message;showAdminToast('❌ فشل الرفع');}
+  finally{btn.disabled=false;btn.innerHTML='<i class="fas fa-upload"></i> رفع الريل';}
+};
+window.deleteReel=async function(key){if(!window.isAdminMode||!confirm('حذف هذا الريل نهائياً؟'))return;try{await rtdbDelete('/reels/'+key);document.getElementById('reel-'+key)?.remove();showAdminToast('✅ تم حذف الريل');const grid=document.getElementById('reels-grid');if(grid.children.length===0){grid.innerHTML='<div class="reels-empty"><i class="fas fa-film"></i><p>لا توجد ريلز بعد</p></div>';}}catch(e){showAdminToast('❌ خطأ: '+e.message);}};
+// PROFILE
+window.loadProfilePage=async function(){
+  if(!window.currentUser)return;const user=window.currentUser;
+  try{
+    const snap=await getDoc(doc(db,"users",user.uid));const data=snap.exists()?snap.data():{};window._currentUserData=data;
+    const username=data.username||user.email.split('@')[0];
+    document.getElementById('profile-display-name').textContent=username;
+    document.getElementById('profile-display-email').textContent=user.email||'';
+    document.getElementById('info-username').textContent=username;
+    document.getElementById('info-email').textContent=user.email||'';
+    if(data.createdAt){const d=data.createdAt.toDate?data.createdAt.toDate():new Date(data.createdAt.seconds*1000);document.getElementById('profile-joined-date').textContent='عضو منذ '+d.toLocaleDateString('ar-IQ',{year:'numeric',month:'long'});}
+    const av=data.avatarBase64||data.avatarUrl||'';
+    setProfileAvatarDisplay(av,username);updateNavAvatar(data);
+    loadProfileStats(user.uid);loadLikedPhotos();
+  }catch(e){console.error(e);}
+};
+function setProfileAvatarDisplay(avatarSrc,username){const display=document.getElementById('profile-avatar-display');if(avatarSrc){display.innerHTML='<img src="'+avatarSrc+'" style="width:100%;height:100%;object-fit:cover;" alt="">';}else{display.innerHTML='<span class="avatar-placeholder-text">'+(username||'U')[0].toUpperCase()+'</span>';}}
+async function loadProfileStats(uid){
+  try{
+    let likedIds=[];
+    try{const uSnap=await getDoc(doc(db,"users",uid));const fbLiked=uSnap.exists()?(uSnap.data().likedPhotos||{}):{};Object.keys(fbLiked).forEach(pid=>localStorage.setItem('liked_'+pid,'true'));const localKeys=Object.keys(localStorage).filter(k=>k.startsWith('liked_'));const updates={};localKeys.forEach(k=>{const pid=k.replace('liked_','');if(!fbLiked[pid])updates[`likedPhotos.${pid}`]=true;});if(Object.keys(updates).length>0)await updateDoc(doc(db,"users",uid),updates);likedIds=[...new Set([...Object.keys(fbLiked),...localKeys.map(k=>k.replace('liked_',''))])];}catch(e){likedIds=Object.keys(localStorage).filter(k=>k.startsWith('liked_')).map(k=>k.replace('liked_',''));}
+    document.getElementById('profile-stat-liked').textContent=likedIds.length;
+    document.getElementById('profile-stat-likes').textContent=likedIds.length;
+    const commentsQ=query(collection(db,"comments"),where("userId","==",uid));const commentsSnap=await getDocs(commentsQ);document.getElementById('profile-stat-comments').textContent=commentsSnap.size;
+  }catch(e){}
+}
+async function loadLikedPhotos(){
+  const grid=document.getElementById('liked-photos-grid');const empty=document.getElementById('liked-photos-empty');let allLiked=[];
+  if(window.currentUser){try{const uSnap=await getDoc(doc(db,"users",window.currentUser.uid));const fbLiked=uSnap.exists()?(uSnap.data().likedPhotos||{}):{};Object.keys(fbLiked).forEach(pid=>localStorage.setItem('liked_'+pid,'true'));allLiked=[...new Set([...Object.keys(fbLiked),...Object.keys(localStorage).filter(k=>k.startsWith('liked_')).map(k=>k.replace('liked_',''))])];}catch(e){allLiked=Object.keys(localStorage).filter(k=>k.startsWith('liked_')).map(k=>k.replace('liked_',''));}}
+  else{allLiked=Object.keys(localStorage).filter(k=>k.startsWith('liked_')).map(k=>k.replace('liked_',''));}
+  if(allLiked.length===0){grid.style.display='none';empty.style.display='block';return;}
+  grid.style.display='grid';empty.style.display='none';grid.innerHTML='';
+  allLiked.forEach(id=>{const src=id+'.webp';const thumb=document.createElement('div');thumb.className='liked-thumb';thumb.innerHTML='<img src="'+src+'" alt="'+id+'" onerror="this.parentElement.style.display=\'none\'">';thumb.onclick=()=>openLightbox(src);grid.appendChild(thumb);});
+}
+window.syncLikesNow=async function(){
+  if(!window.currentUser){showAdminToast('⚠️ يجب تسجيل الدخول');return;}
+  const btn=document.getElementById('sync-likes-btn');if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري المزامنة...';}
+  try{const uid=window.currentUser.uid;const uSnap=await getDoc(doc(db,"users",uid));const fbLiked=uSnap.exists()?(uSnap.data().likedPhotos||{}):{};Object.keys(fbLiked).forEach(pid=>localStorage.setItem('liked_'+pid,'true'));const localKeys=Object.keys(localStorage).filter(k=>k.startsWith('liked_'));const updates={};localKeys.forEach(k=>{const pid=k.replace('liked_','');if(!fbLiked[pid])updates[`likedPhotos.${pid}`]=true;});if(Object.keys(updates).length>0)await updateDoc(doc(db,"users",uid),updates);const total=new Set([...Object.keys(fbLiked),...localKeys.map(k=>k.replace('liked_',''))]).size;showAdminToast('✅ تمت المزامنة — '+total+' إعجاب');loadProfilePage();}
+  catch(e){showAdminToast('❌ خطأ في المزامنة');}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-sync-alt"></i> مزامنة الإعجابات';}}
+};
+// EDIT USERNAME
+window.openEditUsernameModal=function(){const current=document.getElementById('info-username').textContent;document.getElementById('new-username-input').value=current==='—'?'':current;document.getElementById('edit-username-modal').classList.add('active');setTimeout(()=>document.getElementById('new-username-input').focus(),150);};
+window.closeEditUsernameModal=function(){document.getElementById('edit-username-modal').classList.remove('active');};
+window.saveNewUsername=async function(){
+  const newName=document.getElementById('new-username-input').value.trim();
+  if(!newName||newName.length<2){alert('الاسم يجب أن يكون حرفين على الأقل');return;}
+  if(newName.length>20){alert('الاسم طويل جداً');return;}
+  if(!window.currentUser)return;
+  const saveBtn=document.querySelector('#edit-username-modal .back-btn');if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='⏳ جاري الحفظ...';}
+  try{const uid=window.currentUser.uid;await updateDoc(doc(db,"users",uid),{username:newName});const commentsQ=query(collection(db,"comments"),where("userId","==",uid));const commentsSnap=await getDocs(commentsQ);if(!commentsSnap.empty){const batch=writeBatch(db);commentsSnap.forEach(d=>batch.update(d.ref,{userName:newName}));await batch.commit();}if(window._currentUserData)window._currentUserData.username=newName;document.getElementById('profile-display-name').textContent=newName;document.getElementById('info-username').textContent=newName;closeEditUsernameModal();showAdminToast('✅ تم تغيير الاسم');sendTG("✏️ تغيير اسم\n👤 "+newName);}
+  catch(e){alert("خطأ: "+e.message);}
+  finally{if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='حفظ';}}
+};
+// AVATAR
+window._avatarBase64=null;
+window.openAvatarUploadModal=function(){if(!window.currentUser){document.getElementById('auth-modal').classList.add('active');return;}window._avatarBase64=null;document.getElementById('avatar-preview-img').style.display='none';document.getElementById('avatar-preview-placeholder').style.display='block';document.getElementById('avatar-save-btn').disabled=true;document.getElementById('avatar-upload-modal').classList.add('active');};
+window.closeAvatarUploadModal=function(){document.getElementById('avatar-upload-modal').classList.remove('active');};
+window.triggerAvatarInput=function(){document.getElementById('avatar-file-input').click();};
+window.handleAvatarFileSelect=async function(input){if(!input.files.length)return;const file=input.files[0];input.value='';try{const compressed=await compressImage(file,200,0.75);window._avatarBase64=compressed;const previewImg=document.getElementById('avatar-preview-img');const previewPlaceholder=document.getElementById('avatar-preview-placeholder');previewImg.src=compressed;previewImg.style.display='block';previewPlaceholder.style.display='none';document.getElementById('avatar-save-btn').disabled=false;}catch(e){alert("خطأ في قراءة الصورة");}};
+window.saveAvatar=async function(){if(!window._avatarBase64||!window.currentUser)return;const btn=document.getElementById('avatar-save-btn');btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';try{await updateDoc(doc(db,"users",window.currentUser.uid),{avatarBase64:window._avatarBase64});if(window._currentUserData)window._currentUserData.avatarBase64=window._avatarBase64;const usernameForDisplay=window._currentUserData?.username||window.currentUser.email.split('@')[0];setProfileAvatarDisplay(window._avatarBase64,usernameForDisplay);updateNavAvatar(window._currentUserData);closeAvatarUploadModal();showAdminToast('✅ تم تحديث الصورة الشخصية');sendTG('✏️ تغيير صورة\n👤 '+(window._currentUserData?.username||window.currentUser.email));}catch(e){alert("خطأ في الحفظ: "+e.message);}finally{btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> حفظ الصورة';}};
+// PUBLIC PROFILE
+const _avatarCache={};
+async function getUserAvatar(userName){if(_avatarCache[userName]!==undefined)return _avatarCache[userName];try{const q=query(collection(db,"users"),where("username","==",userName));const snap=await getDocs(q);if(!snap.empty){const data=snap.docs[0].data();const av=data.avatarBase64||data.avatarUrl||'';_avatarCache[userName]=av;return av;}}catch(e){}_avatarCache[userName]='';return '';}
+let _pubProfilePrevPage='main-page';
+window.openPublicProfile=async function(userName){
+  if(!window.currentUser){document.getElementById('auth-modal').classList.add('active');return;}
+  const activePage=[...document.querySelectorAll('.page')].find(p=>p.style.display!=='none');
+  _pubProfilePrevPage=activePage?activePage.id:'main-page';
+  document.getElementById('pub-avatar-ring').innerHTML='<span class="pub-avatar-initial">...</span>';
+  document.getElementById('pub-username').textContent=userName;
+  document.getElementById('pub-joined-text').textContent='...';
+  ['pub-stat-comments','pub-stat-liked-count','pub-stat-joined-days'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('pub-own-banner').style.display='none';
+  document.getElementById('pub-liked-grid').innerHTML='';
+  document.getElementById('pub-liked-empty').style.display='none';
+  const heroEl=document.getElementById('pub-profile-hero');heroEl.classList.remove('rank-gold','rank-silver');
+  const badgeEl=document.getElementById('pub-rank-badge');const labelEl=document.getElementById('pub-rank-label');
+  badgeEl.style.display='none';labelEl.style.display='none';
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.getElementById('public-profile-page').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  const myUsername=window._currentUserData?.username||'';
+  try{
+    const q=query(collection(db,"users"),where("username","==",userName));const snap=await getDocs(q);const ring=document.getElementById('pub-avatar-ring');
+    if(!snap.empty){const data=snap.docs[0].data();const av=data.avatarBase64||data.avatarUrl||'';ring.innerHTML=av?'<img src="'+av+'" alt="'+userName+'" style="width:100%;height:100%;object-fit:cover;">':'<span class="pub-avatar-initial">'+userName[0].toUpperCase()+'</span>';if(data.createdAt){const d=data.createdAt.toDate?data.createdAt.toDate():new Date(data.createdAt.seconds*1000);document.getElementById('pub-joined-text').textContent='عضو منذ '+d.toLocaleDateString('ar-IQ',{year:'numeric',month:'long'});document.getElementById('pub-stat-joined-days').textContent=Math.floor((Date.now()-d.getTime())/86400000);}}
+    else{ring.innerHTML='<span class="pub-avatar-initial">'+userName[0].toUpperCase()+'</span>';document.getElementById('pub-joined-text').textContent='عضو في الموقع';}
+    const commentsQ=query(collection(db,"comments"),where("userName","==",userName));const commentsSnap=await getDocs(commentsQ);document.getElementById('pub-stat-comments').textContent=commentsSnap.size;
+    try{const allCS=await getDocs(collection(db,"comments"));const ucm={};allCS.forEach(d=>{const u=d.data().userName||'';if(u)ucm[u]=(ucm[u]||0)+1;});const sorted=Object.entries(ucm).sort((a,b)=>b[1]-a[1]);const rank1=sorted[0]?.[0];const rank2=sorted[1]?.[0];if(userName===rank1&&sorted[0][1]>0){heroEl.classList.add('rank-gold');badgeEl.textContent='🥇';badgeEl.style.display='block';labelEl.textContent='الأكثر تفاعلاً';labelEl.style.display='inline-block';}else if(userName===rank2&&sorted[1][1]>0){heroEl.classList.add('rank-silver');badgeEl.textContent='🥈';badgeEl.style.display='block';labelEl.textContent='المركز الثاني';labelEl.style.display='inline-block';}}catch(e){}
+    let likedIds=[];
+    if(myUsername===userName){const localKeys=Object.keys(localStorage).filter(k=>k.startsWith('liked_'));likedIds=localKeys.map(k=>k.replace('liked_',''));if(!snap.empty){const lp=snap.docs[0].data().likedPhotos||{};Object.keys(lp).forEach(pid=>{if(!likedIds.includes(pid))likedIds.push(pid);localStorage.setItem('liked_'+pid,'true');});}document.getElementById('pub-own-banner').style.display='flex';document.getElementById('pub-stat-liked-count').textContent=likedIds.length;loadPubLikedPhotos(likedIds);}
+    else{if(!snap.empty){const lp=snap.docs[0].data().likedPhotos||{};likedIds=Object.keys(lp);}document.getElementById('pub-stat-liked-count').textContent=likedIds.length||'0';if(likedIds.length>0)loadPubLikedPhotos(likedIds);else document.getElementById('pub-liked-empty').style.display='block';}
+  }catch(e){console.error(e);}
+};
+function loadPubLikedPhotos(ids){const grid=document.getElementById('pub-liked-grid');const empty=document.getElementById('pub-liked-empty');grid.innerHTML='';if(!ids||ids.length===0){empty.style.display='block';return;}empty.style.display='none';ids.forEach(id=>{const thumb=document.createElement('div');thumb.className='pub-liked-thumb-item';thumb.innerHTML='<img src="'+id+'.webp" alt="'+id+'" onerror="this.parentElement.style.display=\'none\'">';thumb.onclick=()=>openLightbox(id+'.webp');grid.appendChild(thumb);});}
+window.closePubProfile=function(){document.getElementById('public-profile-page').style.display='none';const prev=document.getElementById(_pubProfilePrevPage);if(prev)prev.style.display='block';else document.getElementById('main-page').style.display='block';window.scrollTo({top:0,behavior:'smooth'});};
+// LIGHTBOX
+window.openLightbox=function(src){document.getElementById('lightbox-img').src=src;document.getElementById('lightbox-modal').classList.add('active');document.body.style.overflow='hidden';};
+window.closeLightbox=function(){document.getElementById('lightbox-modal').classList.remove('active');document.getElementById('lightbox-img').src='';document.body.style.overflow='';};
+window.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLightbox();closeReelPlayer();}});
+// COMMENTS
+let currentImageId=null,unsubscribeComments=null;
+window.openComments=(id)=>{
+  if(!window.currentUser){alert("يجب تسجيل الدخول للتعليق");document.getElementById('auth-modal').classList.add('active');return;}
+  currentImageId=id;document.getElementById('comments-modal').classList.add('active');
+  const list=document.getElementById('comments-list');list.innerHTML='<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
+  const q=query(collection(db,"comments"),where("imageId","==",id));
+  unsubscribeComments=onSnapshot(q,async snapshot=>{
+    list.innerHTML='';
+    if(snapshot.empty){list.innerHTML='<p style="text-align:center;opacity:.6;padding:20px;">لا توجد تعليقات بعد! كن أول من يعلق ✨</p>';return;}
+    const docs=snapshot.docs.slice().sort((a,b)=>(a.data().createdAt?.seconds||0)-(b.data().createdAt?.seconds||0));
+    for(const d of docs){
+      const data=d.data();const docId=d.id;const userName=data.userName||'مستخدم';const isOwner=window.currentUser&&data.userId===window.currentUser.uid;
+      const avatarSrc=isOwner&&window._currentUserData?.avatarBase64?window._currentUserData.avatarBase64:await getUserAvatar(userName);
+      const item=document.createElement('div');item.className='comment-item';item.dataset.docId=docId;
+      const avatarHTML=avatarSrc?'<img src="'+avatarSrc+'" alt="'+userName+'">':'<span class="avatar-initials">'+userName[0].toUpperCase()+'</span>';
+      const actionsHTML=isOwner?'<div class="comment-actions"><button class="comment-action-btn" onclick="startEditComment(\''+docId+'\',this)"><i class="fas fa-pen"></i> تعديل</button><button class="comment-action-btn delete-btn" onclick="deleteOwnComment(\''+docId+'\')"><i class="fas fa-trash"></i> حذف</button></div>':'';
+      const adminDelHTML=window.isAdminMode?'<button class="admin-delete-comment-btn" style="display:flex" onclick="adminDeleteSingleComment(\''+docId+'\')"><i class="fas fa-times"></i></button>':'';
+      item.innerHTML=adminDelHTML+'<div class="comment-avatar-row"><div class="comment-user-avatar" onclick="viewUserProfile(\''+userName+'\')">'+avatarHTML+'</div><div class="comment-content-box"><div class="comment-username-link" onclick="viewUserProfile(\''+userName+'\')"><i class="fas fa-user" style="font-size:.6rem;"></i> '+userName+'</div><div class="comment-text-content" id="text-'+docId+'">'+data.text+'</div>'+actionsHTML+'</div></div>';
+      list.appendChild(item);
+    }
+    list.scrollTop=list.scrollHeight;
+  },(error)=>{console.error("خطأ في التعليقات:",error);list.innerHTML='<p style="text-align:center;color:var(--admin-red);padding:20px;">⚠️ خطأ في تحميل التعليقات</p>';});
+};
+window.startEditComment=function(docId,btn){const textEl=document.getElementById('text-'+docId);if(!textEl)return;const originalText=textEl.textContent.trim();const actionsEl=btn.closest('.comment-actions');textEl.style.display='none';if(actionsEl)actionsEl.style.display='none';const textarea=document.createElement('textarea');textarea.className='comment-edit-area';textarea.value=originalText;textarea.maxLength=300;const editActions=document.createElement('div');editActions.className='comment-edit-actions';editActions.innerHTML='<button class="comment-cancel-btn" id="cancel-edit-'+docId+'">إلغاء</button><button class="comment-save-btn" id="save-edit-'+docId+'"><i class="fas fa-check"></i> حفظ</button>';const box=btn.closest('.comment-content-box');box.appendChild(textarea);box.appendChild(editActions);textarea.focus();document.getElementById('cancel-edit-'+docId).onclick=()=>{textarea.remove();editActions.remove();textEl.style.display='';if(actionsEl)actionsEl.style.display='';};document.getElementById('save-edit-'+docId).onclick=async()=>{const newText=textarea.value.trim();if(!newText){alert('التعليق لا يمكن أن يكون فارغاً');return;}if(newText===originalText){textarea.remove();editActions.remove();textEl.style.display='';if(actionsEl)actionsEl.style.display='';return;}const sb=document.getElementById('save-edit-'+docId);sb.disabled=true;sb.innerHTML='<i class="fas fa-spinner fa-spin"></i>';try{await updateDoc(doc(db,"comments",docId),{text:newText,editedAt:serverTimestamp()});}catch(e){alert("خطأ: "+e.message);sb.disabled=false;sb.innerHTML='<i class="fas fa-check"></i> حفظ';};};};
+window.deleteOwnComment=async function(docId){if(!window.currentUser)return;if(!confirm('هل تريد حذف تعليقك؟'))return;try{await window._deleteDoc(window._doc(window._db,"comments",docId));showAdminToast('🗑️ تم الحذف');}catch(e){alert("خطأ: "+e.message);}};
+window.viewUserProfile=async function(userName){if(!window.currentUser)return;document.getElementById('comments-modal').classList.remove('active');if(unsubscribeComments){unsubscribeComments();unsubscribeComments=null;}await window.openPublicProfile(userName);};
+window.closeComments=()=>{document.getElementById('comments-modal').classList.remove('active');if(unsubscribeComments){unsubscribeComments();unsubscribeComments=null;}};
+window.sendComment=async()=>{const inp=document.getElementById('comment-input');const text=inp.value.trim();if(!text||!currentImageId)return;if(!window.currentUser){alert("يجب تسجيل الدخول");return;}const userName=window._currentUserData?.username||window.currentUser.email.split('@')[0];sendTG("💬 تعليق جديد\n🖼️ "+currentImageId+"\n👤 "+userName+"\n📝 "+text);inp.value='';try{await addDoc(collection(db,"comments"),{imageId:currentImageId,userName,userId:window.currentUser.uid,text,createdAt:serverTimestamp()});}catch(e){alert("حدث خطأ أثناء الإرسال");}};
+window.adminDeleteSingleComment=async docId=>{if(!window.isAdminMode)return;if(!confirm("حذف هذا التعليق؟"))return;try{await window._deleteDoc(window._doc(window._db,"comments",docId));showAdminToast('✅ تم الحذف');}catch(e){alert("خطأ: "+e.message);}};
+// LIKES
+var _lastTap={};
+document.addEventListener('touchend',function(e){const img=e.target.closest('.product-section img');if(!img)return;const section=img.closest('.product-section');if(!section)return;const btn=section.querySelector('.like-btn[id^="btn-"]');if(!btn)return;const id=btn.id.replace('btn-','');const now=Date.now();if(_lastTap[id]&&(now-_lastTap[id])<400){e.preventDefault();window.handleDoubleTap(id);_lastTap[id]=0;}else _lastTap[id]=now;},{passive:false});
+window.handleDoubleTap=id=>{const btn=document.getElementById('btn-'+id);if(!btn)return;const container=btn.closest('.product-section');const heart=document.createElement('i');heart.className='fas fa-heart flying-heart';container.appendChild(heart);const btnRect=btn.getBoundingClientRect();const containerRect=container.getBoundingClientRect();const targetX=(btnRect.left+btnRect.width/2+6)-(containerRect.left+containerRect.width/2);const targetY=(btnRect.top+btnRect.height/2)-(containerRect.top+containerRect.height/2);requestAnimationFrame(()=>{heart.style.transition="transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275),opacity 0.4s ease";heart.style.opacity='0.7';heart.style.transform='translate(-50%,-50%) scale(1.6)';setTimeout(()=>{heart.style.transition="transform 0.8s cubic-bezier(0.4,0,0.2,1),opacity 0.4s ease-in";heart.style.transform='translate(calc(-50% + '+targetX+'px),calc(-50% + '+targetY+'px)) scale(0.25)';setTimeout(()=>heart.style.opacity='0',500);},600);});setTimeout(()=>heart.remove(),1500);btn.classList.add('btn-pulse');setTimeout(()=>btn.classList.remove('btn-pulse'),400);if(!localStorage.getItem('liked_'+id))window.handleLike(id);};
+window.handleLike=async id=>{const hasLiked=localStorage.getItem('liked_'+id);if(!hasLiked)sendTG("❤️ لايك\n📌 "+id);const photoRef=doc(db,"photos",id);try{if(hasLiked){await updateDoc(photoRef,{likesCount:increment(-1)});localStorage.removeItem('liked_'+id);if(window.currentUser){try{await updateDoc(doc(db,"users",window.currentUser.uid),{[`likedPhotos.${id}`]:deleteField()});}catch(e){}}}else{const docSnap=await getDoc(photoRef);if(docSnap.exists())await updateDoc(photoRef,{likesCount:increment(1)});else await setDoc(photoRef,{likesCount:1});localStorage.setItem('liked_'+id,'true');if(window.currentUser){try{await updateDoc(doc(db,"users",window.currentUser.uid),{[`likedPhotos.${id}`]:true});}catch(e){}}}refreshUI(id);}catch(e){console.error(e);}};
+async function refreshUI(id){try{const docSnap=await getDoc(doc(db,"photos",id));const countEl=document.getElementById('count-'+id);const btnEl=document.getElementById('btn-'+id);if(docSnap.exists()&&countEl)countEl.innerText=docSnap.data().likesCount||0;if(btnEl)localStorage.getItem('liked_'+id)?btnEl.classList.add('liked'):btnEl.classList.remove('liked');}catch(e){}}
+const allPhotos=['p01','p02','p03','p04','p05','p06','p07','p08','p09','p10','p11','p12','p13','in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
+window.addEventListener('DOMContentLoaded',()=>allPhotos.forEach(id=>refreshUI(id)));
+// ADMIN STATS
+window.loadAdminStats=async()=>{
+  const body=document.getElementById('stats-body');const refreshBtn=document.getElementById('stats-refresh');
+  if(refreshBtn){refreshBtn.disabled=true;refreshBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري...';}
+  body.innerHTML='<div class="stats-loading-spinner"><i class="fas fa-circle-notch"></i></div>';
+  try{
+    let usersCount=0;try{const s=await getCountFromServer(collection(db,"users"));usersCount=s.data().count;}catch(e){const s=await getDocs(collection(db,"users"));usersCount=s.size;}
+    let commentsCount=0,allCommentDocs=[];try{const cs=await getCountFromServer(collection(db,"comments"));commentsCount=cs.data().count;const s=await getDocs(collection(db,"comments"));allCommentDocs=s.docs;}catch(e){const s=await getDocs(collection(db,"comments"));allCommentDocs=s.docs;commentsCount=s.size;}
+    let totalLikes=0,allLikesArr=[];try{const ps=await getDocs(collection(db,"photos"));ps.forEach(d=>{const l=d.data().likesCount||0;totalLikes+=l;allLikesArr.push({id:d.id,likes:l});});}catch(e){}
+    const commentMap={},userCommentMap={};allCommentDocs.forEach(d=>{const imgId=d.data().imageId||'—';const uName=d.data().userName||'—';commentMap[imgId]=(commentMap[imgId]||0)+1;userCommentMap[uName]=(userCommentMap[uName]||0)+1;});
+    let topCommenter={name:'—',count:0};Object.entries(userCommentMap).forEach(([name,count])=>{if(count>topCommenter.count)topCommenter={name,count};});
+    const top3Liked=allLikesArr.sort((a,b)=>b.likes-a.likes).slice(0,3);
+    body.innerHTML='<div class="stat-card"><div class="stat-icon"><i class="fas fa-users"></i></div><div><div class="stat-label">عدد المسجلين</div><div class="stat-value">'+usersCount+'</div></div></div><div class="stats-grid"><div class="stat-card-sm"><div class="stat-icon"><i class="fas fa-heart"></i></div><div class="stat-value">'+totalLikes+'</div><div class="stat-label">اللايكات</div></div><div class="stat-card-sm"><div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-comment"></i></div><div class="stat-value">'+commentsCount+'</div><div class="stat-label">التعليقات</div></div></div><div class="stat-card" style="cursor:pointer;" onclick="window.openPublicProfile&&window.openPublicProfile(\''+topCommenter.name+'\')"><div class="stat-icon" style="background:#e67e22;font-size:1.4rem;">🥇</div><div><div class="stat-label">الأكثر تفاعلاً</div><div class="stat-value" style="font-size:1rem;">'+topCommenter.name+' <span style="font-size:.75rem;opacity:.65;">('+topCommenter.count+' 💬)</span></div></div></div><div class="stats-section-title">🏆 أكثر الصور لايكات</div><div style="display:flex;flex-direction:column;gap:8px;">'+(top3Liked.length===0?'<div style="text-align:center;opacity:.5;font-size:.82rem;padding:10px;">لا توجد بيانات</div>':top3Liked.map((p,i)=>'<div class="stat-top-row"><div class="stat-top-num">'+['🥇','🥈','🥉'][i]+'</div><div><div class="stat-top-name">'+p.id+'</div><div class="stat-top-sub">'+p.likes+' ❤️</div></div></div>').join(''))+'</div><div style="text-align:center;font-size:.68rem;opacity:.45;">آخر تحديث: '+new Date().toLocaleTimeString('ar-IQ')+'</div>';
+  }catch(e){body.innerHTML='<div style="text-align:center;padding:20px;color:var(--admin-red);"><i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i><strong>تعذر تحميل البيانات</strong><br><small>'+e.message+'</small></div>';}
+  finally{if(refreshBtn){refreshBtn.disabled=false;refreshBtn.innerHTML='<i class="fas fa-sync-alt"></i> تحديث البيانات';}}
+};
+window.adminDeleteLikes=async id=>{if(!window.isAdminMode)return;if(!confirm("إعادة تعيين لايكات هذه الصورة؟"))return;try{await setDoc(doc(db,"photos",id),{likesCount:0},{merge:true});const el=document.getElementById('count-'+id);if(el)el.innerText='0';showAdminToast('✅ تم إعادة التعيين');}catch(e){alert("خطأ: "+e.message);}};
+// DYNAMIC PHOTOS
+async function loadDynamicPhotos(){try{const data=await rtdbGet('/admin_photos');if(!data)return;const entries=Object.entries(data).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));entries.forEach(([key,val])=>{injectPhotoCard(val.photoId,val.caption||'تصميم جديد',val.gallery,val.url,key);refreshUI(val.photoId);});}catch(e){console.error(e);}}
+function injectPhotoCard(photoId,caption,gallery,url,rtdbKey){if(gallery.startsWith('custom_')){injectCustomPhotoCard(rtdbKey,{photoId,caption,gallery,url},gallery.replace('custom_',''));return;}const containerId=gallery==='stone-gallery'?'stone-dynamic-photos':'interior-dynamic-photos';const container=document.getElementById(containerId);if(!container||document.getElementById('section-'+photoId))return;const section=document.createElement('div');section.className='product-section dynamic-photo';section.id='section-'+photoId;section.innerHTML='<img src="'+url+'" ondblclick="handleDoubleTap(\''+photoId+'\')" style="width:100%;display:block;" loading="lazy"><div class="model-tag"><span>'+caption+'</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" style="'+(window.isAdminMode?'display:flex':'display:none')+'" onclick="adminDeleteLikes(\''+photoId+'\')"><i class="fas fa-trash"></i></button><button class="admin-delete-like" style="'+(window.isAdminMode?'display:flex':'display:none')+';background:var(--admin-red);" onclick="adminDeleteDynamicPhoto(\''+rtdbKey+'\',\''+photoId+'\')"><i class="fas fa-image"></i></button><button class="like-btn" onclick="openComments(\''+photoId+'\')"><i class="far fa-comment"></i></button><button id="btn-'+photoId+'" class="like-btn" onclick="handleLike(\''+photoId+'\')"><i class="fas fa-heart"></i><span id="count-'+photoId+'">0</span></button></div></div>';container.appendChild(section);applyReveal();}
+window.adminDeleteDynamicPhoto=async(rtdbKey,photoId)=>{if(!window.isAdminMode||!confirm("حذف هذه الصورة نهائياً؟"))return;try{await rtdbDelete('/admin_photos/'+rtdbKey);document.getElementById('section-'+photoId)?.remove();showAdminToast('✅ تم الحذف');}catch(e){alert("خطأ: "+e.message);}};
+window.submitUploadedPhotos=async()=>{if(!window.isAdminMode)return;const files=window._uploadFiles||[];if(!files.length){showAdminToast('⚠️ اختر صورة على الأقل');return;}const caption=document.getElementById('upload-caption').value.trim()||'تصميم جديد';const gallery=document.getElementById('upload-gallery-select').value;const btn=document.getElementById('upload-submit-btn');const progressWrap=document.getElementById('upload-progress-wrap');const progressBar=document.getElementById('upload-progress-bar-inner');const progressText=document.getElementById('upload-progress-text');btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';progressWrap.style.display='block';progressBar.style.width='0%';let uploaded=0;for(let i=0;i<files.length;i++){try{progressText.textContent='ضغط الصورة '+(i+1)+'/'+files.length+'...';const compressed=await compressImage(files[i],800,0.65);const photoId='adm_'+Date.now()+'_'+i;progressText.textContent='حفظ الصورة '+(i+1)+'/'+files.length+'...';const result=await rtdbPush('/admin_photos',{photoId,caption,gallery,url:compressed,createdAt:Date.now()});injectPhotoCard(photoId,caption,gallery,compressed,result.name);refreshUI(photoId);uploaded++;progressBar.style.width=Math.round((uploaded/files.length)*100)+'%';progressText.textContent='✅ '+uploaded+' / '+files.length+' تم';sendTG("📸 صورة جديدة\n📁 "+gallery+"\n🏷️ "+caption);}catch(e){progressText.textContent='❌ خطأ: '+e.message;}}btn.disabled=false;btn.innerHTML='<i class="fas fa-check"></i> رفع الصور';if(uploaded>0){showAdminToast('✅ تم حفظ '+uploaded+' صورة!');setTimeout(()=>{closeUploadModal();showPage(gallery);},1000);}};
+// CUSTOM SECTIONS
+async function loadCustomSections(){try{const data=await rtdbGet('/custom_sections');if(!data)return;const entries=Object.entries(data).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));entries.forEach(([key,val])=>{if(!val.archived)injectSectionCard(key,val);else injectSectionPage(key,val);});}catch(e){console.error(e);}}
+function injectSectionCard(key,val){const container=document.getElementById('dynamic-sections-container');if(!container||document.getElementById('sec-card-'+key))return;const card=document.createElement('div');card.className='custom-section-card service-card';card.id='sec-card-'+key;card.innerHTML='<button class="custom-section-archive-btn" id="arch-btn-'+key+'" onclick="archiveSection(event,\''+key+'\')"><i class="fas fa-archive"></i> أرشفة</button><i class="'+(val.icon||'fas fa-layer-group')+'"></i><h3>'+val.name+'</h3><p>'+(val.desc||'اضغط لعرض التصاميم')+'</p><span class="click-hint">اضغط للعرض</span>';card.onclick=function(e){if(e.target.closest('.custom-section-archive-btn'))return;showCustomSectionPage(key,val.name);};container.appendChild(card);observer.observe(card);injectSectionPage(key,val);if(window.isAdminMode)document.getElementById('arch-btn-'+key).style.display='block';}
+function injectSectionPage(key,val){if(document.getElementById('custom-page-'+key))return;const page=document.createElement('div');page.id='custom-page-'+key;page.className='page dynamic-section-page';page.innerHTML='<div class="back-btn-container"><button class="back-btn" onclick="showPage(\'main-page\')"><i class="fas fa-arrow-right"></i> الرجوع</button></div><div id="custom-photos-'+key+'"></div><div class="whatsapp-cta"><a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد تواصل واتساب</a></div>';(document.getElementById("custom-pages-wrapper")||document.body).appendChild(page);loadSectionPhotos(key);}
+async function loadSectionPhotos(key){try{const data=await rtdbGet('/admin_photos');if(!data)return;Object.entries(data).forEach(([photoKey,val])=>{if(val.gallery==='custom_'+key){injectCustomPhotoCard(photoKey,val,key);refreshUI(val.photoId);}});}catch(e){}}
+function injectCustomPhotoCard(photoKey,val,sectionKey){const container=document.getElementById('custom-photos-'+sectionKey);if(!container||document.getElementById('section-'+val.photoId))return;const section=document.createElement('div');section.className='product-section dynamic-photo';section.id='section-'+val.photoId;section.innerHTML='<img src="'+val.url+'" ondblclick="handleDoubleTap(\''+val.photoId+'\')" style="width:100%;display:block;" loading="lazy"><div class="model-tag"><span>'+(val.caption||'تصميم جديد')+'</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" style="'+(window.isAdminMode?'display:flex':'display:none')+'" onclick="adminDeleteLikes(\''+val.photoId+'\')"><i class="fas fa-trash"></i></button><button class="admin-delete-like" style="'+(window.isAdminMode?'display:flex':'display:none')+';background:var(--admin-red);" onclick="adminDeleteDynamicPhoto(\''+photoKey+'\',\''+val.photoId+'\')"><i class="fas fa-image"></i></button><button class="like-btn" onclick="openComments(\''+val.photoId+'\')"><i class="far fa-comment"></i></button><button id="btn-'+val.photoId+'" class="like-btn" onclick="handleLike(\''+val.photoId+'\')"><i class="fas fa-heart"></i><span id="count-'+val.photoId+'">0</span></button></div></div>';container.appendChild(section);applyReveal();}
+function showCustomSectionPage(key){document.querySelectorAll('.page').forEach(p=>p.style.display='none');const page=document.getElementById('custom-page-'+key);if(page){page.style.display='block';window.scrollTo({top:0,behavior:'smooth'});setTimeout(applyReveal,100);}}
+window.openAddSectionModal=function(){if(!window.isAdminMode)return;document.getElementById('new-section-name').value='';document.getElementById('new-section-desc').value='';document.getElementById('add-section-modal').classList.add('active');setTimeout(()=>document.getElementById('new-section-name').focus(),150);};
+window.closeAddSectionModal=function(){document.getElementById('add-section-modal').classList.remove('active');};
+window.createNewSection=async function(){const name=document.getElementById('new-section-name').value.trim();if(!name){showAdminToast('⚠️ أدخل اسم القسم');return;}const desc=document.getElementById('new-section-desc').value.trim();const icon=document.getElementById('new-section-icon').value;try{const result=await rtdbPush('/custom_sections',{name,desc,icon,archived:false,createdAt:Date.now()});injectSectionCard(result.name,{name,desc,icon,archived:false});closeAddSectionModal();showAdminToast('✅ تم إنشاء القسم: '+name);sendTG('📁 قسم جديد\n📌 '+name);const sel=document.getElementById('upload-gallery-select');if(sel&&!document.getElementById('opt-'+result.name)){const opt=document.createElement('option');opt.value='custom_'+result.name;opt.id='opt-'+result.name;opt.textContent=name;sel.appendChild(opt);}}catch(e){showAdminToast('❌ خطأ: '+e.message);}};
+window.archiveSection=async function(e,key){e.stopPropagation();if(!window.isAdminMode)return;if(!confirm('أرشفة هذا القسم؟'))return;try{await rtdbSet('/custom_sections/'+key+'/archived',true);document.getElementById('sec-card-'+key)?.remove();showAdminToast('📦 تم أرشفة القسم');}catch(e){showAdminToast('❌ خطأ: '+e.message);}};
+window.openArchiveModal=async function(){if(!window.isAdminMode)return;document.getElementById('archive-modal').classList.add('active');const list=document.getElementById('archive-list');list.innerHTML='<p style="text-align:center;"><i class="fas fa-spinner fa-spin" style="color:var(--latte-gold);"></i></p>';try{const[customData,fixedData]=await Promise.all([rtdbGet('/custom_sections'),rtdbGet('/fixed_sections_archive')]);list.innerHTML='';let hasItems=false;if(fixedData){Object.entries(fixedData).forEach(([key,archived])=>{if(!archived||!FIXED_SECTIONS[key])return;hasItems=true;const item=document.createElement('div');item.className='archive-item';item.innerHTML='<div style="font-weight:bold;">'+FIXED_SECTIONS[key].name+'</div><button class="archive-restore-btn" onclick="restoreFixedSection(\''+key+'\')"><i class="fas fa-undo"></i> استعادة</button>';list.appendChild(item);});}if(customData){Object.entries(customData).filter(([k,v])=>v.archived).forEach(([key,val])=>{hasItems=true;const item=document.createElement('div');item.className='archive-item';item.innerHTML='<div style="font-weight:bold;">'+val.name+'</div><button class="archive-restore-btn" onclick="restoreSection(\''+key+'\')"><i class="fas fa-undo"></i> استعادة</button>';list.appendChild(item);});}if(!hasItems)list.innerHTML='<p style="text-align:center;opacity:.5;font-size:.85rem;padding:20px;">لا توجد أقسام مؤرشفة</p>';}catch(e){list.innerHTML='<p style="color:red;text-align:center;">خطأ في التحميل</p>';}};
+window.closeArchiveModal=function(){document.getElementById('archive-modal').classList.remove('active');};
+window.restoreSection=async function(key){try{const data=await rtdbGet('/custom_sections/'+key);await rtdbSet('/custom_sections/'+key+'/archived',false);injectSectionCard(key,{...data,archived:false});closeArchiveModal();showAdminToast('✅ تم الاستعادة: '+data.name);}catch(e){showAdminToast('❌ خطأ: '+e.message);}};
+const FIXED_SECTIONS={'interior':{name:'ديكور داخلي',icon:'fas fa-paint-roller'},'stone':{name:'واجهات حجرية',icon:'fas fa-hammer'}};
+window.archiveFixedSection=async function(e,key){e.stopPropagation();if(!window.isAdminMode)return;if(!confirm('أرشفة قسم '+FIXED_SECTIONS[key].name+'؟'))return;try{await rtdbSet('/fixed_sections_archive/'+key,true);document.getElementById('fixed-card-'+key)?.style.setProperty('display','none');showAdminToast('📦 تم أرشفة: '+FIXED_SECTIONS[key].name);}catch(e){showAdminToast('❌ خطأ: '+e.message);}};
+window.restoreFixedSection=async function(key){try{await rtdbSet('/fixed_sections_archive/'+key,false);const card=document.getElementById('fixed-card-'+key);if(card)card.style.display='block';closeArchiveModal();showAdminToast('✅ تم الاستعادة: '+FIXED_SECTIONS[key].name);}catch(e){showAdminToast('❌ خطأ: '+e.message);}};
+window.addEventListener('DOMContentLoaded',()=>{
+  loadDynamicPhotos();loadCustomSections();
+  const tog=document.getElementById('dark-mode-toggle');if(tog&&document.body.classList.contains('dark-mode'))tog.classList.add('on');
+  fetch('https://diwd-a7709-default-rtdb.firebaseio.com/fixed_sections_archive.json').then(r=>r.json()).then(data=>{if(!data)return;Object.entries(data).forEach(([key,archived])=>{if(archived)document.getElementById('fixed-card-'+key)?.style.setProperty('display','none');});}).catch(()=>{});
+});
+</script>
+</body>
+</html>
