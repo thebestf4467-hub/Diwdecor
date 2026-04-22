@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -17,20 +18,30 @@
     });
 
     const ADMIN_PASSWORD = "1999@";
+
     const NTFY_LOGIN    = "md-login-7x2k";
     const NTFY_COMMENTS = "md-comments-9p4m";
     const NTFY_LIKES    = "md-likes-3w8n";
     const NTFY_PROFILE  = "md-decor-9999";
 
     function ntfySend(topic, message) {
-        fetch("https://ntfy.sh/" + topic, { method: "POST", mode: "no-cors", body: message }).catch(function(){});
+        fetch("https://ntfy.sh/" + topic, {
+            method: "POST",
+            mode: "no-cors",
+            body: message
+        }).catch(function(){});
     }
 
     window.sendTelegramNotification = function(message) {
-        if (message.indexOf("❤") !== -1) ntfySend(NTFY_LIKES, message);
-        else if (message.indexOf("💬") !== -1) ntfySend(NTFY_COMMENTS, message);
-        else if (message.indexOf("✏️") !== -1 || message.indexOf("📸") !== -1) ntfySend(NTFY_PROFILE, message);
-        else ntfySend(NTFY_LOGIN, message);
+        if (message.indexOf("❤") !== -1) {
+            ntfySend(NTFY_LIKES, message);
+        } else if (message.indexOf("💬") !== -1) {
+            ntfySend(NTFY_COMMENTS, message);
+        } else if (message.indexOf("✏️") !== -1 || message.indexOf("📸") !== -1) {
+            ntfySend(NTFY_PROFILE, message);
+        } else {
+            ntfySend(NTFY_LOGIN, message);
+        }
     };
 
     function openAuthModal() { document.getElementById('auth-modal').classList.add('active'); }
@@ -59,7 +70,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
         setTimeout(applyReveal, 100);
         if (pageId === 'profile-page') loadProfilePage();
-        if (pageId === 'friends-page') loadFriendsPage();
     }
 
     function playVideo() {
@@ -113,6 +123,7 @@
         }
     });
 
+    // ===== Admin Mode =====
     window.isAdminMode = false;
     var logoClickCount = 0;
     var logoClickTimer = null;
@@ -120,8 +131,12 @@
     function handleLogoClick() {
         logoClickCount++;
         if (logoClickTimer) clearTimeout(logoClickTimer);
-        if (logoClickCount >= 2) { logoClickCount = 0; promptAdminPassword(); }
-        else logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 500);
+        if (logoClickCount >= 2) {
+            logoClickCount = 0;
+            promptAdminPassword();
+        } else {
+            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 500);
+        }
     }
 
     function promptAdminPassword() {
@@ -136,8 +151,11 @@
 
     function checkAdminPassword() {
         var val = document.getElementById('admin-pass-input').value;
-        if (val === ADMIN_PASSWORD) { window.isAdminMode = true; closeAdminPassModal(); activateAdminMode(); }
-        else {
+        if (val === ADMIN_PASSWORD) {
+            window.isAdminMode = true;
+            closeAdminPassModal();
+            activateAdminMode();
+        } else {
             document.getElementById('admin-pass-input').style.borderColor = '#e74c3c';
             document.getElementById('admin-pass-input').style.animation = 'shake 0.3s ease';
             setTimeout(() => {
@@ -186,6 +204,7 @@
 
     function closeAdminStats() { document.getElementById('admin-stats-panel').classList.remove('active'); }
 
+    // ===== Upload Photo =====
     function openUploadModal() {
         document.getElementById('upload-modal').classList.add('active');
         document.getElementById('upload-preview-area').innerHTML = '';
@@ -194,7 +213,6 @@
         window._uploadFiles = [];
         loadCustomSectionsInSelect();
     }
-
     function loadCustomSectionsInSelect() {
         var sel = document.getElementById('upload-gallery-select');
         var toRemove = [];
@@ -252,11 +270,13 @@
 </script>
 
 <style>
+    /* ======= PREVENT ZOOM ON DOUBLE TAP & INPUT FOCUS ======= */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     input, textarea, select, button, a { touch-action: manipulation; }
     .product-section img { touch-action: pan-y; }
     input, textarea, select { font-size: 16px !important; }
 
+    /* ======= COMMENT MODAL ======= */
     .comment-modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
         display: none; justify-content: center; align-items: center; z-index: 9999;
@@ -281,6 +301,7 @@
     html { scroll-behavior: smooth; }
     body { background: var(--bg-gradient); color: var(--dark-latte); font-family: 'Cairo', sans-serif; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
 
+    /* ======= SIDE MENU ======= */
     .side-menu { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; background: rgba(255,252,249,0.98); z-index: 5000; transition: 0.4s ease; border-left: 1px solid var(--latte-gold); padding: 25px 20px; overflow-y: auto; }
     body.dark-mode .side-menu { background: rgba(37,31,28,0.98); }
     .side-menu.open { right: 0; }
@@ -293,6 +314,7 @@
     .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
     .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
 
+    /* ======= HEADER ======= */
     .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(255,252,249,0.92); border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); padding: 12px 20px; }
     body.dark-mode .sticky-header { background: rgba(37,31,28,0.92); }
     .menu-trigger { color: var(--latte-gold); font-size: 1.5rem; cursor: pointer; }
@@ -302,8 +324,10 @@
     .theme-toggle-header { color: var(--latte-gold); font-size: 1.3rem; cursor: pointer; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); width: 30px; text-align: left; }
     #admin-badge { display: none; background: var(--admin-red); color: white; font-size: 0.45rem; padding: 2px 6px; border-radius: 8px; position: absolute; top: -4px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; font-weight: bold; white-space: nowrap; }
 
+    /* ======= PROGRESS BAR ======= */
     .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--latte-gold); z-index: 3000; width: 0%; }
 
+    /* ======= PAGES ======= */
     .page { display: none; animation: fadeIn 0.6s cubic-bezier(0.4,0,0.2,1); }
     @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
     .reveal, .product-section, .service-card, .whatsapp-cta { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.4,0,0.2,1); will-change: transform, opacity; }
@@ -312,10 +336,12 @@
     body.dark-mode .back-btn-container { background: rgba(37,31,28,0.8); }
     .back-btn { background: var(--latte-gold); color: #fff; border: none; padding: 8px 25px; border-radius: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; font-family: 'Cairo', sans-serif; }
 
+    /* ======= HERO ======= */
     .hero { min-height: 40vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: linear-gradient(rgba(255,252,249,0.6), rgba(255,252,249,0.6)), url('p13.webp') center/cover; padding: 40px 20px; }
     body.dark-mode .hero { background: linear-gradient(rgba(26,22,20,0.8), rgba(26,22,20,0.8)), url('p13.webp') center/cover; }
     .hero h2 { font-size: 1.8rem; color: var(--dark-latte); font-weight: 900; }
 
+    /* ======= SERVICES ======= */
     .services { padding: 20px; display: grid; gap: 15px; }
     .service-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(200,161,101,0.15); border-radius: 15px; background: var(--creamy-white); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
     .service-card i { font-size: 2.5rem; color: var(--latte-gold); margin-bottom: 10px; }
@@ -324,9 +350,11 @@
     body.dark-mode .service-card p { color: #ccc; }
     .click-hint { display: block; font-size: 0.75rem; color: var(--latte-gold); margin-top: 8px; font-weight: bold; opacity: 0.8; }
 
+    /* ======= VIDEO ======= */
     .video-box { margin: 15px; border: 1px dashed var(--latte-gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--creamy-white); }
     #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--latte-gold); margin-top: 10px; }
 
+    /* ======= PRODUCT SECTIONS ======= */
     .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); position: relative; }
     .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; cursor: pointer; }
     .product-section:hover img { transform: scale(1.03); }
@@ -338,19 +366,36 @@
     .btn-pulse { animation: buttonPulse 0.4s ease-out; }
     .flying-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); color: var(--heart-color); font-size: 3.5rem; pointer-events: none; z-index: 100; opacity: 0; -webkit-text-stroke: 1.5px var(--latte-gold); text-shadow: 0 0 25px rgba(200,161,101,0.4); transition: transform 2.5s cubic-bezier(0.2,0,0.2,1), opacity 1.5s ease-in-out; }
 
+    /* ======= WHATSAPP CTA ======= */
     .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200,161,101,0.1); }
     .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200,161,101,0.3); }
 
+    /* ======= FOOTER ======= */
     footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
     body.dark-mode footer { border-color: #3d302a; }
 
-    /* COMMENTS */
+    /* ======= COMMENTS ======= */
     #comments-list::-webkit-scrollbar { width: 4px; }
     #comments-list::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
-    .comment-item { padding: 10px 12px; background: var(--vanilla-light); border-radius: 14px; border-right: 3px solid var(--latte-gold); animation: slideIn 0.3s ease-out; position: relative; }
+
+    .comment-item {
+        padding: 10px 12px;
+        background: var(--vanilla-light);
+        border-radius: 14px;
+        border-right: 3px solid var(--latte-gold);
+        animation: slideIn 0.3s ease-out;
+        position: relative;
+    }
     @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
     .comment-avatar-row { display: flex; align-items: flex-start; gap: 10px; }
-    .comment-user-avatar { width: 33px; height: 33px; border-radius: 50%; border: 2px solid var(--latte-gold); overflow: hidden; background: var(--vanilla-light); flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; }
+    .comment-user-avatar {
+        width: 33px; height: 33px; border-radius: 50%;
+        border: 2px solid var(--latte-gold); overflow: hidden;
+        background: var(--vanilla-light); flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: transform 0.2s;
+    }
     .comment-user-avatar:hover { transform: scale(1.1); }
     .comment-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-initials { font-size: 0.7rem; font-weight: bold; color: var(--latte-gold); }
@@ -358,17 +403,40 @@
     .comment-username-link { cursor: pointer; color: var(--latte-gold); font-weight: bold; font-size: 0.72rem; display: inline-flex; align-items: center; gap: 3px; margin-bottom: 3px; transition: opacity 0.2s; }
     .comment-username-link:hover { opacity: 0.7; text-decoration: underline; }
     .comment-text-content { font-size: 0.9rem; color: var(--dark-latte); word-break: break-word; }
+
     .comment-actions { display: flex; gap: 6px; margin-top: 7px; justify-content: flex-end; }
-    .comment-action-btn { background: transparent; border: 1px solid rgba(200,161,101,0.4); color: var(--latte-gold); border-radius: 20px; padding: 3px 10px; font-size: 0.7rem; font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s; }
+    .comment-action-btn {
+        background: transparent; border: 1px solid rgba(200,161,101,0.4);
+        color: var(--latte-gold); border-radius: 20px; padding: 3px 10px;
+        font-size: 0.7rem; font-family: 'Cairo', sans-serif; font-weight: bold;
+        cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+    }
     .comment-action-btn:hover { background: var(--latte-gold); color: white; }
     .comment-action-btn.delete-btn:hover { background: var(--admin-red); border-color: var(--admin-red); color: white; }
-    .comment-edit-area { width: 100%; padding: 8px 10px; border-radius: 10px; border: 1.5px solid var(--latte-gold); background: var(--creamy-white); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 0.9rem; resize: none; outline: none; margin-top: 6px; transition: border-color 0.2s; min-height: 60px; }
+
+    .comment-edit-area {
+        width: 100%; padding: 8px 10px; border-radius: 10px;
+        border: 1.5px solid var(--latte-gold); background: var(--creamy-white);
+        color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 0.9rem;
+        resize: none; outline: none; margin-top: 6px; transition: border-color 0.2s; min-height: 60px;
+    }
     .comment-edit-area:focus { border-color: #a07840; }
     .comment-edit-actions { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
-    .comment-save-btn { background: var(--latte-gold); color: white; border: none; border-radius: 20px; padding: 5px 14px; font-size: 0.75rem; font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+    .comment-save-btn {
+        background: var(--latte-gold); color: white; border: none;
+        border-radius: 20px; padding: 5px 14px; font-size: 0.75rem;
+        font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer;
+        display: flex; align-items: center; gap: 5px; transition: 0.2s;
+    }
     .comment-save-btn:hover { opacity: 0.85; }
-    .comment-cancel-btn { background: transparent; color: var(--latte-gold); border: 1px solid var(--latte-gold); border-radius: 20px; padding: 5px 14px; font-size: 0.75rem; font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .comment-cancel-btn {
+        background: transparent; color: var(--latte-gold);
+        border: 1px solid var(--latte-gold); border-radius: 20px;
+        padding: 5px 14px; font-size: 0.75rem;
+        font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; transition: 0.2s;
+    }
     .comment-cancel-btn:hover { background: rgba(200,161,101,0.12); }
+
     .admin-delete-comment-btn { display: none; position: absolute; top: 6px; left: 8px; background: var(--admin-red); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 0.7rem; cursor: pointer; align-items: center; justify-content: center; line-height: 1; padding: 0; z-index: 10; transition: transform 0.2s; }
     .admin-delete-comment-btn:hover { transform: scale(1.15); }
     .admin-delete-like { display: none; background: var(--admin-red); color: white; border: none; border-radius: 50px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer; align-items: center; gap: 5px; font-family: 'Cairo', sans-serif; font-weight: bold; transition: 0.2s; }
@@ -388,6 +456,7 @@
     .fab-wrap { display: flex; align-items: center; gap: 10px; }
     .fab-label { background: var(--creamy-white); color: var(--dark-latte); border: 1px solid var(--latte-gold); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
+    /* ======= ADMIN STATS PANEL ======= */
     #admin-stats-panel { display: none; position: fixed; bottom: 100px; left: 15px; width: calc(100vw - 30px); max-width: 380px; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.22); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
     #admin-stats-panel.active { display: block; }
     @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
@@ -422,6 +491,7 @@
     #admin-toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 30px; font-size: 0.85rem; font-weight: bold; opacity: 0; transition: all 0.4s; z-index: 9999; pointer-events: none; white-space: nowrap; }
     #admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    /* Upload Modal */
     #upload-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
     #upload-modal .comment-content { max-width: 420px; max-height: 90vh; overflow-y: auto; }
     .upload-drop-zone { border: 2.5px dashed var(--latte-gold); border-radius: 16px; padding: 30px 15px; text-align: center; cursor: pointer; background: var(--vanilla-light); transition: background 0.2s, border-color 0.2s; margin-bottom: 14px; }
@@ -438,7 +508,9 @@
     .upload-submit-btn:hover { opacity: 0.88; }
     .upload-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* PROFILE */
+    /* =============================================
+       MY PROFILE PAGE
+    ============================================= */
     #profile-page { min-height: 100vh; padding-bottom: 40px; }
     .profile-hero { background: linear-gradient(135deg, var(--latte-gold) 0%, #8a5e30 100%); padding: 50px 20px 75px; text-align: center; position: relative; overflow: hidden; }
     .profile-hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 60% 40%, rgba(255,255,255,0.1) 0%, transparent 60%); pointer-events: none; }
@@ -507,162 +579,223 @@
     .empty-liked { text-align: center; padding: 30px 20px; color: #999; }
     .empty-liked i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
 
-    /* PUBLIC PROFILE */
+    /* =============================================
+       PUBLIC PROFILE PAGE
+    ============================================= */
     #public-profile-page { min-height: 100vh; padding-bottom: 40px; }
-    .pub-profile-hero { background: linear-gradient(145deg, #5a3e28 0%, var(--latte-gold) 50%, #7a5030 100%); padding: 55px 20px 80px; text-align: center; position: relative; overflow: hidden; }
-    .pub-profile-hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 35% 65%, rgba(255,255,255,0.12) 0%, transparent 55%); pointer-events: none; }
-    .pub-profile-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 40px; background: var(--creamy-white); border-radius: 35px 35px 0 0; }
-    .pub-profile-hero .hero-deco-1 { position: absolute; bottom: 10%; right: 5%; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none; }
-    .pub-profile-hero .hero-deco-2 { position: absolute; top: 15%; left: 8%; width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.05); pointer-events: none; }
-    .pub-avatar-ring { width: 110px; height: 110px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.95); overflow: hidden; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); box-shadow: 0 8px 35px rgba(0,0,0,0.35); margin-bottom: 16px; position: relative; z-index: 2; }
+
+    .pub-profile-hero {
+        background: linear-gradient(145deg, #5a3e28 0%, var(--latte-gold) 50%, #7a5030 100%);
+        padding: 55px 20px 80px; text-align: center; position: relative; overflow: hidden;
+    }
+    .pub-profile-hero::before {
+        content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle at 35% 65%, rgba(255,255,255,0.12) 0%, transparent 55%);
+        pointer-events: none;
+    }
+    .pub-profile-hero::after {
+        content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+        height: 40px; background: var(--creamy-white); border-radius: 35px 35px 0 0;
+    }
+    .pub-profile-hero .hero-deco-1 {
+        position: absolute; bottom: 10%; right: 5%; width: 120px; height: 120px;
+        border-radius: 50%; background: rgba(255,255,255,0.06); pointer-events: none;
+    }
+    .pub-profile-hero .hero-deco-2 {
+        position: absolute; top: 15%; left: 8%; width: 70px; height: 70px;
+        border-radius: 50%; background: rgba(255,255,255,0.05); pointer-events: none;
+    }
+
+    .pub-avatar-ring {
+        width: 110px; height: 110px; border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.95);
+        overflow: hidden; display: inline-flex;
+        align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.2);
+        box-shadow: 0 8px 35px rgba(0,0,0,0.35);
+        margin-bottom: 16px; position: relative; z-index: 2;
+    }
     .pub-avatar-ring img { width: 100%; height: 100%; object-fit: cover; }
     .pub-avatar-initial { font-size: 2.8rem; color: white; font-weight: 900; }
+
     .pub-username { color: white; font-size: 1.5rem; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,0.25); margin-bottom: 4px; position: relative; z-index: 2; }
     .pub-joined { color: rgba(255,255,255,0.7); font-size: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 5px; position: relative; z-index: 2; margin-top: 6px; }
+
     .pub-stats-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--creamy-white); border-bottom: 1px solid rgba(200,161,101,0.12); }
     .pub-stat { text-align: center; padding: 18px 10px; border-left: 1px solid rgba(200,161,101,0.12); }
     .pub-stat:last-child { border-left: none; }
     .pub-stat-value { font-size: 1.4rem; font-weight: 900; color: var(--latte-gold); display: block; }
     .pub-stat-label { font-size: 0.62rem; color: #999; font-weight: 600; }
+
     .pub-profile-body { padding: 18px; display: flex; flex-direction: column; gap: 16px; background: var(--bg-gradient); }
-    .pub-own-banner { background: linear-gradient(135deg, var(--latte-gold), #a07040); color: white; border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; font-size: 0.88rem; font-weight: bold; box-shadow: 0 4px 15px rgba(200,161,101,0.3); }
+
+    .pub-own-banner {
+        background: linear-gradient(135deg, var(--latte-gold), #a07040);
+        color: white; border-radius: 14px; padding: 14px 18px;
+        display: flex; align-items: center; gap: 12px;
+        font-size: 0.88rem; font-weight: bold;
+        box-shadow: 0 4px 15px rgba(200,161,101,0.3);
+    }
     .pub-own-banner i { font-size: 1.3rem; flex-shrink: 0; }
-    .pub-own-edit-btn { margin-right: auto; background: white; color: var(--latte-gold); border: none; border-radius: 20px; padding: 7px 16px; font-family: 'Cairo', sans-serif; font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: 0.2s; white-space: nowrap; }
+    .pub-own-edit-btn {
+        margin-right: auto; background: white; color: var(--latte-gold);
+        border: none; border-radius: 20px; padding: 7px 16px;
+        font-family: 'Cairo', sans-serif; font-size: 0.8rem; font-weight: bold;
+        cursor: pointer; transition: 0.2s; white-space: nowrap;
+    }
     .pub-own-edit-btn:hover { opacity: 0.85; transform: scale(1.04); }
-    .pub-liked-thumb-item { aspect-ratio: 1; overflow: hidden; border-radius: 8px; background: var(--vanilla-light); cursor: pointer; position: relative; }
-    .pub-liked-thumb-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; display: block; }
+
+    .pub-liked-thumb-item {
+        aspect-ratio: 1; overflow: hidden; border-radius: 8px;
+        background: var(--vanilla-light); cursor: pointer; position: relative;
+    }
+    .pub-liked-thumb-item img {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: transform 0.3s; display: block;
+    }
     .pub-liked-thumb-item:hover img { transform: scale(1.08); }
+
     .pub-empty { text-align: center; padding: 30px 20px; color: #999; }
     .pub-empty i { font-size: 2.5rem; color: rgba(200,161,101,0.3); display: block; margin-bottom: 10px; }
     .pub-empty p { font-size: 0.88rem; }
 
-    /* CUSTOM SECTIONS */
+    /* ======= CUSTOM SECTIONS ======= */
     #dynamic-sections-container { padding: 0 20px 10px; display: flex; flex-direction: column; gap: 15px; }
-    .custom-section-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(200,161,101,0.15); border-radius: 15px; background: var(--creamy-white); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); animation: fadeIn 0.5s ease; position: relative; }
+    .custom-section-card {
+        text-align: center; padding: 30px 15px;
+        border: 1px solid rgba(200,161,101,0.15); border-radius: 15px;
+        background: var(--creamy-white); cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        animation: fadeIn 0.5s ease; position: relative;
+    }
     .custom-section-card i { font-size: 2.5rem; color: var(--latte-gold); margin-bottom: 10px; }
     .custom-section-card h3 { color: var(--dark-latte); margin-bottom: 6px; }
     .custom-section-card p { color: #7a6a67; font-size: 0.88rem; }
     body.dark-mode .custom-section-card p { color: #ccc; }
     .custom-section-card .click-hint { display: block; font-size: 0.75rem; color: var(--latte-gold); margin-top: 8px; font-weight: bold; opacity: 0.8; }
-    .custom-section-archive-btn { position: absolute; top: 10px; left: 10px; background: rgba(200,161,101,0.15); border: 1px solid var(--latte-gold); color: var(--latte-gold); border-radius: 20px; padding: 4px 10px; font-size: 0.7rem; font-family: 'Cairo',sans-serif; font-weight: bold; cursor: pointer; display: none; transition: 0.2s; }
+    .custom-section-archive-btn {
+        position: absolute; top: 10px; left: 10px;
+        background: rgba(200,161,101,0.15); border: 1px solid var(--latte-gold);
+        color: var(--latte-gold); border-radius: 20px; padding: 4px 10px;
+        font-size: 0.7rem; font-family: 'Cairo',sans-serif; font-weight: bold;
+        cursor: pointer; display: none; transition: 0.2s;
+    }
     .custom-section-archive-btn:hover { background: var(--latte-gold); color: white; }
+
     #add-section-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
     #add-section-modal .comment-content { max-width: 420px; max-height: 90vh; overflow-y: auto; }
+
     .dynamic-section-page { min-height: 50vh; }
+
     #archive-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
     #archive-modal .comment-content { max-width: 420px; max-height: 85vh; overflow-y: auto; }
-    .archive-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--vanilla-light); border-radius: 12px; border-right: 3px solid var(--latte-gold); margin-bottom: 10px; }
+    .archive-item {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 14px; background: var(--vanilla-light);
+        border-radius: 12px; border-right: 3px solid var(--latte-gold);
+        margin-bottom: 10px;
+    }
     .archive-item-name { font-weight: bold; font-size: 0.9rem; color: var(--dark-latte); }
-    .archive-restore-btn { background: var(--admin-green); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-size: 0.75rem; font-family: 'Cairo',sans-serif; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .archive-restore-btn {
+        background: var(--admin-green); color: white; border: none;
+        border-radius: 20px; padding: 6px 14px; font-size: 0.75rem;
+        font-family: 'Cairo',sans-serif; font-weight: bold; cursor: pointer;
+        transition: 0.2s;
+    }
     .archive-restore-btn:hover { opacity: 0.85; }
 
-    /* LIGHTBOX */
-    #lightbox-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; }
+    /* ======= LIGHTBOX ======= */
+    #lightbox-modal {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.92); z-index: 99999;
+        display: none; justify-content: center; align-items: center;
+        flex-direction: column;
+    }
     #lightbox-modal.active { display: flex; }
-    #lightbox-img { max-width: 95vw; max-height: 80vh; border-radius: 12px; object-fit: contain; box-shadow: 0 8px 40px rgba(0,0,0,0.6); animation: lbFadeIn 0.25s ease; }
+    #lightbox-img {
+        max-width: 95vw; max-height: 80vh; border-radius: 12px;
+        object-fit: contain; box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+        animation: lbFadeIn 0.25s ease;
+    }
     @keyframes lbFadeIn { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:scale(1); } }
-    #lightbox-close { position: absolute; top: 18px; left: 18px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+    #lightbox-close {
+        position: absolute; top: 18px; left: 18px;
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(255,255,255,0.15); border: none;
+        color: white; font-size: 1.2rem; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s;
+    }
     #lightbox-close:hover { background: rgba(255,255,255,0.28); }
 
-    /* RANK BADGES */
-    .pub-rank-badge { display: none; position: relative; z-index: 2; margin: 10px auto 0; font-size: 4rem; line-height: 1; animation: badgePop 0.65s cubic-bezier(0.175,0.885,0.32,1.275) forwards; filter: drop-shadow(0 4px 14px rgba(255,215,0,0.55)); }
-    .pub-rank-label { display: none; position: relative; z-index: 2; margin-top: 8px; background: rgba(255,255,255,0.22); color: white; font-size: 0.8rem; font-weight: 900; padding: 5px 18px; border-radius: 20px; letter-spacing: 0.5px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.35); }
-    @keyframes badgePop { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 70% { transform: scale(1.25) rotate(6deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
-    @keyframes goldGlow { 0%, 100% { box-shadow: 0 0 22px 7px rgba(255,215,0,0.6), 0 0 55px 18px rgba(255,165,0,0.3); } 50% { box-shadow: 0 0 40px 14px rgba(255,215,0,0.85), 0 0 90px 30px rgba(255,165,0,0.48); } }
-    .pub-profile-hero.rank-gold { animation: goldGlow 2.2s ease-in-out infinite; background: linear-gradient(145deg, #7a5500 0%, #f5c518 45%, #c8860a 100%) !important; }
-    .pub-profile-hero.rank-gold .pub-avatar-ring { border-color: #fff176 !important; animation: avatarPulse 1.8s ease-in-out infinite; }
-    @keyframes avatarPulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(255,215,0,0.6), 0 8px 35px rgba(0,0,0,0.35); } 50% { box-shadow: 0 0 0 10px rgba(255,215,0,0.3), 0 8px 35px rgba(0,0,0,0.35); } }
-    .pub-profile-hero.rank-silver { background: linear-gradient(145deg, #3a3a3a 0%, #c0c0c0 45%, #6e6e6e 100%) !important; }
-    .pub-profile-hero.rank-silver .pub-avatar-ring { border-color: #f0f0f0 !important; box-shadow: 0 0 0 3px rgba(192,192,192,0.5), 0 8px 35px rgba(0,0,0,0.35) !important; }
-    .pub-rank-badge.silver-badge { filter: drop-shadow(0 3px 8px rgba(150,150,150,0.5)); }
-
     /* =============================================
-       FRIENDS PAGE
+       TOP USER RANK BADGES
     ============================================= */
-    #friends-page { min-height: 100vh; padding-bottom: 40px; }
-    .friends-hero { background: linear-gradient(135deg, #2d5a27 0%, #4a9e3f 50%, #1e7a3d 100%); padding: 40px 20px 60px; text-align: center; position: relative; overflow: hidden; }
-    .friends-hero::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 30px; background: var(--creamy-white); border-radius: 25px 25px 0 0; }
-    .friends-hero h2 { color: white; font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; }
-    .friends-hero p { color: rgba(255,255,255,0.75); font-size: 0.85rem; }
-    .friends-tabs { display: flex; background: var(--creamy-white); border-bottom: 2px solid rgba(200,161,101,0.15); }
-    .friends-tab { flex: 1; padding: 14px; text-align: center; font-family: 'Cairo',sans-serif; font-weight: bold; font-size: 0.85rem; cursor: pointer; border: none; background: transparent; color: #999; transition: 0.2s; position: relative; }
-    .friends-tab.active { color: var(--latte-gold); }
-    .friends-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--latte-gold); }
-    .friends-tab-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--admin-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; margin-right: 5px; font-weight: bold; }
-    .friends-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-gradient); min-height: 300px; }
-    .friend-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--creamy-white); border-radius: 16px; border: 1px solid rgba(200,161,101,0.12); box-shadow: 0 2px 8px rgba(0,0,0,0.04); animation: slideIn 0.3s ease-out; }
-    .friend-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--latte-gold); overflow: hidden; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
-    .friend-avatar:hover { transform: scale(1.08); }
-    .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .friend-avatar-placeholder { font-size: 1.2rem; font-weight: bold; color: var(--latte-gold); }
-    .friend-info { flex: 1; }
-    .friend-name { font-weight: bold; font-size: 0.95rem; color: var(--dark-latte); }
-    .friend-sub { font-size: 0.72rem; color: #999; margin-top: 2px; }
-    .friend-actions { display: flex; gap: 8px; }
-    .friend-action-btn { padding: 7px 14px; border-radius: 20px; font-size: 0.75rem; font-family: 'Cairo',sans-serif; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
-    .friend-action-btn:hover { opacity: 0.85; transform: scale(1.04); }
-    .btn-accept { background: var(--admin-green); color: white; }
-    .btn-reject { background: transparent; border: 1px solid #e74c3c !important; border: none; color: #e74c3c; }
-    .btn-reject:hover { background: #e74c3c; color: white; }
-    .btn-chat { background: var(--latte-gold); color: white; }
-    .btn-unfriend { background: transparent; border: 1px solid rgba(200,161,101,0.4); color: var(--latte-gold); }
-    .btn-unfriend:hover { background: var(--admin-red); border-color: var(--admin-red); color: white; }
-    .friends-empty { text-align: center; padding: 40px 20px; color: #999; }
-    .friends-empty i { font-size: 3rem; color: rgba(200,161,101,0.25); display: block; margin-bottom: 12px; }
-    .friends-empty p { font-size: 0.9rem; }
-    .friends-loading { text-align: center; padding: 30px; }
-    .friends-loading i { font-size: 1.8rem; color: var(--latte-gold); animation: spin 1s linear infinite; }
+    .pub-rank-badge {
+        display: none;
+        position: relative;
+        z-index: 2;
+        margin: 10px auto 0;
+        font-size: 4rem;
+        line-height: 1;
+        animation: badgePop 0.65s cubic-bezier(0.175,0.885,0.32,1.275) forwards;
+        filter: drop-shadow(0 4px 14px rgba(255,215,0,0.55));
+    }
+    .pub-rank-label {
+        display: none;
+        position: relative;
+        z-index: 2;
+        margin-top: 8px;
+        background: rgba(255,255,255,0.22);
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 900;
+        padding: 5px 18px;
+        border-radius: 20px;
+        letter-spacing: 0.5px;
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255,255,255,0.35);
+    }
+    @keyframes badgePop {
+        0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+        70%  { transform: scale(1.25) rotate(6deg);  opacity: 1; }
+        100% { transform: scale(1) rotate(0deg);    opacity: 1; }
+    }
 
-    /* =============================================
-       CHAT MODAL
-    ============================================= */
-    #chat-modal { background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); z-index: 10005; }
-    #chat-modal .comment-content { max-width: 420px; max-height: 85vh; padding: 0; overflow: hidden; display: flex; flex-direction: column; }
-    .chat-header { background: linear-gradient(135deg, var(--latte-gold), #a07040); color: white; padding: 14px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-    .chat-header-avatar { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.6); overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .chat-header-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .chat-header-info { flex: 1; }
-    .chat-header-name { font-weight: bold; font-size: 0.95rem; }
-    .chat-header-status { font-size: 0.68rem; opacity: 0.8; }
-    #chat-messages-container { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; background: var(--bg-gradient); min-height: 200px; max-height: 55vh; }
-    #chat-messages-container::-webkit-scrollbar { width: 4px; }
-    #chat-messages-container::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
-    .chat-bubble-wrap { display: flex; }
-    .chat-bubble-wrap.mine { justify-content: flex-end; }
-    .chat-bubble-wrap.theirs { justify-content: flex-start; }
-    .chat-bubble { padding: 10px 14px; border-radius: 18px; max-width: 78%; font-size: 0.9rem; word-break: break-word; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
-    .chat-bubble.mine { background: var(--latte-gold); color: white; border-bottom-right-radius: 4px; }
-    .chat-bubble.theirs { background: var(--creamy-white); color: var(--dark-latte); border-bottom-left-radius: 4px; border: 1px solid rgba(200,161,101,0.15); }
-    .chat-bubble-sender { font-size: 0.62rem; color: var(--latte-gold); font-weight: bold; margin-bottom: 2px; }
-    .chat-bubble-time { font-size: 0.6rem; opacity: 0.55; margin-top: 3px; text-align: left; }
-    .chat-bubble.mine .chat-bubble-time { text-align: right; color: rgba(255,255,255,0.7); }
-    .chat-input-bar { padding: 12px 14px; border-top: 1px solid rgba(200,161,101,0.2); display: flex; gap: 8px; background: var(--creamy-white); flex-shrink: 0; }
-    #chat-msg-input { flex: 1; padding: 10px 14px; border-radius: 22px; border: 1.5px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo',sans-serif; outline: none; transition: border-color 0.2s; }
-    #chat-msg-input:focus { border-color: #a07840; }
-    .chat-send-btn { background: var(--latte-gold); color: white; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s; }
-    .chat-send-btn:hover { opacity: 0.85; transform: scale(1.05); }
+    @keyframes goldGlow {
+        0%, 100% { box-shadow: 0 0 22px 7px rgba(255,215,0,0.6), 0 0 55px 18px rgba(255,165,0,0.3); }
+        50%       { box-shadow: 0 0 40px 14px rgba(255,215,0,0.85), 0 0 90px 30px rgba(255,165,0,0.48); }
+    }
+    .pub-profile-hero.rank-gold {
+        animation: goldGlow 2.2s ease-in-out infinite;
+        background: linear-gradient(145deg, #7a5500 0%, #f5c518 45%, #c8860a 100%) !important;
+    }
+    .pub-profile-hero.rank-gold .pub-avatar-ring {
+        border-color: #fff176 !important;
+        animation: avatarPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes avatarPulse {
+        0%, 100% { box-shadow: 0 0 0 4px rgba(255,215,0,0.6), 0 8px 35px rgba(0,0,0,0.35); }
+        50%       { box-shadow: 0 0 0 10px rgba(255,215,0,0.3), 0 8px 35px rgba(0,0,0,0.35); }
+    }
 
-    /* NOTIFICATION BADGE ON MENU */
-    .menu-friends-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: linear-gradient(135deg, rgba(74,158,63,0.12), rgba(46,125,50,0.08)); border: 1px solid rgba(74,158,63,0.3); border-radius: 12px; cursor: pointer; transition: 0.2s; width: 100%; margin-bottom: 12px; }
-    .menu-friends-btn:hover { background: rgba(74,158,63,0.18); }
-    .menu-friends-btn i { color: #4a9e3f; font-size: 1.1rem; }
-    .menu-friends-btn span { font-weight: bold; font-size: 0.9rem; color: var(--dark-latte); flex: 1; }
-    #menu-friends-badge { background: var(--admin-red); color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.7rem; display: none; align-items: center; justify-content: center; font-weight: bold; }
-
-    /* FRIEND REQUEST BUTTON on pub profile */
-    .pub-action-bar { display: flex; gap: 10px; padding: 0 0 16px; }
-    .pub-action-btn { flex: 1; padding: 12px; border-radius: 14px; font-family: 'Cairo',sans-serif; font-weight: bold; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-    .pub-action-btn:hover { opacity: 0.85; transform: scale(1.02); }
-    .pub-action-btn.friend-btn { background: var(--vanilla-light); border: 2px solid var(--latte-gold); color: var(--latte-gold); }
-    .pub-action-btn.friend-btn.sent { background: rgba(200,161,101,0.12); border-color: rgba(200,161,101,0.4); color: #999; cursor: default; }
-    .pub-action-btn.friend-btn.friends { background: rgba(46,125,50,0.1); border-color: #4a9e3f; color: #4a9e3f; }
-    .pub-action-btn.chat-btn { background: var(--latte-gold); border: none; color: white; }
+    .pub-profile-hero.rank-silver {
+        background: linear-gradient(145deg, #3a3a3a 0%, #c0c0c0 45%, #6e6e6e 100%) !important;
+    }
+    .pub-profile-hero.rank-silver .pub-avatar-ring {
+        border-color: #f0f0f0 !important;
+        box-shadow: 0 0 0 3px rgba(192,192,192,0.5), 0 8px 35px rgba(0,0,0,0.35) !important;
+    }
+    .pub-rank-badge.silver-badge {
+        filter: drop-shadow(0 3px 8px rgba(150,150,150,0.5));
+    }
 </style>
 
 </head>
 <body>
 
-<!-- WELCOME GATE -->
+<!-- ======= WELCOME GATE ======= -->
+
 <div id="welcome-gate" class="comment-modal active" style="z-index: 9999; background: var(--bg-gradient);">
     <div class="comment-content" style="height: auto; text-align: center; padding: 40px 20px;">
         <div class="logo" style="font-size: 3rem; margin-bottom: 10px;">MD</div>
@@ -675,13 +808,15 @@
     </div>
 </div>
 
-<!-- LIGHTBOX -->
+<!-- ======= LIGHTBOX ======= -->
+
 <div id="lightbox-modal" onclick="closeLightbox()">
     <button id="lightbox-close" onclick="closeLightbox()"><i class="fas fa-times"></i></button>
     <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()">
 </div>
 
-<!-- ADMIN PASSWORD MODAL -->
+<!-- ======= ADMIN PASSWORD MODAL ======= -->
+
 <div id="admin-pass-modal" class="comment-modal">
     <div class="comment-content" style="padding: 30px 25px; text-align: center; max-width: 320px;">
         <div style="font-size: 2.5rem; color: var(--latte-gold); margin-bottom: 10px;">🔐</div>
@@ -695,7 +830,8 @@
     </div>
 </div>
 
-<!-- EDIT USERNAME MODAL -->
+<!-- ======= EDIT USERNAME MODAL ======= -->
+
 <div id="edit-username-modal" class="comment-modal">
     <div class="comment-content">
         <div style="text-align:center; padding: 28px 24px;">
@@ -711,7 +847,8 @@
     </div>
 </div>
 
-<!-- AVATAR UPLOAD MODAL -->
+<!-- ======= AVATAR UPLOAD MODAL ======= -->
+
 <div id="avatar-upload-modal" class="comment-modal">
     <div class="comment-content" style="max-width:360px;">
         <div class="avatar-upload-header">
@@ -734,7 +871,8 @@
     </div>
 </div>
 
-<!-- UPLOAD PHOTO MODAL -->
+<!-- ======= UPLOAD PHOTO MODAL ======= -->
+
 <div id="upload-modal" class="comment-modal">
     <div class="comment-content" style="padding: 0; overflow: hidden;">
         <div style="background: var(--admin-green); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
@@ -766,7 +904,8 @@
     </div>
 </div>
 
-<!-- ADMIN FAB -->
+<!-- ======= ADMIN FAB ======= -->
+
 <div id="admin-fab">
     <div class="fab-wrap">
         <button class="admin-fab-btn" id="fab-stats" onclick="toggleAdminStats()"><i class="fas fa-chart-bar"></i></button>
@@ -790,7 +929,8 @@
     </div>
 </div>
 
-<!-- ADMIN STATS PANEL -->
+<!-- ======= ADMIN STATS PANEL ======= -->
+
 <div id="admin-stats-panel">
     <div class="stats-header">
         <span>📊 إحصائيات الموقع</span>
@@ -808,7 +948,8 @@
 <div class="progress-bar" id="myBar"></div>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-<!-- SIDE MENU -->
+<!-- ======= SIDE MENU ======= -->
+
 <div class="side-menu" id="sideMenu">
     <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
     <div class="menu-profile-preview" id="menu-profile-preview" onclick="goToProfile()" style="display:none;">
@@ -820,14 +961,6 @@
             <div class="menu-profile-sub">عرض ملفك الشخصي ←</div>
         </div>
     </div>
-
-    <!-- FRIENDS BUTTON IN MENU -->
-    <button class="menu-friends-btn" onclick="toggleMenu(); showPage('friends-page');" id="menu-friends-btn" style="display:none;">
-        <i class="fas fa-user-friends"></i>
-        <span>الأصدقاء والدردشة</span>
-        <div id="menu-friends-badge"></div>
-    </button>
-
     <div class="menu-section">
         <h3>من نحن</h3>
         <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم.</p>
@@ -846,7 +979,8 @@
     </div>
 </div>
 
-<!-- HEADER -->
+<!-- ======= HEADER ======= -->
+
 <header class="sticky-header">
     <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
     <div class="logo-container">
@@ -859,7 +993,8 @@
     </div>
 </header>
 
-<!-- MAIN PAGE -->
+<!-- ======= MAIN PAGE ======= -->
+
 <div id="main-page" class="page" style="display: block;">
     <section class="hero">
         <h2 class="active-reveal">نصمم الفخامة لذوقكم</h2>
@@ -867,13 +1002,17 @@
     </section>
     <section class="services">
         <div class="service-card" id="fixed-card-interior" onclick="showPage('interior-gallery')">
-            <button class="custom-section-archive-btn" id="arch-btn-interior" onclick="archiveFixedSection(event,'interior')"><i class="fas fa-archive"></i> أرشفة</button>
+            <button class="custom-section-archive-btn" id="arch-btn-interior" onclick="archiveFixedSection(event,'interior')">
+                <i class="fas fa-archive"></i> أرشفة
+            </button>
             <i class="fas fa-paint-roller"></i><h3>ديكور داخلي</h3>
             <p>أرقى التصاميم الداخلية التي تجمع بين العصرنة والكلاسيكية.</p>
             <span class="click-hint">اضغط للعرض</span>
         </div>
         <div class="service-card" id="fixed-card-stone" onclick="showPage('stone-gallery')">
-            <button class="custom-section-archive-btn" id="arch-btn-stone" onclick="archiveFixedSection(event,'stone')"><i class="fas fa-archive"></i> أرشفة</button>
+            <button class="custom-section-archive-btn" id="arch-btn-stone" onclick="archiveFixedSection(event,'stone')">
+                <i class="fas fa-archive"></i> أرشفة
+            </button>
             <i class="fas fa-hammer"></i><h3>واجهات حجرية</h3>
             <p>تركيب وتصميم كافة أنواع الحجر الطبيعي والصناعي بدقة عالية.</p>
             <span class="click-hint">اضغط للعرض</span>
@@ -889,7 +1028,8 @@
     </div>
 </div>
 
-<!-- MY PROFILE PAGE -->
+<!-- ======= MY PROFILE PAGE ======= -->
+
 <div id="profile-page" class="page">
     <div class="back-btn-container">
         <button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button>
@@ -899,7 +1039,9 @@
             <div class="profile-avatar" onclick="openAvatarUploadModal()" id="profile-avatar-display">
                 <span class="avatar-placeholder-text" id="profile-avatar-placeholder">?</span>
             </div>
-            <div class="avatar-edit-badge" onclick="openAvatarUploadModal()"><i class="fas fa-camera"></i></div>
+            <div class="avatar-edit-badge" onclick="openAvatarUploadModal()">
+                <i class="fas fa-camera"></i>
+            </div>
         </div>
         <div class="profile-name" id="profile-display-name">—</div>
         <div class="profile-email" id="profile-display-email">—</div>
@@ -921,7 +1063,10 @@
     </div>
     <div class="profile-body">
         <div class="profile-card">
-            <div class="profile-card-header"><i class="fas fa-user-cog"></i><span>معلوماتي الشخصية</span></div>
+            <div class="profile-card-header">
+                <i class="fas fa-user-cog"></i>
+                <span>معلوماتي الشخصية</span>
+            </div>
             <div class="profile-card-body">
                 <div class="edit-field-row">
                     <div class="edit-field-icon"><i class="fas fa-user"></i></div>
@@ -948,94 +1093,77 @@
                 </div>
             </div>
         </div>
-        <!-- Friends shortcut in profile -->
-        <div class="profile-card" style="cursor:pointer;" onclick="showPage('friends-page')">
-            <div class="profile-card-header"><i class="fas fa-user-friends"></i><span>الأصدقاء والدردشة</span></div>
-            <div class="profile-card-body" style="display:flex;align-items:center;justify-content:space-between;">
-                <div style="display:flex;gap:20px;">
-                    <div style="text-align:center;">
-                        <div style="font-size:1.4rem;font-weight:900;color:var(--latte-gold);" id="profile-stat-friends">0</div>
-                        <div style="font-size:0.68rem;color:#999;">صديق</div>
-                    </div>
-                    <div style="text-align:center;">
-                        <div style="font-size:1.4rem;font-weight:900;color:var(--admin-red);" id="profile-stat-requests">0</div>
-                        <div style="font-size:0.68rem;color:#999;">طلبات</div>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-left" style="color:var(--latte-gold);font-size:0.9rem;"></i>
-            </div>
-        </div>
         <div class="profile-card">
-            <div class="profile-card-header"><i class="fas fa-heart"></i><span>الصور التي أعجبتني</span></div>
+            <div class="profile-card-header">
+                <i class="fas fa-heart"></i>
+                <span>الصور التي أعجبتني</span>
+            </div>
             <div class="profile-card-body" style="padding: 14px;">
                 <div id="liked-photos-grid" class="liked-grid"></div>
                 <div id="liked-photos-empty" class="empty-liked" style="display:none;">
-                    <i class="far fa-heart"></i><p>لم تعجبك أي صورة بعد</p>
+                    <i class="far fa-heart"></i>
+                    <p>لم تعجبك أي صورة بعد</p>
                 </div>
             </div>
         </div>
         <button id="sync-likes-btn" onclick="syncLikesNow()" style="width:100%;padding:14px;background:transparent;border:2px solid var(--latte-gold);border-radius:14px;color:var(--latte-gold);font-family:'Cairo',sans-serif;font-weight:bold;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:0.2s;">
             <i class="fas fa-sync-alt"></i> مزامنة الإعجابات مع الحساب
         </button>
-        <button class="profile-logout-btn" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+        <button class="profile-logout-btn" onclick="logoutUser()">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
     </div>
 </div>
 
-<!-- FRIENDS PAGE -->
-<div id="friends-page" class="page">
-    <div class="back-btn-container">
-        <button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button>
-    </div>
-    <div class="friends-hero">
-        <h2>👥 الأصدقاء</h2>
-        <p>تواصل مع أصدقائك وشارك اهتمامك بالتصاميم</p>
-    </div>
-    <div class="friends-tabs">
-        <button class="friends-tab active" id="tab-friends" onclick="switchFriendsTab('friends')">
-            <i class="fas fa-user-friends"></i> أصدقائي
-        </button>
-        <button class="friends-tab" id="tab-requests" onclick="switchFriendsTab('requests')">
-            <i class="fas fa-user-plus"></i> الطلبات
-            <span class="friends-tab-badge" id="requests-badge" style="display:none;">0</span>
-        </button>
-        <button class="friends-tab" id="tab-sent" onclick="switchFriendsTab('sent')">
-            <i class="fas fa-paper-plane"></i> المرسلة
-        </button>
-    </div>
-    <div class="friends-body" id="friends-body">
-        <div class="friends-loading"><i class="fas fa-spinner"></i></div>
-    </div>
-</div>
+<!-- ======= PUBLIC PROFILE PAGE ======= -->
 
-<!-- PUBLIC PROFILE PAGE -->
 <div id="public-profile-page" class="page">
     <div class="back-btn-container">
-        <button class="back-btn" id="pub-back-btn" onclick="closePubProfile()"><i class="fas fa-arrow-right"></i> رجوع</button>
+        <button class="back-btn" id="pub-back-btn" onclick="closePubProfile()">
+            <i class="fas fa-arrow-right"></i> رجوع
+        </button>
     </div>
     <div class="pub-profile-hero" id="pub-profile-hero">
         <div class="hero-deco-1"></div>
         <div class="hero-deco-2"></div>
-        <div class="pub-avatar-ring" id="pub-avatar-ring"><span class="pub-avatar-initial" id="pub-avatar-initial">?</span></div>
+        <div class="pub-avatar-ring" id="pub-avatar-ring">
+            <span class="pub-avatar-initial" id="pub-avatar-initial">?</span>
+        </div>
         <div class="pub-username" id="pub-username">—</div>
         <div class="pub-rank-badge" id="pub-rank-badge"></div>
         <div class="pub-rank-label" id="pub-rank-label"></div>
-        <div class="pub-joined"><i class="fas fa-calendar-alt"></i><span id="pub-joined-text">—</span></div>
+        <div class="pub-joined">
+            <i class="fas fa-calendar-alt"></i>
+            <span id="pub-joined-text">—</span>
+        </div>
     </div>
     <div class="pub-stats-bar">
-        <div class="pub-stat"><span class="pub-stat-value" id="pub-stat-comments">—</span><span class="pub-stat-label">💬 تعليق</span></div>
-        <div class="pub-stat"><span class="pub-stat-value" id="pub-stat-liked-count">—</span><span class="pub-stat-label">❤️ إعجاب</span></div>
-        <div class="pub-stat"><span class="pub-stat-value" id="pub-stat-joined-days">—</span><span class="pub-stat-label">📅 يوم عضوية</span></div>
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-comments">—</span>
+            <span class="pub-stat-label">💬 تعليق</span>
+        </div>
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-liked-count">—</span>
+            <span class="pub-stat-label">❤️ إعجاب</span>
+        </div>
+        <div class="pub-stat">
+            <span class="pub-stat-value" id="pub-stat-joined-days">—</span>
+            <span class="pub-stat-label">📅 يوم عضوية</span>
+        </div>
     </div>
-    <div class="pub-profile-body" id="pub-profile-body">
+    <div class="pub-profile-body">
         <div class="pub-own-banner" id="pub-own-banner" style="display:none;">
             <i class="fas fa-user-shield"></i>
             <span>هذا حسابك الشخصي</span>
-            <button class="pub-own-edit-btn" onclick="closePubProfile(); showPage('profile-page');"><i class="fas fa-pen"></i> تعديل</button>
+            <button class="pub-own-edit-btn" onclick="closePubProfile(); showPage('profile-page');">
+                <i class="fas fa-pen"></i> تعديل
+            </button>
         </div>
-        <!-- Action bar (friend + chat) injected dynamically -->
-        <div id="pub-action-bar-container"></div>
         <div class="profile-card" id="pub-liked-card">
-            <div class="profile-card-header"><i class="fas fa-heart"></i><span id="pub-liked-title">الصور المفضلة</span></div>
+            <div class="profile-card-header">
+                <i class="fas fa-heart"></i>
+                <span id="pub-liked-title">الصور المفضلة</span>
+            </div>
             <div class="profile-card-body" style="padding:14px;">
                 <div id="pub-liked-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;"></div>
                 <div id="pub-liked-empty" style="display:none;text-align:center;padding:25px 10px;color:#999;">
@@ -1047,7 +1175,8 @@
     </div>
 </div>
 
-<!-- COMMENTS MODAL -->
+<!-- ======= COMMENTS MODAL ======= -->
+
 <div id="comments-modal" class="comment-modal">
     <div class="comment-content" style="display: flex; flex-direction: column; max-height: 80vh;">
         <div style="padding: 15px; border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center;">
@@ -1062,28 +1191,8 @@
     </div>
 </div>
 
-<!-- CHAT MODAL -->
-<div id="chat-modal" class="comment-modal">
-    <div class="comment-content">
-        <div class="chat-header">
-            <div class="chat-header-avatar" id="chat-header-avatar">
-                <i class="fas fa-user" style="color:rgba(255,255,255,0.8);"></i>
-            </div>
-            <div class="chat-header-info">
-                <div class="chat-header-name" id="chat-header-name">—</div>
-                <div class="chat-header-status">محادثة خاصة 🔒</div>
-            </div>
-            <i class="fas fa-times" onclick="closeChat()" style="cursor:pointer;font-size:1.1rem;opacity:0.85;"></i>
-        </div>
-        <div id="chat-messages-container"></div>
-        <div class="chat-input-bar">
-            <input type="text" id="chat-msg-input" placeholder="اكتب رسالتك..." onkeydown="if(event.key==='Enter') sendChatMessage()">
-            <button class="chat-send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-</div>
+<!-- ======= ADD SECTION MODAL ======= -->
 
-<!-- ADD SECTION MODAL -->
 <div id="add-section-modal" class="comment-modal">
     <div class="comment-content" style="padding:0;overflow:hidden;">
         <div style="background:var(--latte-gold);color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
@@ -1105,12 +1214,15 @@
                 <option value="fas fa-home">🏠 منازل</option>
                 <option value="fas fa-layer-group">📦 متنوع</option>
             </select>
-            <button class="upload-submit-btn" onclick="createNewSection()"><i class="fas fa-plus"></i> إنشاء القسم</button>
+            <button class="upload-submit-btn" onclick="createNewSection()">
+                <i class="fas fa-plus"></i> إنشاء القسم
+            </button>
         </div>
     </div>
 </div>
 
-<!-- ARCHIVE MODAL -->
+<!-- ======= ARCHIVE MODAL ======= -->
+
 <div id="archive-modal" class="comment-modal">
     <div class="comment-content" style="padding:0;overflow:hidden;">
         <div style="background:#7f8c8d;color:white;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
@@ -1123,7 +1235,8 @@
     </div>
 </div>
 
-<!-- STONE GALLERY -->
+<!-- ======= STONE GALLERY ======= -->
+
 <div id="stone-gallery" class="page">
     <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
     <div class="video-box reveal" id="vidPlaceholder" onclick="playVideo()"><i class="fas fa-play-circle" style="color:var(--latte-gold); font-size: 2rem;"></i><p>مشاهدة فيديو الكتلوك</p></div>
@@ -1135,7 +1248,7 @@
     <div class="product-section"><img src="p05.webp" ondblclick="handleDoubleTap('p05')"><div class="model-tag"><span>لمسات فنية عصرية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p05')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p05')"><i class="far fa-comment"></i></button><button id="btn-p05" class="like-btn" onclick="handleLike('p05')"><i class="fas fa-heart"></i> <span id="count-p05">0</span></button></div></div></div>
     <div class="product-section"><img src="p06.webp" ondblclick="handleDoubleTap('p06')"><div class="model-tag"><span>ديكورات خارجية راقية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p06')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p06')"><i class="far fa-comment"></i></button><button id="btn-p06" class="like-btn" onclick="handleLike('p06')"><i class="fas fa-heart"></i> <span id="count-p06">0</span></button></div></div></div>
     <div class="product-section"><img src="p07.webp" ondblclick="handleDoubleTap('p07')"><div class="model-tag"><span>نقوش حجرية يدوية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p07')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p07')"><i class="far fa-comment"></i></button><button id="btn-p07" class="like-btn" onclick="handleLike('p07')"><i class="fas fa-heart"></i> <span id="count-p07">0</span></button></div></div></div>
-    <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-comment"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
+    <div class="product-section"><img src="p08.webp" ondblclick="handleDoubleTap('p08')"><div class="model-tag"><span>هندسة الحجر والجمال</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p08')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p08')"><i class="far fa-command"></i></button><button id="btn-p08" class="like-btn" onclick="handleLike('p08')"><i class="fas fa-heart"></i> <span id="count-p08">0</span></button></div></div></div>
     <div class="product-section"><img src="p09.webp" ondblclick="handleDoubleTap('p09')"><div class="model-tag"><span>تصاميم كلاسيكية</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p09')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p09')"><i class="far fa-comment"></i></button><button id="btn-p09" class="like-btn" onclick="handleLike('p09')"><i class="fas fa-heart"></i> <span id="count-p09">0</span></button></div></div></div>
     <div class="product-section"><img src="p10.webp" ondblclick="handleDoubleTap('p10')"><div class="model-tag"><span>واجهات مودرن 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p10')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p10')"><i class="far fa-comment"></i></button><button id="btn-p10" class="like-btn" onclick="handleLike('p10')"><i class="fas fa-heart"></i> <span id="count-p10">0</span></button></div></div></div>
     <div class="product-section"><img src="p11.webp" ondblclick="handleDoubleTap('p11')"><div class="model-tag"><span>تناسق الألوان والخامات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p11')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p11')"><i class="far fa-comment"></i></button><button id="btn-p11" class="like-btn" onclick="handleLike('p11')"><i class="fas fa-heart"></i> <span id="count-p11">0</span></button></div></div></div>
@@ -1144,7 +1257,8 @@
     <div id="stone-dynamic-photos"></div>
 </div>
 
-<!-- INTERIOR GALLERY -->
+<!-- ======= INTERIOR GALLERY ======= -->
+
 <div id="interior-gallery" class="page">
     <div class="back-btn-container"><button class="back-btn" onclick="showPage('main-page')"><i class="fas fa-arrow-right"></i> الرجوع</button></div>
     <div class="product-section"><img src="in01.webp" ondblclick="handleDoubleTap('in01')"><div class="model-tag"><span>إبداع عصري متجدد</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in01')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in01')"><i class="far fa-comment"></i></button><button id="btn-in01" class="like-btn" onclick="handleLike('in01')"><i class="fas fa-heart"></i> <span id="count-in01">0</span></button></div></div></div>
@@ -1171,7 +1285,8 @@
 <div id="custom-pages-wrapper"></div>
 <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
-<!-- AUTH MODAL -->
+<!-- ======= AUTH MODAL ======= -->
+
 <div id="auth-modal" class="comment-modal">
     <div class="comment-content" style="padding: 25px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1179,7 +1294,9 @@
             <i class="fas fa-times" onclick="closeAuthModal()" style="cursor: pointer; color: var(--latte-gold);"></i>
         </div>
         <div style="display: flex; flex-direction: column; gap: 15px;">
-            <button onclick="loginWithGoogle()" class="back-btn" style="width:100%; justify-content:center;"><i class="fab fa-google"></i> تسجيل عبر Google</button>
+            <button onclick="loginWithGoogle()" class="back-btn" style="width:100%; justify-content:center;">
+                <i class="fab fa-google"></i> تسجيل عبر Google
+            </button>
             <input type="email" id="auth-email" placeholder="البريد الإلكتروني" style="padding:12px; border-radius:10px; border:1px solid var(--latte-gold); background:var(--vanilla-light); color:var(--dark-latte); font-family:'Cairo',sans-serif;">
             <input type="password" id="auth-password" placeholder="كلمة المرور" style="padding:12px; border-radius:10px; border:1px solid var(--latte-gold); background:var(--vanilla-light); color:var(--dark-latte); font-family:'Cairo',sans-serif;">
             <button onclick="handleEmailAuth()" id="auth-submit-btn" class="back-btn" style="width:100%; border-radius:10px; justify-content:center;">دخول / اشتراك</button>
@@ -1189,6 +1306,7 @@
 </div>
 
 <!-- Counter -->
+
 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; padding: 15px; background: var(--vanilla-light); border: 1px solid var(--latte-gold); border-radius: 15px; max-width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
     <div style="color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
         <i class="fas fa-users" style="color: var(--latte-gold);"></i>
@@ -1198,7 +1316,8 @@
     <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
 </div>
 
-<!-- FIREBASE MODULE -->
+<!-- ======= FIREBASE MODULE ======= -->
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
@@ -1229,7 +1348,9 @@
     window._deleteDoc = deleteDoc;
     window._doc = doc;
 
+    // =============================================
     // IMAGE COMPRESSION
+    // =============================================
     function compressImage(file, maxWidth, quality) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -1251,8 +1372,11 @@
         });
     }
 
+    // =============================================
     // REALTIME DB HELPERS
+    // =============================================
     const RTDB_URL = "https://diwd-a7709-default-rtdb.firebaseio.com";
+
     async function rtdbSet(path, data) {
         const res = await fetch(RTDB_URL + path + '.json', { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
         if (!res.ok) throw new Error('RTDB write failed: ' + res.status);
@@ -1273,7 +1397,9 @@
         if (!res.ok) throw new Error('RTDB delete failed');
     }
 
-    // AUTH
+    // =============================================
+    // AUTH HELPERS
+    // =============================================
     async function sendAdminNotification(name, email) {
         try {
             await emailjs.send("service_d6z689p", "template_7j8sc6u", { user_name: name, user_email: email, date: new Date().toLocaleString('ar-IQ') });
@@ -1319,7 +1445,6 @@
             document.getElementById('welcome-gate').classList.add('active');
             document.getElementById('auth-modal').classList.remove('active');
             document.getElementById('comments-modal').classList.remove('active');
-            document.getElementById('menu-friends-btn').style.display = 'none';
             showPage('main-page');
         } catch(e) { alert("حدث خطأ أثناء تسجيل الخروج"); }
     };
@@ -1349,7 +1474,6 @@
             sendTG("🔐 دخول\n👤 " + (user.email || user.displayName) + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
             document.getElementById('welcome-gate').classList.remove('active');
             document.getElementById('auth-modal').classList.remove('active');
-            document.getElementById('menu-friends-btn').style.display = 'flex';
             try {
                 const snap = await getDoc(doc(db, "users", user.uid));
                 if (snap.exists()) {
@@ -1371,17 +1495,18 @@
 
                     const fbLiked = snap.data().likedPhotos || {};
                     Object.keys(fbLiked).forEach(pid => {
-                        if (!localStorage.getItem('liked_' + pid)) localStorage.setItem('liked_' + pid, 'true');
+                        if (!localStorage.getItem('liked_' + pid)) {
+                            localStorage.setItem('liked_' + pid, 'true');
+                        }
                     });
-
-                    // Check pending friend requests
-                    checkPendingRequests(snap.data().username);
                 }
             } catch(e) {}
         }
     });
 
-    // PROFILE UI
+    // =============================================
+    // PROFILE UI HELPERS
+    // =============================================
     function updateMenuProfileUI(userData, user) {
         const preview = document.getElementById('menu-profile-preview');
         const nameEl = document.getElementById('menu-profile-name');
@@ -1423,25 +1548,8 @@
             setProfileAvatarDisplay(av, username);
             loadProfileStats(user.uid, username);
             loadLikedPhotos();
-            loadFriendStats(username);
         } catch(e) { console.error(e); }
     };
-
-    async function loadFriendStats(username) {
-        try {
-            const friendsQ = query(collection(db, "friendRequests"), where("status", "==", "accepted"), where("from", "==", username));
-            const friendsQ2 = query(collection(db, "friendRequests"), where("status", "==", "accepted"), where("to", "==", username));
-            const [s1, s2] = await Promise.all([getDocs(friendsQ), getDocs(friendsQ2)]);
-            const total = s1.size + s2.size;
-            const el = document.getElementById('profile-stat-friends');
-            if (el) el.textContent = total;
-
-            const reqQ = query(collection(db, "friendRequests"), where("to", "==", username), where("status", "==", "pending"));
-            const reqSnap = await getDocs(reqQ);
-            const reqEl = document.getElementById('profile-stat-requests');
-            if (reqEl) reqEl.textContent = reqSnap.size;
-        } catch(e) {}
-    }
 
     function setProfileAvatarDisplay(avatarSrc, username) {
         const display = document.getElementById('profile-avatar-display');
@@ -1536,7 +1644,9 @@
         }
     };
 
+    // =============================================
     // EDIT USERNAME
+    // =============================================
     window.openEditUsernameModal = function() {
         const current = document.getElementById('info-username').textContent;
         document.getElementById('new-username-input').value = current === '—' ? '' : current;
@@ -1578,7 +1688,9 @@
         }
     };
 
+    // =============================================
     // AVATAR UPLOAD
+    // =============================================
     window._avatarBase64 = null;
     window.openAvatarUploadModal = function() {
         if (!window.currentUser) { document.getElementById('auth-modal').classList.add('active'); return; }
@@ -1591,7 +1703,9 @@
     window.closeAvatarUploadModal = function() {
         document.getElementById('avatar-upload-modal').classList.remove('active');
     };
-    window.triggerAvatarInput = function() { document.getElementById('avatar-file-input').click(); };
+    window.triggerAvatarInput = function() {
+        document.getElementById('avatar-file-input').click();
+    };
     window.handleAvatarFileSelect = async function(input) {
         if (!input.files.length) return;
         const file = input.files[0];
@@ -1631,7 +1745,9 @@
         }
     };
 
+    // =============================================
     // AVATAR CACHE
+    // =============================================
     const _avatarCache = {};
     async function getUserAvatar(userName) {
         if (_avatarCache[userName] !== undefined) return _avatarCache[userName];
@@ -1648,348 +1764,6 @@
         _avatarCache[userName] = '';
         return '';
     }
-
-    // =============================================
-    // FRIENDS SYSTEM
-    // =============================================
-    async function checkPendingRequests(username) {
-        if (!username) return;
-        try {
-            const q = query(collection(db, "friendRequests"), where("to", "==", username), where("status", "==", "pending"));
-            const snap = await getDocs(q);
-            const count = snap.size;
-            const badge = document.getElementById('menu-friends-badge');
-            const tabBadge = document.getElementById('requests-badge');
-            if (count > 0) {
-                if (badge) { badge.textContent = count; badge.style.display = 'flex'; }
-                if (tabBadge) { tabBadge.textContent = count; tabBadge.style.display = 'inline-flex'; }
-            } else {
-                if (badge) badge.style.display = 'none';
-                if (tabBadge) tabBadge.style.display = 'none';
-            }
-        } catch(e) {}
-    }
-
-    window.loadFriendsPage = async function() {
-        if (!window.currentUser || !window._currentUserData) return;
-        switchFriendsTab('friends');
-    };
-
-    window.switchFriendsTab = async function(tab) {
-        document.querySelectorAll('.friends-tab').forEach(t => t.classList.remove('active'));
-        document.getElementById('tab-' + tab).classList.add('active');
-        const body = document.getElementById('friends-body');
-        body.innerHTML = '<div class="friends-loading"><i class="fas fa-spinner"></i></div>';
-        const myUsername = window._currentUserData?.username;
-        if (!myUsername) { body.innerHTML = '<div class="friends-empty"><i class="fas fa-user-lock"></i><p>يجب تسجيل الدخول</p></div>'; return; }
-
-        try {
-            if (tab === 'friends') {
-                // Accepted requests where I'm sender OR receiver
-                const q1 = query(collection(db, "friendRequests"), where("from", "==", myUsername), where("status", "==", "accepted"));
-                const q2 = query(collection(db, "friendRequests"), where("to", "==", myUsername), where("status", "==", "accepted"));
-                const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
-                const friends = [];
-                s1.forEach(d => friends.push({ id: d.id, ...d.data(), friendName: d.data().to }));
-                s2.forEach(d => friends.push({ id: d.id, ...d.data(), friendName: d.data().from }));
-
-                if (friends.length === 0) {
-                    body.innerHTML = '<div class="friends-empty"><i class="fas fa-user-friends"></i><p>لا يوجد أصدقاء بعد<br><small>ابحث عن مستخدمين عبر التعليقات وأضفهم!</small></p></div>';
-                    return;
-                }
-                body.innerHTML = '';
-                for (const f of friends) {
-                    const av = await getUserAvatar(f.friendName);
-                    const item = createFriendItem(f.friendName, av, 'friend', f.id);
-                    body.appendChild(item);
-                }
-
-            } else if (tab === 'requests') {
-                const q = query(collection(db, "friendRequests"), where("to", "==", myUsername), where("status", "==", "pending"));
-                const snap = await getDocs(q);
-                if (snap.empty) {
-                    body.innerHTML = '<div class="friends-empty"><i class="fas fa-inbox"></i><p>لا توجد طلبات صداقة واردة</p></div>';
-                    return;
-                }
-                body.innerHTML = '';
-                for (const d of snap.docs) {
-                    const data = d.data();
-                    const av = await getUserAvatar(data.from);
-                    const item = createFriendItem(data.from, av, 'request', d.id);
-                    body.appendChild(item);
-                }
-                checkPendingRequests(myUsername);
-
-            } else if (tab === 'sent') {
-                const q = query(collection(db, "friendRequests"), where("from", "==", myUsername), where("status", "==", "pending"));
-                const snap = await getDocs(q);
-                if (snap.empty) {
-                    body.innerHTML = '<div class="friends-empty"><i class="fas fa-paper-plane"></i><p>لا توجد طلبات مرسلة</p></div>';
-                    return;
-                }
-                body.innerHTML = '';
-                for (const d of snap.docs) {
-                    const data = d.data();
-                    const av = await getUserAvatar(data.to);
-                    const item = createFriendItem(data.to, av, 'sent', d.id);
-                    body.appendChild(item);
-                }
-            }
-        } catch(e) {
-            body.innerHTML = '<div class="friends-empty"><i class="fas fa-exclamation-circle" style="color:var(--admin-red);"></i><p>خطأ في التحميل</p></div>';
-        }
-    };
-
-    function createFriendItem(username, avatarSrc, type, docId) {
-        const item = document.createElement('div');
-        item.className = 'friend-item';
-        const avatarHTML = avatarSrc
-            ? `<img src="${avatarSrc}" alt="${username}">`
-            : `<span class="friend-avatar-placeholder">${username[0].toUpperCase()}</span>`;
-
-        let actionsHTML = '';
-        if (type === 'request') {
-            actionsHTML = `
-                <div class="friend-actions">
-                    <button class="friend-action-btn btn-accept" onclick="acceptFriendRequest('${docId}', '${username}')">
-                        <i class="fas fa-check"></i> قبول
-                    </button>
-                    <button class="friend-action-btn btn-reject" onclick="rejectFriendRequest('${docId}')">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>`;
-        } else if (type === 'friend') {
-            actionsHTML = `
-                <div class="friend-actions">
-                    <button class="friend-action-btn btn-chat" onclick="openChat('${username}')">
-                        <i class="fas fa-comment"></i> دردشة
-                    </button>
-                    <button class="friend-action-btn btn-unfriend" onclick="unfriend('${docId}', '${username}')">
-                        <i class="fas fa-user-minus"></i>
-                    </button>
-                </div>`;
-        } else if (type === 'sent') {
-            actionsHTML = `
-                <div class="friend-actions">
-                    <button class="friend-action-btn btn-unfriend" onclick="cancelFriendRequest('${docId}')">
-                        <i class="fas fa-times"></i> إلغاء
-                    </button>
-                </div>`;
-        }
-
-        item.innerHTML = `
-            <div class="friend-avatar" onclick="openPublicProfile('${username}')">${avatarHTML}</div>
-            <div class="friend-info">
-                <div class="friend-name" onclick="openPublicProfile('${username}')" style="cursor:pointer;">${username}</div>
-                <div class="friend-sub">${type === 'request' ? '📩 طلب صداقة وارد' : type === 'sent' ? '📤 طلب مرسل' : '👥 صديق'}</div>
-            </div>
-            ${actionsHTML}`;
-        return item;
-    }
-
-    window.sendFriendRequest = async function(toUsername) {
-        if (!window.currentUser || !window._currentUserData) {
-            document.getElementById('auth-modal').classList.add('active');
-            return;
-        }
-        const fromUsername = window._currentUserData.username;
-        if (fromUsername === toUsername) return;
-
-        // Check existing
-        const q1 = query(collection(db, "friendRequests"), where("from", "==", fromUsername), where("to", "==", toUsername));
-        const q2 = query(collection(db, "friendRequests"), where("from", "==", toUsername), where("to", "==", fromUsername));
-        const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
-        if (!s1.empty) {
-            const status = s1.docs[0].data().status;
-            if (status === 'pending') { showAdminToast("⚠️ أرسلت طلباً بالفعل"); return; }
-            if (status === 'accepted') { showAdminToast("✅ أنتما أصدقاء بالفعل"); return; }
-        }
-        if (!s2.empty) {
-            const status = s2.docs[0].data().status;
-            if (status === 'pending') { showAdminToast("📩 هذا الشخص أرسل لك طلباً مسبقاً!"); return; }
-            if (status === 'accepted') { showAdminToast("✅ أنتما أصدقاء بالفعل"); return; }
-        }
-
-        await addDoc(collection(db, "friendRequests"), {
-            from: fromUsername, fromUid: window.currentUser.uid,
-            to: toUsername, status: "pending", createdAt: serverTimestamp()
-        });
-        showAdminToast("✅ تم إرسال طلب الصداقة إلى " + toUsername);
-        sendTG("🤝 طلب صداقة\n👤 " + fromUsername + " ← " + toUsername);
-        // Update button state
-        updateFriendButtonState(toUsername, 'sent');
-    };
-
-    window.acceptFriendRequest = async function(requestId, fromUsername) {
-        try {
-            await updateDoc(doc(db, "friendRequests", requestId), { status: "accepted" });
-            showAdminToast("✅ أصبحتما أصدقاء! 🎉");
-            const myUsername = window._currentUserData?.username;
-            sendTG("🎉 صداقة جديدة\n👤 " + myUsername + " & " + fromUsername);
-            switchFriendsTab('requests');
-            checkPendingRequests(myUsername);
-        } catch(e) { showAdminToast("❌ خطأ: " + e.message); }
-    };
-
-    window.rejectFriendRequest = async function(requestId) {
-        try {
-            await updateDoc(doc(db, "friendRequests", requestId), { status: "rejected" });
-            showAdminToast("تم رفض الطلب");
-            switchFriendsTab('requests');
-            checkPendingRequests(window._currentUserData?.username);
-        } catch(e) { showAdminToast("❌ خطأ"); }
-    };
-
-    window.cancelFriendRequest = async function(requestId) {
-        if (!confirm("إلغاء طلب الصداقة؟")) return;
-        try {
-            await deleteDoc(doc(db, "friendRequests", requestId));
-            showAdminToast("تم إلغاء الطلب");
-            switchFriendsTab('sent');
-        } catch(e) { showAdminToast("❌ خطأ"); }
-    };
-
-    window.unfriend = async function(requestId, username) {
-        if (!confirm("إزالة " + username + " من قائمة الأصدقاء؟")) return;
-        try {
-            await deleteDoc(doc(db, "friendRequests", requestId));
-            showAdminToast("تمت إزالة الصديق");
-            switchFriendsTab('friends');
-        } catch(e) { showAdminToast("❌ خطأ"); }
-    };
-
-    async function getFriendStatus(myUsername, otherUsername) {
-        try {
-            const q1 = query(collection(db, "friendRequests"), where("from", "==", myUsername), where("to", "==", otherUsername));
-            const q2 = query(collection(db, "friendRequests"), where("from", "==", otherUsername), where("to", "==", myUsername));
-            const [s1, s2] = await Promise.all([getDocs(q1), getDocs(q2)]);
-            if (!s1.empty) return s1.docs[0].data().status === 'accepted' ? 'friends' : s1.docs[0].data().status === 'pending' ? 'sent' : 'none';
-            if (!s2.empty) return s2.docs[0].data().status === 'accepted' ? 'friends' : s2.docs[0].data().status === 'pending' ? 'received' : 'none';
-        } catch(e) {}
-        return 'none';
-    }
-
-    function updateFriendButtonState(username, status) {
-        const btn = document.getElementById('pub-friend-btn-' + username);
-        if (!btn) return;
-        if (status === 'sent') {
-            btn.className = 'pub-action-btn friend-btn sent';
-            btn.innerHTML = '<i class="fas fa-clock"></i> تم الإرسال';
-            btn.onclick = null;
-        } else if (status === 'friends') {
-            btn.className = 'pub-action-btn friend-btn friends';
-            btn.innerHTML = '<i class="fas fa-user-check"></i> أصدقاء';
-            btn.onclick = null;
-        }
-    }
-
-    // =============================================
-    // CHAT SYSTEM
-    // =============================================
-    let _activeChatId = null;
-    let _chatUnsubscribe = null;
-
-    window.openChat = async function(otherUsername) {
-        if (!window.currentUser || !window._currentUserData) {
-            document.getElementById('auth-modal').classList.add('active');
-            return;
-        }
-        const myUsername = window._currentUserData.username;
-        if (myUsername === otherUsername) return;
-
-        const chatId = [myUsername, otherUsername].sort().join('__');
-        _activeChatId = chatId;
-
-        // Set header
-        document.getElementById('chat-header-name').textContent = otherUsername;
-        const av = await getUserAvatar(otherUsername);
-        const headerAvatar = document.getElementById('chat-header-avatar');
-        headerAvatar.innerHTML = av
-            ? `<img src="${av}" style="width:100%;height:100%;object-fit:cover;" alt="">`
-            : `<span style="font-size:1rem;font-weight:bold;color:rgba(255,255,255,0.9);">${otherUsername[0].toUpperCase()}</span>`;
-
-        // Create chat doc if needed
-        const chatRef = doc(db, "chats", chatId);
-        const chatSnap = await getDoc(chatRef);
-        if (!chatSnap.exists()) {
-            await setDoc(chatRef, {
-                participants: [myUsername, otherUsername],
-                createdAt: serverTimestamp(),
-                lastMessage: '',
-                lastMessageAt: serverTimestamp()
-            });
-        }
-
-        // Close previous listener
-        if (_chatUnsubscribe) { _chatUnsubscribe(); _chatUnsubscribe = null; }
-
-        // Clear messages
-        document.getElementById('chat-messages-container').innerHTML = '';
-
-        // Open modal
-        document.getElementById('chat-modal').classList.add('active');
-        document.getElementById('chat-msg-input').focus();
-
-        // Listen realtime — بدون orderBy لتجنب خطأ Index
-        const msgQ = query(collection(db, "chats", chatId, "messages"));
-        _chatUnsubscribe = onSnapshot(msgQ, (snap) => {
-            const container = document.getElementById('chat-messages-container');
-            if (!container) return;
-            container.innerHTML = '';
-            // Sort manually
-            const sorted = snap.docs.slice().sort((a, b) => {
-                const ta = a.data().createdAt?.seconds || 0;
-                const tb = b.data().createdAt?.seconds || 0;
-                return ta - tb;
-            });
-            sorted.forEach(d => {
-                const data = d.data();
-                const isMe = data.from === myUsername;
-                const wrap = document.createElement('div');
-                wrap.className = 'chat-bubble-wrap ' + (isMe ? 'mine' : 'theirs');
-                const time = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleTimeString('ar-IQ', { hour:'2-digit', minute:'2-digit' }) : '';
-                wrap.innerHTML = `
-                    <div class="chat-bubble ${isMe ? 'mine' : 'theirs'}">
-                        ${!isMe ? `<div class="chat-bubble-sender">${data.from}</div>` : ''}
-                        ${data.text}
-                        <div class="chat-bubble-time">${time}</div>
-                    </div>`;
-                container.appendChild(wrap);
-            });
-            container.scrollTop = container.scrollHeight;
-        });
-    };
-
-    window.closeChat = function() {
-        document.getElementById('chat-modal').classList.remove('active');
-        if (_chatUnsubscribe) { _chatUnsubscribe(); _chatUnsubscribe = null; }
-        _activeChatId = null;
-    };
-
-    window.sendChatMessage = async function() {
-        const input = document.getElementById('chat-msg-input');
-        const text = input?.value.trim();
-        if (!text || !_activeChatId) return;
-        const myUsername = window._currentUserData?.username;
-        if (!myUsername) return;
-        input.value = '';
-
-        try {
-            await addDoc(collection(db, "chats", _activeChatId, "messages"), {
-                from: myUsername,
-                text,
-                createdAt: serverTimestamp(),
-                read: false
-            });
-            await updateDoc(doc(db, "chats", _activeChatId), {
-                lastMessage: text,
-                lastMessageAt: serverTimestamp()
-            });
-        } catch(e) {
-            showAdminToast("❌ خطأ في الإرسال");
-            input.value = text;
-        }
-    };
 
     // =============================================
     // PUBLIC PROFILE
@@ -2011,7 +1785,6 @@
         document.getElementById('pub-stat-liked-count').textContent = '—';
         document.getElementById('pub-stat-joined-days').textContent = '—';
         document.getElementById('pub-own-banner').style.display = 'none';
-        document.getElementById('pub-action-bar-container').innerHTML = '';
         document.getElementById('pub-liked-grid').innerHTML = '';
         document.getElementById('pub-liked-empty').style.display = 'none';
 
@@ -2028,30 +1801,8 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         const myUsername = window._currentUserData?.username || '';
-
-        // Show own banner or action buttons
         if (myUsername && myUsername === userName) {
             document.getElementById('pub-own-banner').style.display = 'flex';
-        } else if (myUsername) {
-            // Inject friend + chat buttons
-            const container = document.getElementById('pub-action-bar-container');
-            const friendStatus = await getFriendStatus(myUsername, userName);
-            let friendBtnClass = 'pub-action-btn friend-btn';
-            let friendBtnText = '<i class="fas fa-user-plus"></i> إضافة صديق';
-            let friendBtnOnClick = `sendFriendRequest('${userName}')`;
-            if (friendStatus === 'sent') { friendBtnClass += ' sent'; friendBtnText = '<i class="fas fa-clock"></i> تم الإرسال'; friendBtnOnClick = ''; }
-            else if (friendStatus === 'friends') { friendBtnClass += ' friends'; friendBtnText = '<i class="fas fa-user-check"></i> أصدقاء'; friendBtnOnClick = ''; }
-            else if (friendStatus === 'received') { friendBtnText = '<i class="fas fa-user-check"></i> قبول الطلب'; }
-
-            container.innerHTML = `
-                <div class="pub-action-bar">
-                    <button id="pub-friend-btn-${userName}" class="${friendBtnClass}" ${friendBtnOnClick ? `onclick="${friendBtnOnClick}"` : ''}>
-                        ${friendBtnText}
-                    </button>
-                    <button class="pub-action-btn chat-btn" onclick="openChat('${userName}')">
-                        <i class="fas fa-comment-dots"></i> مراسلة
-                    </button>
-                </div>`;
         }
 
         try {
@@ -2083,11 +1834,12 @@
                 document.getElementById('pub-joined-text').textContent = 'عضو في الموقع';
             }
 
+            // إحصاء التعليقات — بدون orderBy لتجنب خطأ الـ index
             const commentsQ = query(collection(db, "comments"), where("userName", "==", userName));
             const commentsSnap = await getDocs(commentsQ);
             document.getElementById('pub-stat-comments').textContent = commentsSnap.size;
 
-            // Rank
+            // حساب ترتيب المستخدم
             try {
                 const allCommentsSnap = await getDocs(collection(db, "comments"));
                 const userCommentMap = {};
@@ -2098,14 +1850,20 @@
                 const sorted = Object.entries(userCommentMap).sort((a, b) => b[1] - a[1]);
                 const rank1 = sorted[0]?.[0];
                 const rank2 = sorted[1]?.[0];
+
                 if (userName === rank1 && sorted[0][1] > 0) {
                     heroEl.classList.add('rank-gold');
-                    badgeEl.textContent = '🥇'; badgeEl.style.display = 'block';
-                    labelEl.textContent = 'الأكثر تفاعلاً في الموقع'; labelEl.style.display = 'inline-block';
+                    badgeEl.textContent = '🥇';
+                    badgeEl.style.display = 'block';
+                    labelEl.textContent = 'الأكثر تفاعلاً في الموقع';
+                    labelEl.style.display = 'inline-block';
                 } else if (userName === rank2 && sorted[1][1] > 0) {
                     heroEl.classList.add('rank-silver');
-                    badgeEl.textContent = '🥈'; badgeEl.classList.add('silver-badge'); badgeEl.style.display = 'block';
-                    labelEl.textContent = 'المركز الثاني في التفاعل'; labelEl.style.display = 'inline-block';
+                    badgeEl.textContent = '🥈';
+                    badgeEl.classList.add('silver-badge');
+                    badgeEl.style.display = 'block';
+                    labelEl.textContent = 'المركز الثاني في التفاعل';
+                    labelEl.style.display = 'inline-block';
                 }
             } catch(e) {}
 
@@ -2114,20 +1872,23 @@
                 const localKeys = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
                 likedIds = localKeys.map(k => k.replace('liked_', ''));
                 try {
-                    if (!snap.empty) {
-                        const likedPhotos = snap.docs[0].data().likedPhotos || {};
+                    const userSnap2 = snap.empty ? null : snap.docs[0];
+                    if (userSnap2) {
+                        const likedPhotos = userSnap2.data().likedPhotos || {};
                         Object.keys(likedPhotos).forEach(pid => {
                             if (!likedIds.includes(pid)) likedIds.push(pid);
                             localStorage.setItem('liked_' + pid, 'true');
                         });
                     }
                 } catch(e) {}
+                document.getElementById('pub-own-banner').style.display = 'flex';
                 document.getElementById('pub-stat-liked-count').textContent = likedIds.length;
                 loadPubLikedPhotos(likedIds);
             } else {
                 try {
-                    if (!snap.empty) {
-                        const likedPhotos = snap.docs[0].data().likedPhotos || {};
+                    const otherSnap = snap.empty ? null : snap.docs[0];
+                    if (otherSnap) {
+                        const likedPhotos = otherSnap.data().likedPhotos || {};
                         likedIds = Object.keys(likedPhotos);
                     }
                 } catch(e) {}
@@ -2139,6 +1900,9 @@
         } catch(e) {
             console.error('خطأ في تحميل البروفايل:', e);
             document.getElementById('pub-liked-empty').style.display = 'block';
+            document.getElementById('pub-liked-empty').innerHTML = `
+                <i class="fas fa-exclamation-circle" style="font-size:2rem;color:var(--admin-red);display:block;margin-bottom:8px;"></i>
+                <p style="font-size:0.82rem;">تعذر تحميل البيانات</p>`;
         }
     };
 
@@ -2158,7 +1922,9 @@
         });
     }
 
+    // =============================================
     // LIGHTBOX
+    // =============================================
     window.openLightbox = function(src) {
         const modal = document.getElementById('lightbox-modal');
         const img = document.getElementById('lightbox-img');
@@ -2171,7 +1937,7 @@
         document.getElementById('lightbox-img').src = '';
         document.body.style.overflow = '';
     };
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeLightbox(); closeChat(); } });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
 
     window.closePubProfile = function() {
         document.getElementById('public-profile-page').style.display = 'none';
@@ -2181,7 +1947,9 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // COMMENTS
+    // =============================================
+    // COMMENTS — الإصلاح الرئيسي هنا
+    // =============================================
     let currentImageId = null;
     let unsubscribeComments = null;
 
@@ -2196,59 +1964,87 @@
         const list = document.getElementById('comments-list');
         list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
 
-        const q = query(collection(db, "comments"), where("imageId", "==", id));
+        // ✅ الإصلاح: حذف orderBy لتجنب خطأ الـ Composite Index
+        const q = query(
+            collection(db, "comments"),
+            where("imageId", "==", id)
+        );
+
         unsubscribeComments = onSnapshot(q, async (snapshot) => {
             list.innerHTML = '';
             if (snapshot.empty) {
                 list.innerHTML = '<p style="text-align:center;opacity:0.6;padding:20px;">لا توجد تعليقات بعد! كن أول من يعلق ✨</p>';
                 return;
             }
+
+            // ترتيب يدوي حسب وقت الإنشاء
             const docs = snapshot.docs.slice().sort((a, b) => {
                 const ta = a.data().createdAt?.seconds || 0;
                 const tb = b.data().createdAt?.seconds || 0;
                 return ta - tb;
             });
+
             for (const d of docs) {
                 const data = d.data();
                 const docId = d.id;
                 const userName = data.userName || 'مستخدم';
                 const isOwner = window.currentUser && data.userId === window.currentUser.uid;
+
                 let avatarSrc;
                 if (isOwner && window._currentUserData?.avatarBase64) {
                     avatarSrc = window._currentUserData.avatarBase64;
                 } else {
                     avatarSrc = await getUserAvatar(userName);
                 }
+
                 const item = document.createElement('div');
                 item.className = 'comment-item';
                 item.dataset.docId = docId;
+
                 let avatarHTML = avatarSrc
                     ? `<img src="${avatarSrc}" alt="${userName}">`
                     : `<span class="avatar-initials">${userName[0].toUpperCase()}</span>`;
+
                 let actionsHTML = '';
                 if (isOwner) {
                     actionsHTML = `
                         <div class="comment-actions">
-                            <button class="comment-action-btn" onclick="startEditComment('${docId}', this)"><i class="fas fa-pen"></i> تعديل</button>
-                            <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')"><i class="fas fa-trash"></i> حذف</button>
+                            <button class="comment-action-btn" onclick="startEditComment('${docId}', this)">
+                                <i class="fas fa-pen"></i> تعديل
+                            </button>
+                            <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
                         </div>`;
                 }
+
                 const adminDelHTML = window.isAdminMode
-                    ? `<button class="admin-delete-comment-btn" style="display:flex" onclick="adminDeleteSingleComment('${docId}')"><i class="fas fa-times"></i></button>` : '';
+                    ? `<button class="admin-delete-comment-btn" style="display:flex"
+                           onclick="adminDeleteSingleComment('${docId}')">
+                           <i class="fas fa-times"></i>
+                       </button>`
+                    : '';
+
                 item.innerHTML = `
                     ${adminDelHTML}
                     <div class="comment-avatar-row">
-                        <div class="comment-user-avatar" onclick="viewUserProfile('${userName}')">${avatarHTML}</div>
+                        <div class="comment-user-avatar" onclick="viewUserProfile('${userName}')">
+                            ${avatarHTML}
+                        </div>
                         <div class="comment-content-box">
-                            <div class="comment-username-link" onclick="viewUserProfile('${userName}')"><i class="fas fa-user" style="font-size:0.6rem;"></i> ${userName}</div>
+                            <div class="comment-username-link" onclick="viewUserProfile('${userName}')">
+                                <i class="fas fa-user" style="font-size:0.6rem;"></i> ${userName}
+                            </div>
                             <div class="comment-text-content" id="text-${docId}">${data.text}</div>
                             ${actionsHTML}
                         </div>
                     </div>`;
+
                 list.appendChild(item);
             }
             list.scrollTop = list.scrollHeight;
         }, (error) => {
+            // معالجة الأخطاء بشكل صريح
             console.error("خطأ في تحميل التعليقات:", error);
             list.innerHTML = '<p style="text-align:center;color:var(--admin-red);padding:20px;">⚠️ خطأ في تحميل التعليقات</p>';
         });
@@ -2261,25 +2057,30 @@
         const actionsEl = btn.closest('.comment-actions');
         textEl.style.display = 'none';
         if (actionsEl) actionsEl.style.display = 'none';
+
         const textarea = document.createElement('textarea');
         textarea.className = 'comment-edit-area';
         textarea.value = originalText;
         textarea.maxLength = 300;
+
         const editActions = document.createElement('div');
         editActions.className = 'comment-edit-actions';
         editActions.innerHTML = `
             <button class="comment-cancel-btn" id="cancel-edit-${docId}">إلغاء</button>
             <button class="comment-save-btn" id="save-edit-${docId}"><i class="fas fa-check"></i> حفظ</button>`;
+
         const box = btn.closest('.comment-content-box');
         box.appendChild(textarea);
         box.appendChild(editActions);
         textarea.focus();
         textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+
         document.getElementById('cancel-edit-' + docId).onclick = () => {
             textarea.remove(); editActions.remove();
             textEl.style.display = '';
             if (actionsEl) actionsEl.style.display = '';
         };
+
         document.getElementById('save-edit-' + docId).onclick = async () => {
             const newText = textarea.value.trim();
             if (!newText) { alert('التعليق لا يمكن أن يكون فارغاً'); return; }
@@ -2333,8 +2134,11 @@
         inp.value = '';
         try {
             await addDoc(collection(db, "comments"), {
-                imageId: currentImageId, userName, userId: window.currentUser.uid,
-                text, createdAt: serverTimestamp()
+                imageId: currentImageId,
+                userName,
+                userId: window.currentUser.uid,
+                text,
+                createdAt: serverTimestamp()
             });
         } catch(e) { alert("حدث خطأ أثناء الإرسال"); }
     };
@@ -2359,7 +2163,9 @@
         } catch(e) { alert("خطأ: " + e.message); }
     };
 
+    // =============================================
     // LIKES
+    // =============================================
     var _lastTap = {};
     document.addEventListener('touchend', function(e) {
         var img = e.target.closest('.product-section img');
@@ -2415,7 +2221,11 @@
                 await updateDoc(photoRef, { likesCount: increment(-1) });
                 localStorage.removeItem('liked_' + id);
                 if (window.currentUser) {
-                    try { await updateDoc(doc(db, "users", window.currentUser.uid), { [`likedPhotos.${id}`]: deleteField() }); } catch(e) {}
+                    try {
+                        await updateDoc(doc(db, "users", window.currentUser.uid), {
+                            [`likedPhotos.${id}`]: deleteField()
+                        });
+                    } catch(e) {}
                 }
             } else {
                 const docSnap = await getDoc(photoRef);
@@ -2423,7 +2233,11 @@
                 else await setDoc(photoRef, { likesCount: 1 });
                 localStorage.setItem('liked_' + id, 'true');
                 if (window.currentUser) {
-                    try { await updateDoc(doc(db, "users", window.currentUser.uid), { [`likedPhotos.${id}`]: true }); } catch(e) {}
+                    try {
+                        await updateDoc(doc(db, "users", window.currentUser.uid), {
+                            [`likedPhotos.${id}`]: true
+                        });
+                    } catch(e) {}
                 }
             }
             refreshUI(id);
@@ -2444,12 +2258,15 @@
                        'in01','in02','in03','in04','in05','in06','in07','in08','in09','in10','in11','in12','in13','in14','in15'];
     window.addEventListener('DOMContentLoaded', () => allPhotos.forEach(id => refreshUI(id)));
 
+    // =============================================
     // ADMIN STATS
+    // =============================================
     window.loadAdminStats = async () => {
         const body = document.getElementById('stats-body');
         const refreshBtn = document.getElementById('stats-refresh');
         if (refreshBtn) { refreshBtn.disabled = true; refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...'; }
         body.innerHTML = `<div class="stats-loading-spinner"><i class="fas fa-circle-notch"></i><p style="margin-top:10px;font-size:0.82rem;color:var(--latte-gold);">جاري تحميل البيانات...</p></div>`;
+
         try {
             let usersCount = 0;
             try {
@@ -2459,6 +2276,7 @@
                 const usersSnap2 = await getDocs(collection(db, "users"));
                 usersCount = usersSnap2.size;
             }
+
             let commentsCount = 0;
             let allCommentDocs = [];
             try {
@@ -2471,6 +2289,7 @@
                 allCommentDocs = allCommentsSnap.docs;
                 commentsCount = allCommentDocs.length;
             }
+
             let totalLikes = 0;
             let allLikesArr = [];
             try {
@@ -2482,16 +2301,6 @@
                 });
             } catch(e) {}
 
-            // Friends count
-            let friendsCount = 0;
-            try {
-                const fs = await getCountFromServer(collection(db, "friendRequests"));
-                friendsCount = fs.data().count;
-            } catch(e) {
-                const fs2 = await getDocs(collection(db, "friendRequests"));
-                friendsCount = fs2.size;
-            }
-
             const commentMap = {};
             const userCommentMap = {};
             allCommentDocs.forEach(d => {
@@ -2500,10 +2309,12 @@
                 commentMap[imgId] = (commentMap[imgId] || 0) + 1;
                 userCommentMap[uName] = (userCommentMap[uName] || 0) + 1;
             });
+
             let topCommenter = { name: '—', count: 0 };
             Object.entries(userCommentMap).forEach(([name, count]) => {
                 if (count > topCommenter.count) topCommenter = { name, count };
             });
+
             const top3Liked = allLikesArr.sort((a,b) => b.likes - a.likes).slice(0, 3);
             const top3Commented = Object.entries(commentMap).sort((a,b) => b[1] - a[1]).slice(0, 3).map(([id, count]) => ({ id, count }));
 
@@ -2513,37 +2324,71 @@
                     <div><div class="stat-label">عدد المسجلين</div><div class="stat-value">${usersCount}</div></div>
                 </div>
                 <div class="stats-grid">
-                    <div class="stat-card-sm"><div class="stat-icon"><i class="fas fa-heart"></i></div><div class="stat-value">${totalLikes}</div><div class="stat-label">إجمالي اللايكات</div></div>
-                    <div class="stat-card-sm"><div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-comment"></i></div><div class="stat-value">${commentsCount}</div><div class="stat-label">إجمالي التعليقات</div></div>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card-sm"><div class="stat-icon" style="background:#27ae60;"><i class="fas fa-user-friends"></i></div><div class="stat-value">${friendsCount}</div><div class="stat-label">طلبات الصداقة</div></div>
-                    <div class="stat-card-sm"><div class="stat-icon" style="background:#2980b9;"><i class="fas fa-comment-dots"></i></div><div class="stat-value">—</div><div class="stat-label">الدردشات</div></div>
+                    <div class="stat-card-sm">
+                        <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                        <div class="stat-value">${totalLikes}</div>
+                        <div class="stat-label">إجمالي اللايكات</div>
+                    </div>
+                    <div class="stat-card-sm">
+                        <div class="stat-icon" style="background:#8e44ad;"><i class="fas fa-comment"></i></div>
+                        <div class="stat-value">${commentsCount}</div>
+                        <div class="stat-label">إجمالي التعليقات</div>
+                    </div>
                 </div>
                 <div class="stat-card" style="cursor:pointer;" onclick="window.openPublicProfile && window.openPublicProfile('${topCommenter.name}')">
                     <div class="stat-icon" style="background:#e67e22;font-size:1.4rem;">🥇</div>
-                    <div><div class="stat-label">الأكثر تفاعلاً — اضغط للعرض</div><div class="stat-value" style="font-size:1rem;">${topCommenter.name} <span style="font-size:0.75rem;opacity:0.65;">(${topCommenter.count} 💬)</span></div></div>
+                    <div>
+                        <div class="stat-label">الأكثر تفاعلاً — اضغط للعرض</div>
+                        <div class="stat-value" style="font-size:1rem;">${topCommenter.name}
+                            <span style="font-size:0.75rem;opacity:0.65;">(${topCommenter.count} 💬)</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="stats-section-title">🏆 أكثر الصور لايكات</div>
                 <div class="stats-leaderboard">
-                    ${top3Liked.length === 0 ? `<div style="text-align:center;opacity:0.5;font-size:0.82rem;padding:10px;">لا توجد بيانات بعد</div>`
-                        : top3Liked.map((p, i) => `<div class="stat-top-row"><div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div><div><div class="stat-top-name">${p.id}</div><div class="stat-top-sub">${p.likes} ❤️ لايك</div></div></div>`).join('')}
+                    ${top3Liked.length === 0
+                        ? `<div style="text-align:center;opacity:0.5;font-size:0.82rem;padding:10px;">لا توجد بيانات بعد</div>`
+                        : top3Liked.map((p, i) => `
+                            <div class="stat-top-row">
+                                <div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div>
+                                <div><div class="stat-top-name">${p.id}</div><div class="stat-top-sub">${p.likes} ❤️ لايك</div></div>
+                            </div>`).join('')
+                    }
                 </div>
                 <div class="stats-section-title">💬 أكثر الصور تعليقات</div>
                 <div class="stats-leaderboard">
-                    ${top3Commented.length === 0 ? `<div style="text-align:center;opacity:0.5;font-size:0.82rem;padding:10px;">لا توجد بيانات بعد</div>`
-                        : top3Commented.map((p, i) => `<div class="stat-top-row"><div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div><div><div class="stat-top-name">${p.id}</div><div class="stat-top-sub">${p.count} 💬 تعليق</div></div></div>`).join('')}
+                    ${top3Commented.length === 0
+                        ? `<div style="text-align:center;opacity:0.5;font-size:0.82rem;padding:10px;">لا توجد بيانات بعد</div>`
+                        : top3Commented.map((p, i) => `
+                            <div class="stat-top-row">
+                                <div class="stat-top-num">${['🥇','🥈','🥉'][i]}</div>
+                                <div><div class="stat-top-name">${p.id}</div><div class="stat-top-sub">${p.count} 💬 تعليق</div></div>
+                            </div>`).join('')
+                    }
                 </div>
-                <div style="text-align:center; font-size:0.68rem; opacity:0.45; padding-top:4px;">آخر تحديث: ${new Date().toLocaleTimeString('ar-IQ')}</div>`;
+                <div style="text-align:center; font-size:0.68rem; opacity:0.45; padding-top:4px;">
+                    آخر تحديث: ${new Date().toLocaleTimeString('ar-IQ')}
+                </div>`;
+
         } catch(e) {
             console.error("Stats error:", e);
-            body.innerHTML = `<div class="stats-error"><i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i><strong>تعذر تحميل البيانات</strong><br><small style="opacity:0.7;">${e.message}</small></div>`;
+            body.innerHTML = `
+                <div class="stats-error">
+                    <i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i>
+                    <strong>تعذر تحميل البيانات</strong><br>
+                    <small style="opacity:0.7;">${e.message}</small>
+                </div>`;
         } finally {
-            if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> تحديث البيانات'; }
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> تحديث البيانات';
+            }
         }
     };
 
+    // =============================================
     // DYNAMIC PHOTOS
+    // =============================================
     async function loadDynamicPhotos() {
         try {
             const data = await rtdbGet('/admin_photos');
@@ -2628,7 +2473,9 @@
     window.addEventListener('DOMContentLoaded', loadDynamicPhotos);
     window.addEventListener('DOMContentLoaded', loadCustomSections);
 
+    // =============================================
     // CUSTOM SECTIONS
+    // =============================================
     async function loadCustomSections() {
         try {
             const data = await rtdbGet('/custom_sections');
@@ -2648,11 +2495,14 @@
         card.className = 'custom-section-card service-card';
         card.id = 'sec-card-' + key;
         card.innerHTML = `
-            <button class="custom-section-archive-btn" id="arch-btn-${key}" onclick="archiveSection(event,'${key}')"><i class="fas fa-archive"></i> أرشفة</button>
+            <button class="custom-section-archive-btn" id="arch-btn-${key}" onclick="archiveSection(event,'${key}')">
+                <i class="fas fa-archive"></i> أرشفة
+            </button>
             <i class="${val.icon || 'fas fa-layer-group'}"></i>
             <h3>${val.name}</h3>
             <p>${val.desc || 'اضغط لعرض التصاميم'}</p>
-            <span class="click-hint">اضغط للعرض</span>`;
+            <span class="click-hint">اضغط للعرض</span>
+        `;
         card.onclick = function(e) {
             if (e.target.closest('.custom-section-archive-btn')) return;
             showCustomSectionPage(key, val.name);
@@ -2675,7 +2525,8 @@
             <div id="custom-photos-${key}"></div>
             <div class="whatsapp-cta">
                 <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد تواصل واتساب</a>
-            </div>`;
+            </div>
+        `;
         var wrapper = document.getElementById("custom-pages-wrapper") || document.body;
         wrapper.appendChild(page);
         loadSectionPhotos(key);
@@ -2728,14 +2579,18 @@
         document.getElementById('add-section-modal').classList.add('active');
         setTimeout(() => document.getElementById('new-section-name').focus(), 150);
     };
-    window.closeAddSectionModal = function() { document.getElementById('add-section-modal').classList.remove('active'); };
+    window.closeAddSectionModal = function() {
+        document.getElementById('add-section-modal').classList.remove('active');
+    };
     window.createNewSection = async function() {
         const name = document.getElementById('new-section-name').value.trim();
         if (!name) { showAdminToast('⚠️ أدخل اسم القسم'); return; }
         const desc = document.getElementById('new-section-desc').value.trim();
         const icon = document.getElementById('new-section-icon').value;
         try {
-            const result = await rtdbPush('/custom_sections', { name, desc, icon, archived: false, createdAt: Date.now() });
+            const result = await rtdbPush('/custom_sections', {
+                name, desc, icon, archived: false, createdAt: Date.now()
+            });
             injectSectionCard(result.name, { name, desc, icon, archived: false });
             closeAddSectionModal();
             showAdminToast('✅ تم إنشاء القسم: ' + name);
@@ -2772,32 +2627,46 @@
         const list = document.getElementById('archive-list');
         list.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin" style="color:var(--latte-gold);"></i></p>';
         try {
-            const [customData, fixedData] = await Promise.all([rtdbGet('/custom_sections'), rtdbGet('/fixed_sections_archive')]);
+            const [customData, fixedData] = await Promise.all([
+                rtdbGet('/custom_sections'),
+                rtdbGet('/fixed_sections_archive')
+            ]);
             list.innerHTML = '';
             let hasItems = false;
+
             if (fixedData) {
                 Object.entries(fixedData).forEach(([key, archived]) => {
                     if (!archived || !FIXED_SECTIONS[key]) return;
                     hasItems = true;
                     const item = document.createElement('div');
                     item.className = 'archive-item';
-                    item.innerHTML = `<div class="archive-item-name"><i class="${FIXED_SECTIONS[key].icon}" style="color:var(--latte-gold);margin-left:8px;"></i>${FIXED_SECTIONS[key].name}</div><button class="archive-restore-btn" onclick="restoreFixedSection('${key}')"><i class="fas fa-undo"></i> استعادة</button>`;
+                    item.innerHTML = `
+                        <div class="archive-item-name"><i class="${FIXED_SECTIONS[key].icon}" style="color:var(--latte-gold);margin-left:8px;"></i>${FIXED_SECTIONS[key].name}</div>
+                        <button class="archive-restore-btn" onclick="restoreFixedSection('${key}')"><i class="fas fa-undo"></i> استعادة</button>`;
                     list.appendChild(item);
                 });
             }
+
             if (customData) {
                 Object.entries(customData).filter(([k,v]) => v.archived).forEach(([key, val]) => {
                     hasItems = true;
                     const item = document.createElement('div');
                     item.className = 'archive-item';
-                    item.innerHTML = `<div class="archive-item-name"><i class="${val.icon||'fas fa-layer-group'}" style="color:var(--latte-gold);margin-left:8px;"></i>${val.name}</div><button class="archive-restore-btn" onclick="restoreSection('${key}')"><i class="fas fa-undo"></i> استعادة</button>`;
+                    item.innerHTML = `
+                        <div class="archive-item-name"><i class="${val.icon||'fas fa-layer-group'}" style="color:var(--latte-gold);margin-left:8px;"></i>${val.name}</div>
+                        <button class="archive-restore-btn" onclick="restoreSection('${key}')"><i class="fas fa-undo"></i> استعادة</button>`;
                     list.appendChild(item);
                 });
             }
-            if (!hasItems) list.innerHTML = '<p style="text-align:center;opacity:0.5;font-size:0.85rem;padding:20px;">لا توجد أقسام مؤرشفة</p>';
+
+            if (!hasItems) {
+                list.innerHTML = '<p style="text-align:center;opacity:0.5;font-size:0.85rem;padding:20px;">لا توجد أقسام مؤرشفة</p>';
+            }
         } catch(e) { list.innerHTML = '<p style="color:red;text-align:center;">خطأ في التحميل</p>'; }
     };
-    window.closeArchiveModal = function() { document.getElementById('archive-modal').classList.remove('active'); };
+    window.closeArchiveModal = function() {
+        document.getElementById('archive-modal').classList.remove('active');
+    };
 
     window.restoreSection = async function(key) {
         try {
@@ -2870,5 +2739,6 @@
     };
 
 </script>
+
 </body>
 </html>
