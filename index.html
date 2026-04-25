@@ -150,6 +150,7 @@
 
     function activateAdminMode() {
         document.getElementById('admin-fab').style.display = 'flex';
+        document.getElementById('admin-fab').classList.remove('collapsed');
         document.getElementById('admin-badge').style.display = 'inline-block';
         showAdminToast('🔐 تم تفعيل وضع الإدارة');
         updateAdminDeleteButtons();
@@ -157,17 +158,22 @@
 
     function deactivateAdminMode() {
         window.isAdminMode = false;
-        document.getElementById('admin-fab').style.display = 'none';
+        const fab = document.getElementById('admin-fab');
+        fab.classList.add('collapsed');
+        setTimeout(() => { fab.style.display = 'none'; }, 350);
         document.getElementById('admin-badge').style.display = 'none';
         document.getElementById('admin-stats-panel').classList.remove('active');
         document.querySelectorAll('.admin-delete-like, .admin-delete-comment-btn').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.custom-section-archive-btn').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.section-rename-btn').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.admin-rename-btn').forEach(el => el.style.display = 'none');
         showAdminToast('تم إلغاء وضع الإدارة');
     }
 
     function updateAdminDeleteButtons() {
         if (!window.isAdminMode) return;
         document.querySelectorAll('.admin-delete-like').forEach(el => el.style.display = 'flex');
+        document.querySelectorAll('.admin-rename-btn').forEach(el => el.style.display = 'flex');
     }
 
     function showAdminToast(msg) {
@@ -175,6 +181,10 @@
         toast.textContent = msg;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function toggleAdminSidebar() {
+        document.getElementById('admin-fab').classList.toggle('collapsed');
     }
 
     function toggleAdminStats() {
@@ -342,10 +352,179 @@
     .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200,161,101,0.1); }
     .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200,161,101,0.3); }
 
-    footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
+    footer { padding: 30px; padding-bottom: 100px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
     body.dark-mode footer { border-color: #3d302a; }
 
-    /* COMMENTS */
+    /* BOTTOM NAV */
+    #bottom-nav {
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        height: 62px;
+        background: var(--creamy-white);
+        border-top: 1px solid rgba(200,161,101,0.2);
+        display: flex;
+        align-items: stretch;
+        z-index: 7500;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.07);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+    body.dark-mode #bottom-nav { background: rgba(37,31,28,0.97); border-top-color: rgba(200,161,101,0.15); }
+
+    .bn-item {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        font-family: 'Cairo', sans-serif;
+        color: #b8a89a;
+        padding: 0;
+        position: relative;
+        transition: color 0.2s;
+        -webkit-tap-highlight-color: transparent;
+    }
+    body.dark-mode .bn-item { color: #6e5f58; }
+    .bn-item i { font-size: 1.15rem; transition: transform 0.2s, color 0.2s; }
+    .bn-item span { font-size: 0.57rem; font-weight: 700; line-height: 1; transition: color 0.2s; }
+    .bn-item.active { color: var(--latte-gold); }
+    .bn-item.active i { transform: translateY(-1px); }
+    .bn-item.active::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 20%; right: 20%;
+        height: 2px;
+        background: var(--latte-gold);
+        border-radius: 0 0 4px 4px;
+    }
+
+    /* Center explore button */
+    .bn-item.bn-center {
+        flex: 0 0 62px;
+    }
+    .bn-center-bubble {
+        width: 48px; height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--latte-gold), #a07040);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -18px;
+        box-shadow: 0 4px 16px rgba(200,161,101,0.5);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .bn-center-bubble i { color: white !important; font-size: 1.2rem !important; }
+    .bn-item.bn-center span { margin-top: 2px; color: var(--latte-gold); font-weight: 800; }
+    .bn-item.bn-center.active .bn-center-bubble { transform: scale(1.1); box-shadow: 0 6px 22px rgba(200,161,101,0.65); }
+    .bn-item.bn-center::before { display: none; }
+
+    /* Badge */
+    .bn-badge {
+        position: absolute;
+        top: 7px; right: 8px;
+        min-width: 16px; height: 16px;
+        background: #e74c3c;
+        border-radius: 8px;
+        border: 2px solid var(--creamy-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.5rem;
+        color: white;
+        font-weight: 900;
+        padding: 0 3px;
+        line-height: 1;
+    }
+    body.dark-mode .bn-badge { border-color: #251f1c; }
+
+    /* push page content above nav */
+    .page { padding-bottom: 70px; }
+
+    /* admin toolbar sits above bottom nav when both visible */
+    #admin-fab { bottom: 62px; }
+
+    /* SETTINGS PAGE */
+    #settings-page { min-height: 100vh; padding-bottom: 80px; }
+    .settings-hero { background: linear-gradient(135deg, var(--dark-latte) 0%, #3d2f25 100%); padding: 40px 20px 50px; text-align: center; position: relative; overflow: hidden; }
+    .settings-hero::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:28px; background:var(--creamy-white); border-radius:25px 25px 0 0; }
+    body.dark-mode .settings-hero::after { background: var(--bg-gradient); }
+    .settings-hero h2 { color:white; font-size:1.5rem; font-weight:900; margin-bottom:5px; }
+    .settings-hero p { color:rgba(255,255,255,0.6); font-size:0.82rem; }
+    .settings-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .settings-group-title { font-size:0.72rem; font-weight:900; color:var(--latte-gold); letter-spacing:0.5px; padding: 6px 4px 2px; text-transform: uppercase; }
+    .settings-row { display:flex; align-items:center; gap:14px; background:var(--creamy-white); border-radius:16px; padding:15px 16px; border:1px solid rgba(200,161,101,0.12); box-shadow:0 2px 8px rgba(0,0,0,0.03); cursor:pointer; transition: background 0.2s; }
+    .settings-row:active { background: var(--vanilla-light); }
+    body.dark-mode .settings-row { background:#2a2218; border-color:rgba(200,161,101,0.1); }
+    .settings-row-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+    .settings-row-text { flex:1; }
+    .settings-row-label { font-size:0.88rem; font-weight:700; color:var(--dark-latte); }
+    .settings-row-sub { font-size:0.72rem; color:#999; margin-top:1px; }
+    body.dark-mode .settings-row-label { color:#e8ddd5; }
+    .settings-row-arrow { color:#ccc; font-size:0.8rem; }
+    .settings-toggle { width:44px; height:26px; background:#ddd; border-radius:13px; position:relative; cursor:pointer; border:none; transition:background 0.3s; flex-shrink:0; }
+    .settings-toggle.on { background:var(--latte-gold); }
+    .settings-toggle::after { content:''; position:absolute; top:3px; right:3px; width:20px; height:20px; background:white; border-radius:50%; transition:transform 0.3s; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+    .settings-toggle.on::after { transform:translateX(-18px); }
+
+    /* EXPLORE PAGE */
+    #explore-page { min-height:100vh; padding-bottom:80px; }
+    .explore-hero { background: linear-gradient(135deg, #1a2a3a 0%, #2d4a5a 100%); padding:40px 20px 50px; text-align:center; position:relative; overflow:hidden; }
+    .explore-hero::after { content:''; position:absolute; bottom:-1px; left:0; right:0; height:28px; background:var(--creamy-white); border-radius:25px 25px 0 0; }
+    body.dark-mode .explore-hero::after { background:var(--bg-gradient); }
+    .explore-hero h2 { color:white; font-size:1.5rem; font-weight:900; }
+    .explore-hero p { color:rgba(255,255,255,0.6); font-size:0.82rem; margin-top:5px; }
+    .explore-search { margin:16px 16px 0; position:relative; }
+    .explore-search input { width:100%; padding:13px 18px 13px 46px; border-radius:14px; border:1.5px solid rgba(200,161,101,0.3); background:var(--creamy-white); color:var(--dark-latte); font-family:'Cairo',sans-serif; font-size:0.9rem; outline:none; transition:border-color 0.2s; }
+    .explore-search input:focus { border-color:var(--latte-gold); }
+    .explore-search i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--latte-gold); font-size:1rem; }
+    body.dark-mode .explore-search input { background:#2a2218; color:#e8ddd5; }
+    .explore-filters { display:flex; gap:8px; padding:14px 16px 6px; overflow-x:auto; scrollbar-width:none; }
+    .explore-filters::-webkit-scrollbar { display:none; }
+    .explore-chip { flex-shrink:0; padding:7px 16px; border-radius:20px; border:1.5px solid rgba(200,161,101,0.3); background:transparent; color:var(--dark-latte); font-family:'Cairo',sans-serif; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+    .explore-chip.active { background:var(--latte-gold); color:white; border-color:var(--latte-gold); }
+    body.dark-mode .explore-chip { color:#e8ddd5; }
+    .explore-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; padding:10px 16px; }
+    .explore-card { border-radius:12px; overflow:hidden; background:var(--vanilla-light); aspect-ratio:1; cursor:pointer; position:relative; }
+    .explore-card img { width:100%; height:100%; object-fit:cover; transition:transform 0.4s; }
+    .explore-card:active img { transform:scale(1.05); }
+    .explore-card-label { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent,rgba(0,0,0,0.6)); color:white; font-size:0.65rem; font-weight:700; padding:16px 8px 6px; font-family:'Cairo',sans-serif; }
+
+    /* SEARCH OVERLAY */
+    #search-overlay { display:none; position:fixed; inset:0; z-index:20000; flex-direction:column; }
+    #search-overlay.active { display:flex; }
+    #search-backdrop { position:absolute; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+    #search-box { position:relative; z-index:1; margin:60px 16px 0; background:var(--creamy-white); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; animation:searchSlideDown 0.28s cubic-bezier(0.4,0,0.2,1); }
+    body.dark-mode #search-box { background:#2a2218; }
+    @keyframes searchSlideDown { from{opacity:0;transform:translateY(-20px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+    #search-input-row { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid rgba(200,161,101,0.15); }
+    #search-input-row > i { color:var(--latte-gold); font-size:1.1rem; flex-shrink:0; }
+    #search-main-input { flex:1; border:none; outline:none; background:transparent; font-family:'Cairo',sans-serif; font-size:1rem; color:var(--dark-latte); text-align:right; }
+    body.dark-mode #search-main-input { color:#e8ddd5; }
+    #search-main-input::placeholder { color:#bbb; }
+    #search-close-btn { background:rgba(200,161,101,0.12); border:none; border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--latte-gold); font-size:0.85rem; flex-shrink:0; transition:background 0.2s; }
+    #search-close-btn:hover { background:rgba(200,161,101,0.25); }
+    #search-results { max-height:60vh; overflow-y:auto; padding:8px 0; scrollbar-width:thin; scrollbar-color:var(--latte-gold) transparent; }
+    #search-results::-webkit-scrollbar { width:4px; }
+    #search-results::-webkit-scrollbar-thumb { background:var(--latte-gold); border-radius:4px; }
+    .search-result-item { display:flex; align-items:center; gap:12px; padding:10px 16px; cursor:pointer; transition:background 0.15s; border-bottom:1px solid rgba(200,161,101,0.07); }
+    .search-result-item:last-child { border-bottom:none; }
+    .search-result-item:active { background:rgba(200,161,101,0.1); }
+    .search-result-thumb { width:52px; height:52px; border-radius:10px; object-fit:cover; border:1.5px solid rgba(200,161,101,0.3); flex-shrink:0; background:var(--vanilla-light); }
+    .search-result-info { flex:1; min-width:0; }
+    .search-result-name { font-size:0.88rem; font-weight:700; color:var(--dark-latte); margin-bottom:3px; }
+    body.dark-mode .search-result-name { color:#e8ddd5; }
+    .search-result-name mark { background:rgba(200,161,101,0.3); color:inherit; border-radius:3px; padding:0 2px; }
+    .search-result-section { font-size:0.7rem; color:var(--latte-gold); font-weight:600; display:flex; align-items:center; gap:4px; }
+    .search-result-arrow { color:#ccc; font-size:0.75rem; flex-shrink:0; }
+    .search-empty { padding:30px 16px; text-align:center; color:#aaa; font-size:0.85rem; }
+    .search-empty i { font-size:2rem; color:rgba(200,161,101,0.3); display:block; margin-bottom:8px; }
+    @keyframes searchHighlight { 0%{box-shadow:0 0 0 0 rgba(200,161,101,0.8)} 50%{box-shadow:0 0 0 14px rgba(200,161,101,0.2)} 100%{box-shadow:0 0 0 0 rgba(200,161,101,0)} }
+    .search-highlight-pulse { animation:searchHighlight 0.9s ease 3; }
+
     #comments-list::-webkit-scrollbar { width: 4px; }
     #comments-list::-webkit-scrollbar-thumb { background: var(--latte-gold); border-radius: 10px; }
     .comment-item { padding: 10px 12px; background: var(--vanilla-light); border-radius: 14px; border-right: 3px solid var(--latte-gold); animation: slideIn 0.3s ease-out; position: relative; }
@@ -380,16 +559,94 @@
     #admin-pass-input { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 1.1rem; text-align: center; letter-spacing: 3px; outline: none; margin: 15px 0; transition: border-color 0.3s; }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
-    #admin-fab { display: none; position: fixed; bottom: 25px; left: 25px; flex-direction: column; align-items: flex-start; gap: 10px; z-index: 8000; }
-    .admin-fab-btn { width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 18px rgba(0,0,0,0.2); transition: transform 0.2s, box-shadow 0.2s; font-family: 'Cairo', sans-serif; }
-    .admin-fab-btn:hover { transform: scale(1.1); box-shadow: 0 6px 24px rgba(0,0,0,0.28); }
-    #fab-stats { background: var(--latte-gold); color: white; }
-    #fab-upload { background: var(--admin-green); color: white; }
-    #fab-exit { background: var(--admin-red); color: white; font-size: 0.9rem; }
-    .fab-wrap { display: flex; align-items: center; gap: 10px; }
-    .fab-label { background: var(--creamy-white); color: var(--dark-latte); border: 1px solid var(--latte-gold); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    /* ADMIN TOOLBAR — bottom drawer */
+    #admin-fab {
+        display: none;
+        position: fixed;
+        bottom: 0; left: 0; right: 0;
+        z-index: 8000;
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-    #admin-stats-panel { display: none; position: fixed; bottom: 100px; left: 15px; width: calc(100vw - 30px); max-width: 380px; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.22); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+    /* Tab handle — always visible */
+    #admin-sidebar-toggle {
+        align-self: center;
+        background: linear-gradient(135deg, var(--latte-gold), #b08040);
+        border: none;
+        border-radius: 14px 14px 0 0;
+        padding: 7px 22px 5px;
+        cursor: pointer;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.72rem;
+        font-weight: 900;
+        color: white;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        box-shadow: 0 -4px 16px rgba(200,161,101,0.35);
+        transition: padding 0.2s;
+        width: auto;
+        min-width: 100px;
+        justify-content: center;
+    }
+    #admin-sidebar-toggle i { font-size: 0.75rem; transition: transform 0.3s; }
+    #admin-fab:not(.collapsed) #admin-sidebar-toggle i { transform: rotate(180deg); }
+
+    /* Drawer panel */
+    #admin-sidebar-panel {
+        background: var(--creamy-white);
+        border-top: 2px solid var(--latte-gold);
+        padding: 14px 16px 20px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
+        overflow: hidden;
+        max-height: 0;
+        padding-top: 0; padding-bottom: 0;
+        transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1),
+                    padding 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    #admin-fab:not(.collapsed) #admin-sidebar-panel {
+        max-height: 140px;
+        padding: 14px 16px 20px;
+    }
+    body.dark-mode #admin-sidebar-panel { background: #2a2218; }
+
+    /* Each button cell */
+    .admin-sidebar-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: none;
+        border-radius: 14px;
+        padding: 12px 6px 10px;
+        cursor: pointer;
+        font-family: 'Cairo', sans-serif;
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: white;
+        transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        -webkit-tap-highlight-color: transparent;
+    }
+    .admin-sidebar-btn i { font-size: 1.25rem; }
+    .admin-sidebar-btn:active { transform: scale(0.93); opacity: 0.85; }
+    .admin-sidebar-btn span { line-height: 1.1; text-align: center; }
+
+    #fab-stats       { background: linear-gradient(135deg, #C8A165, #a07040); }
+    #fab-upload      { background: linear-gradient(135deg, #27ae60, #1e8449); }
+    #fab-new-section { background: linear-gradient(135deg, #8e44ad, #6c3483); }
+    #fab-archive     { background: linear-gradient(135deg, #7f8c8d, #5d6d7e); }
+    #fab-exit        { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+    .admin-sidebar-divider { display: none; }
+
+    #admin-stats-panel { display: none; position: fixed; bottom: 110px; left: 10px; right: 10px; width: auto; max-width: 420px; margin: 0 auto; max-height: 75vh; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.22); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
     #admin-stats-panel.active { display: block; }
     @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
     .stats-header { background: linear-gradient(135deg, var(--latte-gold), #a07040); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
@@ -556,6 +813,21 @@
     .archive-item-name { font-weight: bold; font-size: 0.9rem; color: var(--dark-latte); }
     .archive-restore-btn { background: var(--admin-green); color: white; border: none; border-radius: 20px; padding: 6px 14px; font-size: 0.75rem; font-family: 'Cairo',sans-serif; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .archive-restore-btn:hover { opacity: 0.85; }
+
+    /* RENAME MODALS */
+    #rename-photo-modal, #rename-section-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10500; }
+    #rename-photo-modal .comment-content, #rename-section-modal .comment-content { max-width: 400px; padding: 0; overflow: hidden; }
+    .rename-modal-header { background: linear-gradient(135deg, var(--latte-gold), #a07040); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .rename-modal-header span { font-weight: bold; font-size: 1rem; }
+    .rename-modal-body { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .rename-input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 1rem; outline: none; transition: border-color 0.2s; text-align: right; }
+    .rename-input:focus { border-color: #a07840; }
+    .rename-save-btn { width: 100%; padding: 12px; background: var(--latte-gold); color: white; border: none; border-radius: 12px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
+    .rename-save-btn:hover { opacity: 0.88; }
+    .admin-rename-btn { background: rgba(200,161,101,0.15); border: 1px solid var(--latte-gold); color: var(--latte-gold); border-radius: 50px; padding: 4px 10px; font-size: 0.7rem; cursor: pointer; align-items: center; gap: 5px; font-family: 'Cairo', sans-serif; font-weight: bold; transition: 0.2s; display: none; }
+    .admin-rename-btn:hover { background: var(--latte-gold); color: white; }
+    .section-rename-btn { position: absolute; top: 10px; right: 10px; background: rgba(200,161,101,0.12); border: 1px solid var(--latte-gold); color: var(--latte-gold); border-radius: 20px; padding: 4px 10px; font-size: 0.7rem; font-family: 'Cairo',sans-serif; font-weight: bold; cursor: pointer; display: none; transition: 0.2s; z-index: 5; }
+    .section-rename-btn:hover { background: var(--latte-gold); color: white; }
 
     /* LIGHTBOX */
     #lightbox-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 99999; display: none; justify-content: center; align-items: center; flex-direction: column; }
@@ -795,28 +1067,66 @@
     </div>
 </div>
 
-<!-- ADMIN FAB -->
+<!-- RENAME PHOTO MODAL -->
 
-<div id="admin-fab">
-    <div class="fab-wrap">
-        <button class="admin-fab-btn" id="fab-stats" onclick="toggleAdminStats()"><i class="fas fa-chart-bar"></i></button>
-        <span class="fab-label">إحصائيات</span>
+<div id="rename-photo-modal" class="comment-modal">
+    <div class="comment-content" style="padding:0;overflow:hidden;">
+        <div class="rename-modal-header">
+            <span>✏️ تعديل اسم الصورة</span>
+            <i class="fas fa-times" onclick="closeRenamePhotoModal()" style="cursor:pointer;font-size:1.1rem;opacity:0.85;"></i>
+        </div>
+        <div class="rename-modal-body">
+            <p style="font-size:0.82rem;color:var(--gray);margin-bottom:4px;">أدخل الاسم الجديد للتصميم</p>
+            <input type="text" id="rename-photo-input" class="rename-input" placeholder="اسم التصميم..."
+                onkeydown="if(event.key==='Enter') saveRenamePhoto()">
+            <button class="rename-save-btn" id="rename-photo-save-btn" onclick="saveRenamePhoto()">
+                <i class="fas fa-check"></i> حفظ
+            </button>
+        </div>
     </div>
-    <div class="fab-wrap">
-        <button class="admin-fab-btn" id="fab-upload" onclick="openUploadModal()"><i class="fas fa-camera"></i></button>
-        <span class="fab-label">إضافة صور</span>
+</div>
+
+<!-- RENAME SECTION MODAL -->
+
+<div id="rename-section-modal" class="comment-modal">
+    <div class="comment-content" style="padding:0;overflow:hidden;">
+        <div class="rename-modal-header">
+            <span>✏️ تعديل اسم القسم</span>
+            <i class="fas fa-times" onclick="closeRenameSectionModal()" style="cursor:pointer;font-size:1.1rem;opacity:0.85;"></i>
+        </div>
+        <div class="rename-modal-body">
+            <p style="font-size:0.82rem;color:var(--gray);margin-bottom:4px;">أدخل الاسم الجديد للقسم</p>
+            <input type="text" id="rename-section-input" class="rename-input" placeholder="اسم القسم..."
+                onkeydown="if(event.key==='Enter') saveRenameSection()">
+            <button class="rename-save-btn" id="rename-section-save-btn" onclick="saveRenameSection()">
+                <i class="fas fa-check"></i> حفظ
+            </button>
+        </div>
     </div>
-    <div class="fab-wrap">
-        <button class="admin-fab-btn" style="background:#9b59b6;color:white;" onclick="openAddSectionModal()"><i class="fas fa-folder-plus"></i></button>
-        <span class="fab-label">قسم جديد</span>
-    </div>
-    <div class="fab-wrap">
-        <button class="admin-fab-btn" style="background:#7f8c8d;color:white;" onclick="openArchiveModal()"><i class="fas fa-archive"></i></button>
-        <span class="fab-label">الأرشيف</span>
-    </div>
-    <div class="fab-wrap">
-        <button class="admin-fab-btn" id="fab-exit" onclick="deactivateAdminMode()"><i class="fas fa-sign-out-alt"></i></button>
-        <span class="fab-label">إنهاء الإدارة</span>
+</div>
+
+<!-- ADMIN TOOLBAR (bottom drawer) -->
+
+<div id="admin-fab" class="collapsed">
+    <button id="admin-sidebar-toggle" onclick="toggleAdminSidebar()">
+        <i class="fas fa-chevron-up"></i> لوحة الإدارة
+    </button>
+    <div id="admin-sidebar-panel">
+        <button class="admin-sidebar-btn" id="fab-stats" onclick="toggleAdminStats()">
+            <i class="fas fa-chart-bar"></i><span>إحصائيات</span>
+        </button>
+        <button class="admin-sidebar-btn" id="fab-upload" onclick="openUploadModal()">
+            <i class="fas fa-camera"></i><span>إضافة صور</span>
+        </button>
+        <button class="admin-sidebar-btn" id="fab-new-section" onclick="openAddSectionModal()">
+            <i class="fas fa-folder-plus"></i><span>قسم جديد</span>
+        </button>
+        <button class="admin-sidebar-btn" id="fab-archive" onclick="openArchiveModal()">
+            <i class="fas fa-archive"></i><span>الأرشيف</span>
+        </button>
+        <button class="admin-sidebar-btn" id="fab-exit" onclick="deactivateAdminMode()">
+            <i class="fas fa-sign-out-alt"></i><span>إنهاء</span>
+        </button>
     </div>
 </div>
 
@@ -891,7 +1201,10 @@
 <!-- HEADER -->
 
 <header class="sticky-header">
-    <div class="menu-trigger" onclick="toggleMenu()"><i class="fas fa-bars"></i></div>
+    <div id="header-explore-icon" style="width:30px;display:none;align-items:center;justify-content:center;color:var(--latte-gold);font-size:1.3rem;cursor:pointer;" onclick="focusExploreSearch()">
+        <i class="fas fa-search"></i>
+    </div>
+    <div style="width:30px;display:block;" id="header-placeholder"></div>
     <div class="logo-container">
         <span id="admin-badge">ADMIN</span>
         <div class="logo" id="logo-trigger" onclick="handleLogoClick()">MD</div>
@@ -1271,7 +1584,136 @@
 </div>
 
 <div id="custom-pages-wrapper"></div>
+
+<!-- BOTTOM NAV -->
+
+<nav id="bottom-nav">
+    <button class="bn-item active" id="bn-home" onclick="bnSwitch('home')">
+        <i class="fas fa-home"></i>
+        <span>الرئيسية</span>
+    </button>
+    <button class="bn-item" id="bn-chat" onclick="bnSwitch('chat')">
+        <i class="fas fa-comment-dots"></i>
+        <span>الدردشة</span>
+        <div class="bn-badge" id="bn-chat-badge" style="display:none;">0</div>
+    </button>
+    <button class="bn-item bn-center" id="bn-profile" onclick="bnSwitch('profile')">
+        <div class="bn-center-bubble"><i class="fas fa-user-circle"></i></div>
+        <span>حسابي</span>
+    </button>
+    <button class="bn-item" id="bn-explore" onclick="bnSwitch('explore')">
+        <i class="fas fa-compass"></i>
+        <span>استكشاف</span>
+    </button>
+    <button class="bn-item" id="bn-settings" onclick="bnSwitch('settings')">
+        <i class="fas fa-cog"></i>
+        <span>إعدادات</span>
+    </button>
+</nav>
+
 <footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+
+<!-- SETTINGS PAGE -->
+
+<div id="settings-page" class="page">
+    <div class="settings-hero">
+        <h2>⚙️ الإعدادات</h2>
+        <p>تخصيص تجربتك في الموقع</p>
+    </div>
+    <div class="settings-body">
+
+```
+    <div class="settings-group-title">المظهر</div>
+    <div class="settings-row" onclick="toggleTheme()">
+        <div class="settings-row-icon" style="background:rgba(200,161,101,0.12);">
+            <i class="fas fa-moon" style="color:var(--latte-gold);"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">الوضع الليلي</div>
+            <div class="settings-row-sub">تغيير مظهر الموقع</div>
+        </div>
+        <button class="settings-toggle" id="dark-mode-toggle" onclick="event.stopPropagation();toggleTheme();syncDarkToggle()"></button>
+    </div>
+
+    <div class="settings-group-title">الحساب</div>
+    <div class="settings-row" onclick="bnSwitch('profile')">
+        <div class="settings-row-icon" style="background:rgba(52,152,219,0.12);">
+            <i class="fas fa-user-circle" style="color:#3498db;"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">الملف الشخصي</div>
+            <div class="settings-row-sub">تعديل بياناتك وصورتك</div>
+        </div>
+        <i class="fas fa-chevron-left settings-row-arrow"></i>
+    </div>
+    <div class="settings-row" id="settings-notif-row" onclick="requestNotifPermission()">
+        <div class="settings-row-icon" style="background:rgba(200,161,101,0.12);">
+            <i class="fas fa-bell" style="color:var(--latte-gold);"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">الإشعارات الفورية</div>
+            <div class="settings-row-sub">تفعيل إشعارات التعليقات واللايكات</div>
+        </div>
+        <i class="fas fa-chevron-left settings-row-arrow"></i>
+    </div>
+    <div class="settings-row" onclick="logoutUser()">
+        <div class="settings-row-icon" style="background:rgba(231,76,60,0.12);">
+            <i class="fas fa-sign-out-alt" style="color:#e74c3c;"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">تسجيل الخروج</div>
+            <div class="settings-row-sub">الخروج من حسابك الحالي</div>
+        </div>
+        <i class="fas fa-chevron-left settings-row-arrow"></i>
+    </div>
+
+    <div class="settings-group-title">تواصل معنا</div>
+    <div class="settings-row" onclick="window.open('https://wa.me/9647839529360','_blank')">
+        <div class="settings-row-icon" style="background:rgba(39,174,96,0.12);">
+            <i class="fab fa-whatsapp" style="color:#27ae60;font-size:1.2rem;"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">واتساب</div>
+            <div class="settings-row-sub">تواصل مباشر مع المصمم</div>
+        </div>
+        <i class="fas fa-chevron-left settings-row-arrow"></i>
+    </div>
+    <div class="settings-row" onclick="window.open('https://www.instagram.com/diwdecor','_blank')">
+        <div class="settings-row-icon" style="background:rgba(225,48,108,0.12);">
+            <i class="fab fa-instagram" style="color:#e1306c;font-size:1.2rem;"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">انستجرام</div>
+            <div class="settings-row-sub">@diwdecor</div>
+        </div>
+        <i class="fas fa-chevron-left settings-row-arrow"></i>
+    </div>
+    <div class="settings-row" onclick="window.open('https://www.instagram.com/mvbn1','_blank')">
+        <div class="settings-row-icon" style="background:rgba(225,48,108,0.12);">
+            <i class="fab fa-instagram" style="color:#e1306c;font-size:1.2rem;"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">محمد البعاج (المالك)</div>
+            <div class="settings-row-sub">@mvbn1</div>
+        </div>
+        <i class="fas fa-chevron-left settings-row-arrow"></i>
+    </div>
+
+    <div class="settings-group-title">عن الموقع</div>
+    <div class="settings-row">
+        <div class="settings-row-icon" style="background:rgba(200,161,101,0.12);">
+            <i class="fas fa-info-circle" style="color:var(--latte-gold);"></i>
+        </div>
+        <div class="settings-row-text">
+            <div class="settings-row-label">MD Decor</div>
+            <div class="settings-row-sub">محمد البعاج — خبرة من 2018</div>
+        </div>
+    </div>
+
+</div>
+```
+
+</div>
 
 <!-- AUTH MODAL -->
 
@@ -1774,7 +2216,7 @@
     // =============================================
     // ⚠️ ضع VAPID Key هنا من:
     // Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
-    const FCM_VAPID_KEY = "BL_cQd7DRtYCBhmcCC3PQ6lYF0vIVQPy-aCFuBbwuEgZ6LRXFTtRSYvmMfGzrzOGWb6rsTnqBHOs36lJ6Mv39kY";
+    const FCM_VAPID_KEY = "BL_cQd7DRtYCBhmcCC3PQ6lYF0vlVQPy-aCFuBbwuEgZ6LRXFTtRSYvmMfGzrzOGWb6rsTnqBHOs36lJ6Mv39kY";
 
 // احذف من هنا ↓
 let _fcmToken = null;
@@ -2999,8 +3441,9 @@ let _fcmToken = null;
         section.innerHTML = `
             <img src="${url}" ondblclick="handleDoubleTap('${photoId}')" style="width:100%;display:block;" loading="lazy">
             <div class="model-tag">
-                <span>${caption}</span>
+                <span id="caption-${photoId}">${caption}</span>
                 <div style="display:flex;gap:10px;align-items:center;">
+                    <button class="admin-rename-btn" style="${window.isAdminMode?'display:flex':'display:none'}" onclick="openRenamePhoto('${rtdbKey}','${photoId}')"><i class="fas fa-pen"></i> تعديل الاسم</button>
                     <button class="admin-delete-like" style="${window.isAdminMode?'display:flex':'display:none'}" onclick="adminDeleteLikes('${photoId}')"><i class="fas fa-trash"></i> حذف اللايكات</button>
                     <button class="admin-delete-like" style="${window.isAdminMode?'display:flex':'display:none'};background:var(--admin-red);" onclick="adminDeleteDynamicPhoto('${rtdbKey}','${photoId}')"><i class="fas fa-image"></i> حذف الصورة</button>
                     <button class="like-btn" onclick="openComments('${photoId}')"><i class="far fa-comment"></i></button>
@@ -3093,18 +3536,23 @@ let _fcmToken = null;
         card.id = 'sec-card-' + key;
         card.innerHTML = `
             <button class="custom-section-archive-btn" id="arch-btn-${key}" onclick="archiveSection(event,'${key}')"><i class="fas fa-archive"></i> أرشفة</button>
+            <button class="section-rename-btn" id="rename-sec-btn-${key}" onclick="openRenameSection(event,'${key}','${val.name}')"><i class="fas fa-pen"></i> تعديل</button>
             <i class="${val.icon || 'fas fa-layer-group'}"></i>
-            <h3>${val.name}</h3>
+            <h3 id="sec-name-${key}">${val.name}</h3>
             <p>${val.desc || 'اضغط لعرض التصاميم'}</p>
             <span class="click-hint">اضغط للعرض</span>`;
         card.onclick = function(e) {
             if (e.target.closest('.custom-section-archive-btn')) return;
+            if (e.target.closest('.section-rename-btn')) return;
             showCustomSectionPage(key, val.name);
         };
         container.appendChild(card);
         observer.observe(card);
         injectSectionPage(key, val);
-        if (window.isAdminMode) document.getElementById('arch-btn-' + key).style.display = 'block';
+        if (window.isAdminMode) {
+            document.getElementById('arch-btn-' + key).style.display = 'block';
+            document.getElementById('rename-sec-btn-' + key).style.display = 'block';
+        }
     }
 
     function injectSectionPage(key, val) {
@@ -3147,8 +3595,9 @@ let _fcmToken = null;
         section.innerHTML = `
             <img src="${val.url}" ondblclick="handleDoubleTap('${val.photoId}')" style="width:100%;display:block;" loading="lazy">
             <div class="model-tag">
-                <span>${val.caption || 'تصميم جديد'}</span>
+                <span id="caption-${val.photoId}">${val.caption || 'تصميم جديد'}</span>
                 <div style="display:flex;gap:10px;align-items:center;">
+                    <button class="admin-rename-btn" style="${window.isAdminMode?'display:flex':'display:none'}" onclick="openRenamePhoto('${photoKey}','${val.photoId}')"><i class="fas fa-pen"></i> تعديل الاسم</button>
                     <button class="admin-delete-like" style="${window.isAdminMode?'display:flex':'display:none'}" onclick="adminDeleteLikes('${val.photoId}')"><i class="fas fa-trash"></i> حذف اللايكات</button>
                     <button class="admin-delete-like" style="${window.isAdminMode?'display:flex':'display:none'};background:var(--admin-red);" onclick="adminDeleteDynamicPhoto('${photoKey}','${val.photoId}')"><i class="fas fa-image"></i> حذف الصورة</button>
                     <button class="like-btn" onclick="openComments('${val.photoId}')"><i class="far fa-comment"></i></button>
@@ -3164,6 +3613,78 @@ let _fcmToken = null;
         const page = document.getElementById('custom-page-' + key);
         if (page) { page.style.display = 'block'; window.scrollTo({top:0,behavior:'smooth'}); setTimeout(applyReveal,100); }
     }
+
+    window.openRenamePhoto = function(rtdbKey, photoId) {
+        if (!window.isAdminMode) return;
+        window._renamePhotoKey = rtdbKey;
+        window._renamePhotoId = photoId;
+        const currentName = document.getElementById('caption-' + photoId)?.textContent || '';
+        document.getElementById('rename-photo-input').value = currentName;
+        document.getElementById('rename-photo-modal').classList.add('active');
+        setTimeout(() => document.getElementById('rename-photo-input').focus(), 150);
+    };
+
+    window.closeRenamePhotoModal = function() {
+        document.getElementById('rename-photo-modal').classList.remove('active');
+        window._renamePhotoKey = null;
+        window._renamePhotoId = null;
+    };
+
+    window.saveRenamePhoto = async function() {
+        if (!window.isAdminMode || !window._renamePhotoKey) return;
+        const newName = document.getElementById('rename-photo-input').value.trim();
+        if (!newName) { showAdminToast('⚠️ أدخل اسم الصورة'); return; }
+        const btn = document.getElementById('rename-photo-save-btn');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        try {
+            await rtdbSet('/admin_photos/' + window._renamePhotoKey + '/caption', newName);
+            const captionEl = document.getElementById('caption-' + window._renamePhotoId);
+            if (captionEl) captionEl.textContent = newName;
+            closeRenamePhotoModal();
+            showAdminToast('✅ تم تعديل اسم الصورة');
+        } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> حفظ'; }
+    };
+
+    window.openRenameSection = function(e, key, currentName) {
+        e.stopPropagation();
+        if (!window.isAdminMode) return;
+        window._renameSectionKey = key;
+        document.getElementById('rename-section-input').value = currentName;
+        document.getElementById('rename-section-modal').classList.add('active');
+        setTimeout(() => document.getElementById('rename-section-input').focus(), 150);
+    };
+
+    window.closeRenameSectionModal = function() {
+        document.getElementById('rename-section-modal').classList.remove('active');
+        window._renameSectionKey = null;
+    };
+
+    window.saveRenameSection = async function() {
+        if (!window.isAdminMode || !window._renameSectionKey) return;
+        const newName = document.getElementById('rename-section-input').value.trim();
+        if (!newName) { showAdminToast('⚠️ أدخل اسم القسم'); return; }
+        const btn = document.getElementById('rename-section-save-btn');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+        try {
+            await rtdbSet('/custom_sections/' + window._renameSectionKey + '/name', newName);
+            const nameEl = document.getElementById('sec-name-' + window._renameSectionKey);
+            if (nameEl) nameEl.textContent = newName;
+            // update page title too if exists
+            const pageTitle = document.getElementById('custom-page-title-' + window._renameSectionKey);
+            if (pageTitle) pageTitle.textContent = newName;
+            // update option in upload select
+            const opt = document.getElementById('opt-' + window._renameSectionKey);
+            if (opt) opt.textContent = newName;
+            // update rename button's onclick with new name
+            const renameBtn = document.getElementById('rename-sec-btn-' + window._renameSectionKey);
+            if (renameBtn) renameBtn.setAttribute('onclick', `openRenameSection(event,'${window._renameSectionKey}','${newName}')`);
+            closeRenameSectionModal();
+            showAdminToast('✅ تم تعديل اسم القسم');
+        } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> حفظ'; }
+    };
+
 
     window.openAddSectionModal = function() {
         if (!window.isAdminMode) return;
@@ -3257,6 +3778,7 @@ let _fcmToken = null;
     window.activateAdminMode = function() {
         _origActivate();
         document.querySelectorAll('.custom-section-archive-btn').forEach(el => el.style.display = 'block');
+        document.querySelectorAll('.section-rename-btn').forEach(el => el.style.display = 'block');
         loadFixedSectionsState();
     };
 
@@ -3313,7 +3835,225 @@ let _fcmToken = null;
         } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
     };
 
+    // =============================================
+    // BOTTOM NAV — fixed
+    // =============================================
+    var _bnActive = 'home';
+
+    function bnSetActive(tab) {
+        _bnActive = tab;
+        document.querySelectorAll('.bn-item').forEach(function(el){ el.classList.remove('active'); });
+        var btn = document.getElementById('bn-' + tab);
+        if (btn) btn.classList.add('active');
+        // show search icon in header only on explore tab
+        var exploreIcon = document.getElementById('header-explore-icon');
+        var placeholder  = document.getElementById('header-placeholder');
+        if (exploreIcon && placeholder) {
+            if (tab === 'explore') {
+                exploreIcon.style.display = 'flex';
+                placeholder.style.display = 'none';
+            } else {
+                exploreIcon.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+        }
+    }
+
+    window.focusExploreSearch = function() {
+        var inp = document.getElementById('explore-search-input');
+        if (inp) { inp.focus(); inp.scrollIntoView({behavior:'smooth', block:'center'}); }
+    };
+
+    window.bnSwitch = function(tab) {
+        bnSetActive(tab);
+        var closeSide = document.getElementById('sideMenu');
+        if (closeSide && closeSide.classList.contains('open')) toggleMenu();
+
+        if (tab === 'settings') {
+            document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+            var pg = document.getElementById('settings-page');
+            if (pg) { pg.style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); }
+            return;
+        }
+        var pageMap = { home:'main-page', chat:'friends-page', explore:'main-page', profile:'profile-page' };
+        var pageId  = pageMap[tab];
+        if (!pageId) return;
+
+        document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+        var el = document.getElementById(pageId);
+        if (el) el.style.display = 'block';
+        window.scrollTo({top:0,behavior:'smooth'});
+        setTimeout(applyReveal, 100);
+        if (pageId === 'profile-page')  loadProfilePage();
+        if (pageId === 'friends-page')  loadFriendsPage();
+
+        if (tab === 'explore') {
+            setTimeout(function(){
+                var srv = document.querySelector('.services');
+                if (srv) srv.scrollIntoView({behavior:'smooth',block:'start'});
+            }, 200);
+        }
+    };
+
+    // Patch the original showPage to also sync bottom nav indicator
+    var _bnShowPageOrig = showPage;
+    showPage = function(pageId) {
+        _bnShowPageOrig(pageId);
+        var map = { 'main-page':'home', 'friends-page':'chat', 'profile-page':'profile' };
+        if (map[pageId]) bnSetActive(map[pageId]);
+    };
+
+    // Chat badge — sync with existing friends badge
+    setInterval(function() {
+        var src   = document.getElementById('menu-friends-badge');
+        var badge = document.getElementById('bn-chat-badge');
+        if (!badge) return;
+        var txt = src ? src.textContent.trim() : '';
+        if (txt && txt !== '0') { badge.textContent = txt; badge.style.display = 'flex'; }
+        else badge.style.display = 'none';
+    }, 2000);
+
+    // Sync dark-mode toggle inside settings page
+    window.syncDarkToggle = function syncDarkToggle() {
+        var t = document.getElementById('dark-mode-toggle');
+        if (!t) return;
+        document.body.classList.contains('dark-mode') ? t.classList.add('on') : t.classList.remove('on');
+    }
+    window.addEventListener('load', syncDarkToggle);
+    // =============================================
+    // PHOTO SEARCH SYSTEM
+    // =============================================
+
+    // Build index from all .product-section elements in DOM
+    function buildSearchIndex() {
+        var index = [];
+        document.querySelectorAll('.product-section').forEach(function(section) {
+            var img      = section.querySelector('img');
+            var nameEl   = section.querySelector('.model-tag span[id^="caption-"], .model-tag > span');
+            var caption  = nameEl ? nameEl.textContent.trim() : '';
+            var src      = img ? img.src : '';
+            var id       = section.id || '';          // section-photoId
+            var pageEl   = section.closest('.page');
+            var pageId   = pageEl ? pageEl.id : 'main-page';
+
+            // determine section label
+            var sectionLabel = 'الرئيسية';
+            if (pageId === 'stone-gallery')    sectionLabel = 'واجهات حجرية';
+            else if (pageId === 'interior-gallery') sectionLabel = 'ديكور داخلي';
+            else if (pageId && pageId.startsWith('custom-page-')) {
+                var secKey  = pageId.replace('custom-page-', '');
+                var secName = document.getElementById('sec-name-' + secKey);
+                sectionLabel = secName ? secName.textContent.trim() : 'قسم مخصص';
+            }
+
+            if (caption) {
+                index.push({ caption, src, id, pageId, sectionLabel, el: section });
+            }
+        });
+        return index;
+    }
+
+    window.openSearch = function() {
+        document.getElementById('search-overlay').classList.add('active');
+        document.getElementById('search-results').innerHTML =
+            '<div class="search-empty"><i class="fas fa-search"></i>اكتب كلمة للبحث في التصاميم</div>';
+        document.getElementById('search-main-input').value = '';
+        setTimeout(function() { document.getElementById('search-main-input').focus(); }, 150);
+    };
+
+    window.closeSearch = function() {
+        document.getElementById('search-overlay').classList.remove('active');
+    };
+
+    window.runSearch = function(q) {
+        var container = document.getElementById('search-results');
+        q = q.trim();
+        if (!q) {
+            container.innerHTML = '<div class="search-empty"><i class="fas fa-search"></i>اكتب كلمة للبحث في التصاميم</div>';
+            return;
+        }
+        var index   = buildSearchIndex();
+        var lower   = q.toLowerCase();
+        var results = index.filter(function(item) {
+            return item.caption.toLowerCase().indexOf(lower) !== -1;
+        });
+
+        if (!results.length) {
+            container.innerHTML = '<div class="search-empty"><i class="fas fa-dizzy"></i>لا توجد نتائج لـ "' + q + '"</div>';
+            return;
+        }
+
+        var html = results.map(function(item) {
+            // highlight matched text
+            var re      = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+            var highlighted = item.caption.replace(re, '<mark>$1</mark>');
+            return '<div class="search-result-item" onclick="goToSearchResult(\'' + item.id + '\',\'' + item.pageId + '\')">' +
+                '<img class="search-result-thumb" src="' + item.src + '" loading="lazy">' +
+                '<div class="search-result-info">' +
+                    '<div class="search-result-name">' + highlighted + '</div>' +
+                    '<div class="search-result-section"><i class="fas fa-layer-group"></i>' + item.sectionLabel + '</div>' +
+                '</div>' +
+                '<i class="fas fa-chevron-left search-result-arrow"></i>' +
+            '</div>';
+        }).join('');
+        container.innerHTML = html;
+    };
+
+    window.goToSearchResult = function(sectionId, pageId) {
+        closeSearch();
+
+        // navigate to the correct page first
+        if (pageId === 'settings-page') return;
+        if (pageId === 'stone-gallery' || pageId === 'interior-gallery') {
+            showPage(pageId);
+        } else if (pageId && pageId.startsWith('custom-page-')) {
+            document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+            var pg = document.getElementById(pageId);
+            if (pg) pg.style.display = 'block';
+        } else {
+            showPage(pageId || 'main-page');
+        }
+
+        // scroll to element and pulse highlight
+        setTimeout(function() {
+            var el = sectionId ? document.getElementById(sectionId) : null;
+            if (!el) {
+                // fallback: try matching by section id pattern
+                el = document.querySelector('[id="' + sectionId + '"]');
+            }
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.remove('search-highlight-pulse');
+                void el.offsetWidth; // reflow
+                el.classList.add('search-highlight-pulse');
+                setTimeout(function(){ el.classList.remove('search-highlight-pulse'); }, 2800);
+            }
+        }, 400);
+    };
+
+    // Wire up the header search icon
+    window.focusExploreSearch = function() { openSearch(); };
+
+    // wrap toggleTheme to also update the toggle button
+    var _bnOrigToggleTheme = toggleTheme;
+    toggleTheme = function() { _bnOrigToggleTheme(); setTimeout(syncDarkToggle, 60); };
+
+
+
 </script>
 
-</body>
-</html>
+<!-- SEARCH OVERLAY -->
+
+<div id="search-overlay">
+    <div id="search-backdrop" onclick="closeSearch()"></div>
+    <div id="search-box">
+        <div id="search-input-row">
+            <i class="fas fa-search"></i>
+            <input id="search-main-input" type="text" placeholder="ابحث عن تصميم..." autocomplete="off" oninput="runSearch(this.value)">
+            <button id="search-close-btn" onclick="closeSearch()"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="search-results">
+            <div class="search-empty"><i class="fas fa-search"></i>اكتب كلمة للبحث في التصاميم</div>
+        </div>
+    </div>
+</div>
