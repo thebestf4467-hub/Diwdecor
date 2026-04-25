@@ -1776,7 +1776,8 @@
     // Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
     const FCM_VAPID_KEY = "BL_cQd7DRtYCBhmcCC3PQ6lYF0vlVQPy-aCFuBbwuEgZ6LRXFTtRSYvmMfGzrzOGWb6rsTnqBHOs36lJ6Mv39kY";
 
-    let _fcmToken = null;
+// احذف من هنا ↓
+let _fcmToken = null;
 
     // FCM مُعطَّل مؤقتاً — يُفعَّل بعد رفع الموقع على HTTPS
     // لتفعيله: ضع VAPID Key الحقيقي وارفع firebase-messaging-sw.js
@@ -1807,6 +1808,7 @@
             });
         } catch(e) { console.log('FCM:', e.message); }
     }
+
 
     function showPushBanner(title, body, icon, url) {
         let banner = document.getElementById('push-banner');
