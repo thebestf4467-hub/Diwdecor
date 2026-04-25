@@ -310,7 +310,134 @@
     .logo-container { text-align: center; flex-grow: 1; position: relative; }
     .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; cursor: pointer; user-select: none; display: inline-block; }
     .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
-    .theme-toggle-header { color: var(--latte-gold); font-size: 1.3rem; cursor: pointer; transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); width: 30px; text-align: left; }
+    /* COLOR PICKER */
+    #color-picker-btn {
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        background: transparent;
+        border: none;
+        position: relative;
+        flex-shrink: 0;
+    }
+    #color-picker-btn:active { transform: scale(0.9); }
+
+    /* Pulsing ring */
+    #color-picker-btn::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: 50%;
+        border: 1.5px solid var(--latte-gold);
+        opacity: 0.6;
+        animation: colorRingPulse 2.8s ease-in-out infinite;
+    }
+    @keyframes colorRingPulse {
+        0%   { transform: scale(1);    opacity: 0.6; }
+        50%  { transform: scale(1.18); opacity: 0; }
+        100% { transform: scale(1);    opacity: 0.6; }
+    }
+
+    #color-btn-dot {
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        background: var(--latte-gold);
+        box-shadow: 0 0 0 2.5px rgba(255,255,255,0.7);
+        transition: background 0.3s;
+        z-index: 1;
+        position: relative;
+    }
+
+    #color-palette-popup {
+        display: none;
+        position: fixed;
+        top: 62px; left: 50%;
+        transform: translateX(-50%);
+        background: var(--creamy-white);
+        border: 1.5px solid rgba(200,161,101,0.3);
+        border-radius: 18px;
+        padding: 14px 16px;
+        z-index: 9500;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+        min-width: 290px;
+        max-width: 320px;
+        animation: cpSlideDown 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+    body.dark-mode #color-palette-popup { background: #2a2218; }
+    #color-palette-popup.open { display: block; }
+    @keyframes cpSlideDown { from{opacity:0;transform:translateX(-50%) translateY(-8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+    .cp-title {
+        font-size: 0.78rem; font-weight: 700;
+        color: var(--dark-latte);
+        margin-bottom: 12px;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .cp-title i { color: var(--latte-gold); }
+
+    .cp-swatches {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        justify-content: center;
+        margin-bottom: 12px;
+    }
+    .cp-swatch {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 2.5px solid transparent;
+        transition: transform 0.18s, border-color 0.18s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        position: relative;
+    }
+    .cp-swatch:active { transform: scale(0.88); }
+    .cp-swatch.selected { border-color: white; box-shadow: 0 0 0 3px var(--latte-gold); }
+    .cp-swatch .cp-check {
+        display: none; position: absolute; inset: 0;
+        align-items: center; justify-content: center;
+        color: white; font-size: 0.85rem;
+    }
+    .cp-swatch.selected .cp-check { display: flex; }
+
+    .cp-reset {
+        text-align: center; font-size: 0.72rem; font-weight: 700;
+        color: var(--latte-gold); cursor: pointer;
+        padding: 6px; border-radius: 10px;
+        transition: background 0.15s;
+    }
+    .cp-reset:active { background: rgba(200,161,101,0.1); }
+
+    .theme-toggle-header {
+        color: var(--latte-gold);
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+        width: 30px;
+        text-align: left;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: visible;
+    }
+
+    .theme-toggle-header::before {
+        content: '';
+        position: absolute;
+        width: 26px; height: 26px;
+        border-radius: 50%;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        border: 1.5px solid var(--latte-gold);
+        opacity: 0.6;
+        animation: themeRingPulse 2.8s ease-in-out infinite;
+        pointer-events: none;
+    }
+    @keyframes themeRingPulse {
+        0%   { opacity: 0.6; transform: translate(-50%, -50%) scale(1);    }
+        50%  { opacity: 0;   transform: translate(-50%, -50%) scale(1.18); }
+        100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1);    }
+    }
     #admin-badge { display: none; background: var(--admin-red); color: white; font-size: 0.45rem; padding: 2px 6px; border-radius: 8px; position: absolute; top: -4px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; font-weight: bold; white-space: nowrap; }
 
     .progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--latte-gold); z-index: 3000; width: 0%; }
@@ -442,7 +569,9 @@
     body.dark-mode .bn-badge { border-color: #251f1c; }
 
     /* push page content above nav */
-    .page { padding-bottom: 70px; }
+    .page { padding-bottom: 80px; }
+    .page-copyright { text-align:center; padding: 16px 20px 4px; font-size:0.72rem; color:#aaa; font-family:'Cairo',sans-serif; }
+    body.dark-mode .page-copyright { color:#5a4e48; }
 
     /* admin toolbar sits above bottom nav when both visible */
     #admin-fab { bottom: 62px; }
@@ -499,6 +628,33 @@
     #search-backdrop { position:absolute; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
     #search-box { position:relative; z-index:1; margin:60px 16px 0; background:var(--creamy-white); border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.3); overflow:hidden; animation:searchSlideDown 0.28s cubic-bezier(0.4,0,0.2,1); }
     body.dark-mode #search-box { background:#2a2218; }
+    /* FLOATING VISITOR COUNTER - removed */
+    .page-counter-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 20px 4px;
+        padding: 14px 20px;
+        background: var(--vanilla-light);
+        border: 1px solid rgba(200,161,101,0.25);
+        border-radius: 16px;
+        gap: 6px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    body.dark-mode .page-counter-block { background: #2a2218; border-color: rgba(200,161,101,0.15); }
+    .page-counter-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--dark-latte);
+        font-family: 'Cairo', sans-serif;
+    }
+    body.dark-mode .page-counter-label { color: #e8ddd5; }
+    .page-counter-label i { color: var(--latte-gold); }
+
     @keyframes searchSlideDown { from{opacity:0;transform:translateY(-20px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
     #search-input-row { display:flex; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid rgba(200,161,101,0.15); }
     #search-input-row > i { color:var(--latte-gold); font-size:1.1rem; flex-shrink:0; }
@@ -1201,6 +1357,9 @@
 <!-- HEADER -->
 
 <header class="sticky-header">
+    <div id="color-picker-btn" onclick="toggleColorPalette()" title="تخصيص اللون">
+        <div id="color-btn-dot"></div>
+    </div>
     <div id="header-explore-icon" style="width:30px;display:none;align-items:center;justify-content:center;color:var(--latte-gold);font-size:1.3rem;cursor:pointer;" onclick="focusExploreSearch()">
         <i class="fas fa-search"></i>
     </div>
@@ -1214,6 +1373,14 @@
         <i class="fas fa-moon" id="themeIcon"></i>
     </div>
 </header>
+
+<!-- COLOR PALETTE POPUP -->
+
+<div id="color-palette-popup">
+    <div class="cp-title"><i class="fas fa-palette"></i> لون الموقع</div>
+    <div class="cp-swatches" id="cp-swatches"></div>
+    <div class="cp-reset" onclick="resetAccentColor()"><i class="fas fa-undo"></i> الافتراضي</div>
+</div>
 
 <!-- MAIN PAGE -->
 
@@ -1244,6 +1411,7 @@
             <span class="click-hint">اضغط للمراسلة</span>
         </div>
     </div>
+    <div class="page-counter-block"><div class="page-counter-label"><i class="fas fa-users"></i><span>عدد زوار الموقع</span></div><div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div><script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script><noscript><a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a></noscript></div><div class="page-copyright">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
 </div>
 
 <!-- MY PROFILE PAGE -->
@@ -1556,6 +1724,7 @@
     <div class="product-section"><img src="p12.webp" ondblclick="handleDoubleTap('p12')"><div class="model-tag"><span>أناقة المداخل</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p12')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p12')"><i class="far fa-comment"></i></button><button id="btn-p12" class="like-btn" onclick="handleLike('p12')"><i class="fas fa-heart"></i> <span id="count-p12">0</span></button></div></div></div>
     <div class="product-section"><img src="p13.webp" ondblclick="handleDoubleTap('p13')"><div class="model-tag"><span>تميز الواجهات</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('p13')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('p13')"><i class="far fa-comment"></i></button><button id="btn-p13" class="like-btn" onclick="handleLike('p13')"><i class="fas fa-heart"></i> <span id="count-p13">0</span></button></div></div></div>
     <div id="stone-dynamic-photos"></div>
+    <div class="page-counter-block"><div class="page-counter-label"><i class="fas fa-users"></i><span>عدد زوار الموقع</span></div><div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div><script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script><noscript><a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a></noscript></div><div class="page-copyright">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
 </div>
 
 <!-- INTERIOR GALLERY -->
@@ -1581,6 +1750,7 @@
     <div class="whatsapp-cta">
         <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
     </div>
+    <div class="page-counter-block"><div class="page-counter-label"><i class="fas fa-users"></i><span>عدد زوار الموقع</span></div><div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div><script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script><noscript><a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a></noscript></div><div class="page-copyright">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
 </div>
 
 <div id="custom-pages-wrapper"></div>
@@ -1611,7 +1781,7 @@
     </button>
 </nav>
 
-<footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+<footer style="display:none;"><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
 <!-- SETTINGS PAGE -->
 
@@ -1710,6 +1880,23 @@
         </div>
     </div>
 
+    <!-- Visitor Counter -->
+    <div class="settings-group-title">إحصائيات</div>
+    <div class="page-counter-block">
+        <div class="page-counter-label">
+            <i class="fas fa-users"></i>
+            <span>عدد زوار الموقع</span>
+        </div>
+        <div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div>
+        <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
+        <noscript><a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a></noscript>
+    </div>
+
+    <!-- Copyright -->
+    <div style="text-align:center; padding: 20px 0 10px; font-size:0.75rem; color:#aaa; font-family:'Cairo',sans-serif;">
+        جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026
+    </div>
+
 </div>
 ```
 
@@ -1733,16 +1920,7 @@
     </div>
 </div>
 
-<!-- Counter -->
-
-<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px auto; padding: 15px; background: var(--vanilla-light); border: 1px solid var(--latte-gold); border-radius: 15px; max-width: fit-content; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-    <div style="color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-        <i class="fas fa-users" style="color: var(--latte-gold);"></i>
-        <span>عدد زوار الموقع:</span>
-    </div>
-    <div id="sfcbgldekqmktpww6ctpxw3l8x1uc28hqwd"></div>
-    <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd&down=async" async></script>
-</div>
+<!-- Counter moved to settings page -->
 
 <!-- FIREBASE MODULE -->
 
@@ -3836,7 +4014,98 @@ let _fcmToken = null;
     };
 
     // =============================================
-    // BOTTOM NAV — fixed
+    // ACCENT COLOR PICKER
+    // =============================================
+    var _accentColors = [
+        { name:'ذهبي',      hex:'#c8a165', light:'#f9f1d8', bg1:'#fffcf7', bg2:'#f3e5ab' },
+        { name:'أزرق',      hex:'#3b82f6', light:'#dbeafe', bg1:'#f0f7ff', bg2:'#bfdbfe' },
+        { name:'أخضر',      hex:'#10b981', light:'#d1fae5', bg1:'#f0fdf4', bg2:'#a7f3d0' },
+        { name:'بنفسجي',   hex:'#8b5cf6', light:'#ede9fe', bg1:'#f5f3ff', bg2:'#ddd6fe' },
+        { name:'وردي',      hex:'#ec4899', light:'#fce7f3', bg1:'#fdf2f8', bg2:'#fbcfe8' },
+        { name:'برتقالي',  hex:'#f97316', light:'#ffedd5', bg1:'#fff7ed', bg2:'#fed7aa' },
+        { name:'أحمر',      hex:'#ef4444', light:'#fee2e2', bg1:'#fef2f2', bg2:'#fecaca' },
+        { name:'رمادي',    hex:'#6b7280', light:'#f3f4f6', bg1:'#f9fafb', bg2:'#e5e7eb' },
+        { name:'سماوي',    hex:'#06b6d4', light:'#cffafe', bg1:'#ecfeff', bg2:'#a5f3fc' },
+        { name:'نيلي',     hex:'#6366f1', light:'#e0e7ff', bg1:'#eef2ff', bg2:'#c7d2fe' },
+        { name:'ليموني',   hex:'#84cc16', light:'#ecfccb', bg1:'#f7fee7', bg2:'#d9f99d' },
+        { name:'فيروزي',   hex:'#14b8a6', light:'#ccfbf1', bg1:'#f0fdfa', bg2:'#99f6e4' },
+        { name:'دموي',     hex:'#be123c', light:'#ffe4e6', bg1:'#fff1f2', bg2:'#fecdd3' },
+        { name:'بني',      hex:'#92400e', light:'#fde68a', bg1:'#fffbeb', bg2:'#fcd34d' },
+        { name:'زيتي',     hex:'#4d7c0f', light:'#ecfccb', bg1:'#f7fee7', bg2:'#bef264' },
+        { name:'صدئ',      hex:'#c2410c', light:'#ffedd5', bg1:'#fff7ed', bg2:'#fdba74' },
+        { name:'فضي',      hex:'#94a3b8', light:'#f1f5f9', bg1:'#f8fafc', bg2:'#e2e8f0' },
+        { name:'ذهبي داكن',hex:'#b45309', light:'#fef3c7', bg1:'#fffbeb', bg2:'#fde68a' },
+        { name:'أزرق داكن',hex:'#1d4ed8', light:'#dbeafe', bg1:'#eff6ff', bg2:'#bfdbfe' },
+        { name:'أرجواني',  hex:'#a21caf', light:'#fae8ff', bg1:'#fdf4ff', bg2:'#f5d0fe' },
+    ];
+
+    var _currentAccent = localStorage.getItem('accentColor') || '#c8a165';
+
+    function applyAccentColor(hex, light, bg1, bg2, save) {
+        var r = document.documentElement;
+        r.style.setProperty('--latte-gold', hex);
+        r.style.setProperty('--heart-color', hex);
+        r.style.setProperty('--vanilla-light', light || '#f9f1d8');
+        r.style.setProperty('--bg-gradient', 'linear-gradient(135deg,' + (bg1||'#fffcf7') + ' 0%,' + (bg2||'#f3e5ab') + ' 100%)');
+        var dot = document.getElementById('color-btn-dot');
+        if (dot) dot.style.background = hex;
+        _currentAccent = hex;
+        if (save !== false) localStorage.setItem('accentColor', JSON.stringify({hex,light,bg1,bg2}));
+        // update selected swatch
+        document.querySelectorAll('.cp-swatch').forEach(function(s){
+            s.classList.toggle('selected', s.dataset.hex === hex);
+        });
+    }
+
+    window.toggleColorPalette = function() {
+        var popup = document.getElementById('color-palette-popup');
+        popup.classList.toggle('open');
+    };
+
+    window.resetAccentColor = function() {
+        var def = _accentColors[0];
+        applyAccentColor(def.hex, def.light, def.bg1, def.bg2);
+        localStorage.removeItem('accentColor');
+    };
+
+    // Build swatches
+    window.addEventListener('DOMContentLoaded', function() {
+        var container = document.getElementById('cp-swatches');
+        if (!container) return;
+        _accentColors.forEach(function(c) {
+            var sw = document.createElement('div');
+            sw.className = 'cp-swatch';
+            sw.dataset.hex = c.hex;
+            sw.title = c.name;
+            sw.style.background = c.hex;
+            sw.innerHTML = '<div class="cp-check"><i class="fas fa-check"></i></div>';
+            sw.onclick = function() {
+                applyAccentColor(c.hex, c.light, c.bg1, c.bg2);
+                setTimeout(function(){ document.getElementById('color-palette-popup').classList.remove('open'); }, 300);
+            };
+            container.appendChild(sw);
+        });
+
+        // Restore saved color
+        var saved = localStorage.getItem('accentColor');
+        if (saved) {
+            try {
+                var obj = JSON.parse(saved);
+                applyAccentColor(obj.hex, obj.light, obj.bg1, obj.bg2, false);
+            } catch(e) {}
+        }
+
+        // Close palette when clicking outside
+        document.addEventListener('click', function(e) {
+            var popup = document.getElementById('color-palette-popup');
+            var btn   = document.getElementById('color-picker-btn');
+            if (popup && popup.classList.contains('open') && !popup.contains(e.target) && !btn.contains(e.target)) {
+                popup.classList.remove('open');
+            }
+        });
+    });
+
+
     // =============================================
     var _bnActive = 'home';
 
@@ -3846,16 +4115,17 @@ let _fcmToken = null;
         var btn = document.getElementById('bn-' + tab);
         if (btn) btn.classList.add('active');
         // show search icon in header only on explore tab
-        var exploreIcon = document.getElementById('header-explore-icon');
+        var exploreIcon  = document.getElementById('header-explore-icon');
+        var colorPickBtn = document.getElementById('color-picker-btn');
         var placeholder  = document.getElementById('header-placeholder');
-        if (exploreIcon && placeholder) {
-            if (tab === 'explore') {
-                exploreIcon.style.display = 'flex';
-                placeholder.style.display = 'none';
-            } else {
-                exploreIcon.style.display = 'none';
-                placeholder.style.display = 'block';
-            }
+        if (tab === 'explore') {
+            if (exploreIcon)  exploreIcon.style.display  = 'flex';
+            if (colorPickBtn) colorPickBtn.style.display = 'none';
+            if (placeholder)  placeholder.style.display  = 'none';
+        } else {
+            if (exploreIcon)  exploreIcon.style.display  = 'none';
+            if (colorPickBtn) colorPickBtn.style.display = 'flex';
+            if (placeholder)  placeholder.style.display  = 'none';
         }
     }
 
@@ -4041,8 +4311,6 @@ let _fcmToken = null;
 
 
 </script>
-
-<!-- SEARCH OVERLAY -->
 
 <div id="search-overlay">
     <div id="search-backdrop" onclick="closeSearch()"></div>
