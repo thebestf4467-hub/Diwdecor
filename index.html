@@ -1811,18 +1811,80 @@ let _fcmToken = null;
 
 
     function showPushBanner(title, body, icon, url) {
-        let banner = document.getElementById('push-banner');
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'push-banner';
-            banner.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-140px);background:var(--creamy-white);border:1.5px solid var(--latte-gold);border-radius:18px;padding:14px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.18);z-index:99998;transition:transform 0.45s cubic-bezier(0.175,0.885,0.32,1.275);min-width:260px;max-width:320px;display:flex;align-items:center;gap:12px;';
-            document.body.appendChild(banner);
-        }
-        banner.innerHTML = `<div style="font-size:1.8rem;flex-shrink:0;">${icon}</div><div style="flex:1;"><div style="font-weight:bold;font-size:0.88rem;color:var(--dark-latte);margin-bottom:2px;">${title}</div><div style="font-size:0.76rem;color:#999;">${body}</div></div><i class="fas fa-times" style="color:#ccc;font-size:0.85rem;flex-shrink:0;cursor:pointer;" onclick="event.stopPropagation();this.closest('#push-banner').style.transform='translateX(-50%) translateY(-140px)'"></i>`;
-        if (url) banner.onclick = () => { if(url.startsWith('#')) showPage(url.replace('#','')); };
-        banner.style.transform = 'translateX(-50%) translateY(0)';
-        setTimeout(() => { const b = document.getElementById('push-banner'); if(b) b.style.transform = 'translateX(-50%) translateY(-140px)'; }, 5500);
+    // احذف البانر السابق إذا موجود
+    const old = document.getElementById('push-banner');
+    if (old) old.remove();
+
+    const banner = document.createElement('div');
+    banner.id = 'push-banner';
+    banner.style.cssText = `
+        position:fixed;
+        top:70px;
+        left:50%;
+        transform:translateX(-50%) translateY(-140px);
+        opacity:0;
+        background:var(--creamy-white);
+        border:1.5px solid var(--latte-gold);
+        border-radius:18px;
+        padding:14px 18px;
+        box-shadow:0 8px 30px rgba(0,0,0,0.18);
+        z-index:99998;
+        transition:transform 0.45s cubic-bezier(0.175,0.885,0.32,1.275), opacity 0.35s ease;
+        min-width:260px;
+        max-width:320px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        pointer-events:auto;
+    `;
+
+    banner.innerHTML = `
+        <div style="font-size:1.8rem;flex-shrink:0;">${icon || '🔔'}</div>
+        <div style="flex:1;">
+            <div style="font-weight:bold;font-size:0.88rem;color:var(--dark-latte);margin-bottom:2px;">${title || ''}</div>
+            <div style="font-size:0.76rem;color:#999;">${body || ''}</div>
+        </div>
+        <i class="fas fa-times" style="color:#ccc;font-size:0.85rem;flex-shrink:0;cursor:pointer;" onclick="
+            event.stopPropagation();
+            const b = document.getElementById('push-banner');
+            if (b) {
+                b.style.opacity = '0';
+                b.style.transform = 'translateX(-50%) translateY(-140px)';
+                setTimeout(() => b.remove(), 400);
+            }
+        "></i>
+    `;
+
+    if (url) {
+        banner.style.cursor = 'pointer';
+        banner.onclick = () => {
+            if (url.startsWith('#')) showPage(url.replace('#', ''));
+            else if (url.startsWith('http')) window.open(url, '_blank');
+            document.getElementById('push-banner')?.remove();
+        };
     }
+
+    document.body.appendChild(banner);
+
+    // إظهار
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            banner.style.transform = 'translateX(-50%) translateY(0)';
+            banner.style.opacity = '1';
+        }, 50);
+    });
+
+    // إخفاء تلقائي بعد 5.5 ثانية
+    setTimeout(() => {
+        const b = document.getElementById('push-banner');
+        if (b) {
+            b.style.opacity = '0';
+            b.style.transform = 'translateX(-50%) translateY(-140px)';
+            setTimeout(() => b.remove(), 400);
+        }
+    }, 5500);
+}
+
 
     async function sendFCMNotification(toUid, title, body, icon, url) {
         if (!toUid) return;
@@ -3004,7 +3066,7 @@ let _fcmToken = null;
             } else {
                 showAdminToast('⚠️ يجب السماح بالإشعارات من إعدادات المتصفح');
             }
-        } catch(e) { showAdminToast('❌ خطأ في تفعيل الإشعارات'); }
+        } catch(e) { showAdminToast('اضف الموقع الى الشاشة الرئيسية'); }
     };
 
     window.addEventListener('DOMContentLoaded', loadDynamicPhotos);
