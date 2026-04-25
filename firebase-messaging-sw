@@ -1,0 +1,49 @@
+// =============================================
+// firebase-messaging-sw.js
+// ضع هذا الملف في نفس مجلد index.html
+// =============================================
+importScripts(‘https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js’);
+importScripts(‘https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js’);
+
+firebase.initializeApp({
+apiKey: “AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0”,
+authDomain: “diwd-a7709.firebaseapp.com”,
+projectId: “diwd-a7709”,
+storageBucket: “diwd-a7709.firebasestorage.app”,
+messagingSenderId: “190314181686”,
+appId: “1:190314181686:web:97b7f8674522bdbb4d5497”
+});
+
+const messaging = firebase.messaging();
+
+// الإشعارات في الخلفية (الموقع مغلق)
+messaging.onBackgroundMessage(function(payload) {
+const data = payload.data || {};
+const title = data.title || ‘MD Decor’;
+const body  = data.body  || ‘لديك إشعار جديد’;
+const icon  = data.icon  || ‘/app-icon.png’;
+const url   = data.url   || ‘/’;
+
+```
+self.registration.showNotification(title, {
+    body,
+    icon,
+    badge: '/app-icon.png',
+    vibrate: [200, 100, 200],
+    data: { url },
+    actions: [
+        { action: 'open', title: 'فتح الموقع' },
+        { action: 'close', title: 'تجاهل' }
+    ]
+});
+```
+
+});
+
+// عند الضغط على الإشعار
+self.addEventListener(‘notificationclick’, function(event) {
+event.notification.close();
+if (event.action === ‘close’) return;
+const url = event.notification.data?.url || ‘/’;
+event.waitUntil(clients.openWindow(url));
+});
