@@ -2404,72 +2404,47 @@
     }
 
     // =============================================
-    // FCM PUSH NOTIFICATIONS
+    // WEB PUSH — يدعم iOS 16.4+ و Android
     // =============================================
-    const FCM_VAPID_KEY = "BL_cQd7DRtYCBhmcCC3PQ6lYF0vlVQPy-aCFuBbwuEgZ6LRXFTtRSYvmMfGzrzOGWb6rsTnqBHOs36lJ6Mv39kY";
-
+    const VAPID_PUBLIC_KEY = 'BNx77VMC0kbW2pdKlcWFdlWvdy29AgohHgDrLGEEqHfoqHBSkkXcLFvQTwxOFfXuC6n13nLVw7rcrAjvbJuGwZQ';
     let _fcmToken = null;
     let _fcmMessaging = null;
 
+    function urlBase64ToUint8Array(b64) {
+        const pad = '='.repeat((4 - b64.length % 4) % 4);
+        const raw = atob((b64 + pad).replace(/-/g,'+').replace(/_/g,'/'));
+        return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+    }
+
     async function initFCM() {
-        if (location.protocol !== 'https:') {
-            console.log('FCM: requires HTTPS');
-            return;
-        }
-        if (!('Notification' in window) || !navigator.serviceWorker) {
-            console.log('FCM: not supported');
-            return;
-        }
-        setTimeout(_startFCM, 1500);
+        if (location.protocol !== 'https:') return;
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+        setTimeout(_startFCM, 1000);
     }
 
     async function _startFCM() {
         try {
-            // تسجيل Service Worker
-            if (!('serviceWorker' in navigator)) {
-                console.log('[FCM] SW not supported');
-                return;
-            }
-            const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+            const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope:'/' });
             await navigator.serviceWorker.ready;
-            console.log('[FCM] SW ready');
+            console.log('[Push] SW ready');
 
-            // استخدام static import بدل dynamic (يشتغل على iOS)
-            const messaging = getMessaging(app);
-            _fcmMessaging = messaging;
-
-            // جلب التوكن
-            const token = await getToken(messaging, {
-                vapidKey: FCM_VAPID_KEY,
-                serviceWorkerRegistration: reg
-            });
-
-            if (token) {
-                _fcmToken = token;
-                console.log('[FCM] Token OK');
-                if (window.currentUser) {
-                    await updateDoc(doc(db, "users", window.currentUser.uid), {
-                        fcmToken: token,
-                        fcmUpdatedAt: new Date().toISOString()
-                    }).catch(e => console.log('[FCM] save err:', e.message));
-                    console.log('[FCM] Token saved');
-                }
-            } else {
-                console.log('[FCM] No token');
-                return;
+            let sub = await reg.pushManager.getSubscription();
+            if (!sub) {
+                sub = await reg.pushManager.subscribe({
+                    userVisibleOnly:      true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                });
             }
 
-            // استقبال الإشعارات وهو مفتوح
-            onMessage(messaging, (payload) => {
-                const d = payload.data || payload.notification || {};
-                showPushBanner(d.title || 'MD Decor', d.body || '', d.icon || '🔔', d.url || '');
-            });
-
-        } catch(e) {
-            console.log('[FCM] Error:', e.message);
-        }
+            if (window.currentUser && sub) {
+                await updateDoc(doc(db, 'users', window.currentUser.uid), {
+                    pushSubscription: JSON.stringify(sub.toJSON()),
+                    pushUpdatedAt:    new Date().toISOString()
+                }).catch(e => console.log('[Push] save err:', e.message));
+                console.log('[Push] Subscription saved ✅');
+            }
+        } catch(e) { console.log('[Push] Error:', e.message); }
     }
-
 
     function showPushBanner(title, body, icon, url) {
     // احذف البانر السابق إذا موجود
@@ -2561,21 +2536,19 @@
 
     async function sendRealPush(toUid, title, body, url) {
         try {
-            // جيب توكن المستخدم
             const uSnap = await getDoc(doc(db, "users", toUid));
             if (!uSnap.exists()) return;
-            const token = uSnap.data().fcmToken;
-            if (!token) { console.log('[FCM] No token for user:', toUid); return; }
-
-            // أضف للـ push_queue — يُرسل عبر Cloud Function أو سكريبت خارجي
+            const sub = uSnap.data().pushSubscription;
+            if (!sub) { console.log('[Push] No subscription for:', toUid); return; }
             await addDoc(collection(db, "push_queue"), {
-                token, title, body,
+                subscription: sub,
+                title, body,
                 url:  url || '/',
                 sent: false,
                 createdAt: serverTimestamp()
             });
-            console.log('[FCM] Push queued for:', toUid);
-        } catch(e) { console.log('[FCM] sendRealPush error:', e.message); }
+            console.log('[Push] Queued for:', toUid);
+        } catch(e) { console.log('[Push] sendRealPush error:', e.message); }
     }
 
     // إرسال إشعار واتساب للمستخدم
