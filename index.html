@@ -4,13 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MD</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="app-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <title>MD Decor</title>
+
+```
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C8A165">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MD Decor">
+<link rel="apple-touch-icon" sizes="180x180" href="/app-icon.png">
+<link rel="apple-touch-startup-image" href="/app-icon.png">
+
+<link rel="icon" type="image/png" sizes="32x32" href="app-icon.png">
+<link rel="icon" type="image/png" sizes="16x16" href="app-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+```
 
 <script type="text/javascript">
     window.addEventListener('load', function() {
@@ -2162,6 +2174,7 @@
             loadProfileStats(user.uid, username);
             loadLikedPhotos();
             loadFriendStats(username);
+            loadWhatsappPhone(user.uid);
         } catch(e) { console.error(e); }
     };
 
@@ -2409,16 +2422,21 @@
 
     async function _startFCM() {
         try {
-            // تسجيل Service Worker
-            const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
-            await navigator.serviceWorker.ready;
-            console.log('[FCM] SW registered:', reg.scope);
+            // تسجيل Service Worker أولاً
+            let reg;
+            if ('serviceWorker' in navigator) {
+                reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+                await navigator.serviceWorker.ready;
+                console.log('[FCM] SW registered');
+            } else {
+                console.log('[FCM] SW not supported');
+                return;
+            }
 
-            // تحميل messaging من modular SDK
+            // تحميل messaging
             const { getMessaging, getToken, onMessage } = await import(
                 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js'
             );
-
             _fcmMessaging = getMessaging(app);
 
             // جلب التوكن
@@ -2429,31 +2447,24 @@
 
             if (token) {
                 _fcmToken = token;
-                console.log('[FCM] Token:', token.substring(0, 20) + '...');
-                // حفظ التوكن في Firestore
+                console.log('[FCM] Token OK:', token.substring(0,15) + '...');
+                // حفظ التوكن في Firestore مرتبط بالمستخدم
                 if (window.currentUser) {
-                    try {
-                        await updateDoc(doc(db, "users", window.currentUser.uid), {
-                            fcmToken: token,
-                            fcmUpdatedAt: new Date().toISOString()
-                        });
-                        console.log('[FCM] Token saved to Firestore');
-                    } catch(e) { console.log('[FCM] Save error:', e.message); }
+                    await updateDoc(doc(db, "users", window.currentUser.uid), {
+                        fcmToken: token,
+                        fcmUpdatedAt: new Date().toISOString()
+                    }).catch(e => console.log('[FCM] save err:', e.message));
                 }
             } else {
-                console.log('[FCM] No token received');
+                console.log('[FCM] No token — check VAPID key');
+                return;
             }
 
             // استقبال الإشعارات وهو مفتوح (foreground)
             onMessage(_fcmMessaging, (payload) => {
-                console.log('[FCM] Foreground message:', payload);
+                console.log('[FCM] Foreground:', payload);
                 const d = payload.data || payload.notification || {};
-                showPushBanner(
-                    d.title || 'MD Decor',
-                    d.body  || '',
-                    d.icon  || '🔔',
-                    d.url   || ''
-                );
+                showPushBanner(d.title || 'MD Decor', d.body || '', d.icon || '🔔', d.url || '');
             });
 
         } catch(e) {
@@ -2541,10 +2552,94 @@
     async function sendFCMNotification(toUid, title, body, icon, url) {
         if (!toUid) return;
         try {
+            // حفظ في Firestore للإشعارات الداخلية
             await addDoc(collection(db, "notifications"), {
                 toUid, title, body, icon: icon || '🔔', url: url || '/', read: false, createdAt: serverTimestamp()
             });
+            // إرسال FCM push حقيقي عبر توكن المستخدم
+            await sendRealPush(toUid, title, body, url);
         } catch(e) { console.error('sendFCM error:', e); }
+    }
+
+    async function sendRealPush(toUid, title, body, url) {
+        try {
+            // جيب توكن المستخدم
+            const uSnap = await getDoc(doc(db, "users", toUid));
+            if (!uSnap.exists()) return;
+            const token = uSnap.data().fcmToken;
+            if (!token) { console.log('[FCM] No token for user:', toUid); return; }
+
+            // أضف للـ push_queue — يُرسل عبر Cloud Function أو سكريبت خارجي
+            await addDoc(collection(db, "push_queue"), {
+                token, title, body,
+                url:  url || '/',
+                sent: false,
+                createdAt: serverTimestamp()
+            });
+            console.log('[FCM] Push queued for:', toUid);
+        } catch(e) { console.log('[FCM] sendRealPush error:', e.message); }
+    }
+
+    // إرسال إشعار واتساب للمستخدم
+    async function sendWhatsAppNotif(toUid, title, body) {
+        try {
+            const uSnap = await getDoc(doc(db, "users", toUid));
+            if (!uSnap.exists()) return;
+            const phone = uSnap.data().whatsappPhone;
+            if (!phone) return;
+            // تنظيف الرقم وإضافة كود العراق
+            const cleaned = phone.replace(/\D/g, '');
+            const full = cleaned.startsWith('964') ? cleaned :
+                         cleaned.startsWith('0')   ? '964' + cleaned.slice(1) :
+                                                     '964' + cleaned;
+            const msg = encodeURIComponent('🔔 ' + title + '\n' + body + '\n\n— MD Decor');
+            // نرسل عبر wa.me link — يفتح واتساب تلقائياً
+            // للإرسال التلقائي نحتاج API — هنا نستخدم Firestore trigger
+            await addDoc(collection(db, "whatsapp_queue"), {
+                to: full, message: decodeURIComponent(msg),
+                createdAt: serverTimestamp(), sent: false
+            });
+        } catch(e) { console.log('WA notif error:', e.message); }
+    }
+
+    // حفظ رقم الواتساب
+    window.savePhoneNumber = async function() {
+        const input = document.getElementById('phone-modal-input');
+        const btn   = document.getElementById('phone-modal-save-btn');
+        if (!input || !window.currentUser) return;
+        const val = input.value.trim().replace(/\D/g, '');
+        if (!val || val.length < 9) {
+            showAdminToast('⚠️ أدخل رقماً صحيحاً'); return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'جاري الحفظ...';
+        try {
+            await updateDoc(doc(db, "users", window.currentUser.uid), { whatsappPhone: val });
+            // تحديث الواجهة
+            const display = document.getElementById('info-phone');
+            if (display) { display.textContent = '🟢 ' + val; display.style.color = '#25d366'; }
+            // إغلاق المودال
+            const modal = document.getElementById('phone-modal');
+            if (modal) modal.classList.remove('active');
+            showAdminToast('✅ تم حفظ رقم الواتساب!');
+        } catch(e) {
+            showAdminToast('❌ خطأ: ' + e.message);
+        } finally {
+            btn.disabled = false; btn.textContent = 'حفظ';
+        }
+    };
+
+    // تحميل رقم الواتساب عند فتح الپروفايل
+    function loadWhatsappPhone(uid) {
+        getDoc(doc(db, "users", uid)).then(snap => {
+            if (!snap.exists()) return;
+            const phone = snap.data().whatsappPhone;
+            const display = document.getElementById('info-phone');
+            if (display) {
+                if (phone) { display.textContent = '🟢 ' + phone; display.style.color = '#25d366'; }
+                else { display.textContent = 'لم يتم الإضافة'; display.style.color = '#999'; }
+            }
+        }).catch(() => {});
     }
 
     let _notifUnsubscribe = null;
