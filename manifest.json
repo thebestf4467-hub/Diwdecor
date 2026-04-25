@@ -1,0 +1,35 @@
+{
+  "name": "MD Decor",
+  "short_name": "MD",
+  "description": "محمد البعاج — ديكور داخلي وواجهات حجرية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFCF9",
+  "theme_color": "#C8A165",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/app-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "design"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "الرئيسية",
+      "url": "/",
+      "description": "معرض التصاميم"
+    }
+  ]
+}
