@@ -304,12 +304,12 @@
     .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
     .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
 
-    .sticky-header { position: sticky; top: 0; z-index: 1000; background: rgba(255,252,249,0.92); border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); padding: 12px 20px; }
+    .sticky-header { position: sticky; position: -webkit-sticky; top: 0; z-index: 1000; background: rgba(255,252,249,0.92); border-bottom: 1px solid var(--latte-gold); display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(10px); padding: 12px 20px; position: relative; }
     body.dark-mode .sticky-header { background: rgba(37,31,28,0.92); }
     .menu-trigger { color: var(--latte-gold); font-size: 1.5rem; cursor: pointer; }
-    .logo-container { text-align: center; flex-grow: 1; position: relative; }
-    .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; cursor: pointer; user-select: none; display: inline-block; }
-    .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 2px; }
+    .logo-container { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; pointer-events: none; }
+    .logo { color: var(--latte-gold); font-size: 1.5rem; font-weight: 900; cursor: pointer; user-select: none; display: inline-block; pointer-events: auto; }
+    .brand-name { color: var(--latte-gold); font-size: 0.55rem; letter-spacing: 3.5px; margin-top: -4px; display: block; pointer-events: auto; }
     /* COLOR PICKER */
     #color-picker-btn {
         width: 30px; height: 30px;
