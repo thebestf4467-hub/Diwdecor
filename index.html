@@ -4345,40 +4345,17 @@
         result.classList.remove('visible');
 
         try {
-            // جيب التوكن من Firestore
-            if (!HF_TOKEN) await loadHFToken();
-            if (!HF_TOKEN) throw new Error('خطأ في الاتصال');
-
-            var fullPrompt = 'interior design, ' + _aiStyle + ' style, ' + prompt + ', photorealistic, high quality, 4k, professional interior photography, beautiful lighting';
-
             var res = await fetch('/ai-proxy.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: fullPrompt })
+                body: JSON.stringify({ prompt: prompt })
             });
 
             var data = await res.json();
             if (data.error) throw new Error(data.error);
+            if (!data.image) throw new Error('لم يتم الحصول على الصورة');
 
-            var imageUrl = data.output && data.output[0] ? data.output[0] : null;
-
-            if (!imageUrl && data.urls && data.urls.get) {
-                for (var i = 0; i < 30; i++) {
-                    await new Promise(function(r){ setTimeout(r, 2000); });
-                    var poll = await fetch('/ai-proxy.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ poll_url: data.urls.get })
-                    });
-                    var pollData = await poll.json();
-                    if (pollData.status === 'succeeded') { imageUrl = pollData.output[0]; break; }
-                    if (pollData.status === 'failed') throw new Error('فشل التوليد');
-                }
-            }
-
-            if (!imageUrl) throw new Error('لم يتم الحصول على الصورة');
-
-            document.getElementById('ai-result-img').src = imageUrl;
+            document.getElementById('ai-result-img').src = data.image;
             loading.classList.remove('visible');
             result.classList.add('visible');
             result.scrollIntoView({behavior:'smooth', block:'center'});
