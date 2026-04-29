@@ -1,0 +1,8 @@
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+# Cache images
+<FilesMatch "\.(webp|jpg|jpeg|png|gif)$">
+    Header set Cache-Control "max-age=2592000, public"
+</FilesMatch>
