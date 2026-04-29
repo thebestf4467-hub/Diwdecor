@@ -4363,12 +4363,17 @@
             );
 
             if (response.status === 503) {
-                showAdminToast('⏳ النموذج يتحمّل — انتظر 30 ثانية وحاول مجدداً');
+                showAdminToast('⏳ النموذج يتحمّل... انتظر 30 ثانية وحاول مجدداً');
+                return;
+            }
+            if (response.status === 401) {
+                showAdminToast('❌ خطأ في التوثيق');
                 return;
             }
             if (!response.ok) {
-                var err = await response.json().catch(function(){ return {}; });
-                throw new Error(err.error || 'فشل التوليد');
+                const errText = await response.text().catch(() => '');
+                console.log('[AI] Error:', response.status, errText);
+                throw new Error('خطأ ' + response.status);
             }
 
             var blob = await response.blob();
@@ -4379,6 +4384,7 @@
             showAdminToast('✅ تم توليد التصميم!');
 
         } catch(e) {
+            console.log('[AI] Catch error:', e.message);
             showAdminToast('❌ ' + e.message);
         } finally {
             btn.disabled = false;
