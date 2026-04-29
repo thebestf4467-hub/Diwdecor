@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD Decor</title>
 
-```
+
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#C8A165">
@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-```
+
 
 <script type="text/javascript">
     window.addEventListener('load', function() {
@@ -1042,6 +1042,18 @@
     .friends-tab-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--admin-red); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 0.65rem; margin-right: 5px; font-weight: bold; }
     .friends-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--bg-gradient); min-height: 300px; }
     .friend-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--creamy-white); border-radius: 16px; border: 1px solid rgba(200,161,101,0.12); box-shadow: 0 2px 8px rgba(0,0,0,0.04); animation: slideIn 0.3s ease-out; }
+    .friend-avatar { position: relative; }
+    .presence-dot {
+        position: absolute;
+        bottom: 1px; right: 1px;
+        width: 11px; height: 11px;
+        border-radius: 50%;
+        border: 2px solid var(--creamy-white);
+        background: #aaa;
+        z-index: 2;
+    }
+    .presence-dot.online  { background: #2ecc71; }
+    .presence-dot.offline { background: #e74c3c; }
     .friend-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--latte-gold); overflow: hidden; background: var(--vanilla-light); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: transform 0.2s; }
     .friend-avatar:hover { transform: scale(1.08); }
     .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -1341,7 +1353,7 @@
         </div>
     </div>
 
-```
+
 <!-- FRIENDS BUTTON IN MENU -->
 <button class="menu-friends-btn" onclick="toggleMenu(); showPage('friends-page');" id="menu-friends-btn" style="display:none;">
     <i class="fas fa-user-friends"></i>
@@ -1372,7 +1384,7 @@
     <h3>الحساب</h3>
     <button onclick="logoutUser()" style="width:100%; padding:12px; border:none; border-radius:10px; background:#c8a165; color:white; font-weight:bold; cursor:pointer; font-family:'Cairo',sans-serif;">تسجيل الخروج</button>
 </div>
-```
+
 
 </div>
 
@@ -1814,7 +1826,7 @@
     </div>
     <div class="settings-body">
 
-```
+
     <div class="settings-group-title">المظهر</div>
     <div class="settings-row" onclick="toggleTheme()">
         <div class="settings-row-icon" style="background:rgba(200,161,101,0.12);">
@@ -1918,7 +1930,7 @@
     </div>
 
 </div>
-```
+
 
 </div>
 
@@ -2103,6 +2115,8 @@
                 if (snap.exists()) {
                     window._currentUserData = snap.data();
                     updateMenuProfileUI(snap.data(), user);
+                    // تفعيل نظام الحضور
+                    initPresence(snap.data().username);
 
                     const localLiked = Object.keys(localStorage).filter(k => k.startsWith('liked_'));
                     if (localLiked.length > 0) {
@@ -2747,13 +2761,28 @@
         const item = document.createElement('div');
         item.className = 'friend-item';
 
-        // Avatar
+        // Avatar with presence dot
         const avatarDiv = document.createElement('div');
         avatarDiv.className = 'friend-avatar';
+        avatarDiv.style.position = 'relative';
         avatarDiv.innerHTML = avatarSrc
             ? `<img src="${avatarSrc}" alt="${username}" style="width:100%;height:100%;object-fit:cover;">`
             : `<span class="friend-avatar-placeholder">${username[0].toUpperCase()}</span>`;
         avatarDiv.addEventListener('click', () => window.openPublicProfile(username));
+
+        // نقطة الحضور
+        const dot = document.createElement('div');
+        dot.className = 'presence-dot offline';
+        dot.id = 'presence-' + username;
+        avatarDiv.appendChild(dot);
+
+        // تحميل حالة الحضور بشكل غير متزامن
+        if (type === 'friend') {
+            getUserPresence(username).then(status => {
+                dot.className = 'presence-dot ' + status;
+                dot.title = status === 'online' ? 'متصل الآن' : 'غير متصل';
+            });
+        }
 
         // Info
         const infoDiv = document.createElement('div');
@@ -2765,7 +2794,17 @@
         nameDiv.addEventListener('click', () => window.openPublicProfile(username));
         const subDiv = document.createElement('div');
         subDiv.className = 'friend-sub';
-        subDiv.textContent = type === 'request' ? '📩 طلب صداقة وارد' : type === 'sent' ? '📤 طلب مرسل' : '👥 صديق';
+        subDiv.id = 'presence-sub-' + username;
+        if (type === 'request') {
+            subDiv.textContent = '📩 طلب صداقة وارد';
+        } else if (type === 'sent') {
+            subDiv.textContent = '📤 طلب مرسل';
+        } else {
+            subDiv.textContent = '⏳ جاري التحقق...';
+            getUserPresence(username).then(status => {
+                subDiv.textContent = status === 'online' ? '🟢 متصل الآن' : '🔴 غير متصل';
+            });
+        }
         infoDiv.appendChild(nameDiv);
         infoDiv.appendChild(subDiv);
 
@@ -4235,6 +4274,37 @@
 
 
     // =============================================
+    // =============================================
+    // PRESENCE SYSTEM (online/offline)
+    // =============================================
+    async function initPresence(username) {
+        if (!username) return;
+        const path = '/presence/' + username;
+        await rtdbSet(path + '/online', true);
+        await rtdbSet(path + '/lastSeen', Date.now());
+        setInterval(async function() {
+            try {
+                await rtdbSet(path + '/online', true);
+                await rtdbSet(path + '/lastSeen', Date.now());
+            } catch(e) {}
+        }, 60000);
+        window.addEventListener('beforeunload', function() {
+            navigator.sendBeacon(
+                'https://diwd-a7709-default-rtdb.firebaseio.com' + path + '/online.json',
+                'false'
+            );
+        });
+    }
+
+    async function getUserPresence(username) {
+        try {
+            const data = await rtdbGet('/presence/' + username);
+            if (!data || !data.online) return 'offline';
+            const diff = Date.now() - (data.lastSeen || 0);
+            return diff < 180000 ? 'online' : 'offline';
+        } catch(e) { return 'offline'; }
+    }
+
     var _bnActive = 'home';
 
     function bnSetActive(tab) {
