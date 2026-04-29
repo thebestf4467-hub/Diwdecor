@@ -4344,27 +4344,55 @@
         loading.classList.add('visible');
         result.classList.remove('visible');
 
-        var fullPrompt = 'interior design, ' + _aiStyle + ' style, ' + prompt + ', photorealistic, high quality, 4k, professional interior photography, beautiful lighting';
-        var seed = Math.floor(Math.random() * 999999);
-        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(fullPrompt) + '?width=768&height=512&nologo=true&seed=' + seed;
-
         try {
-            var response = await fetch(imageUrl);
-            if (!response.ok) throw new Error('فشل التوليد');
-            var blob = await response.blob();
-            var objectUrl = URL.createObjectURL(blob);
-            var img = document.getElementById('ai-result-img');
-            img.src = objectUrl;
+            // جيب التوكن من Firestore
+            if (!HF_TOKEN) await loadHFToken();
+            if (!HF_TOKEN) throw new Error('خطأ في الاتصال');
+
+            var fullPrompt = 'interior design, ' + _aiStyle + ' style, ' + prompt + ', photorealistic, high quality, 4k, professional interior photography, beautiful lighting';
+
+            var res = await fetch('https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + HF_TOKEN,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'wait'
+                },
+                body: JSON.stringify({
+                    input: { prompt: fullPrompt, width: 768, height: 512, num_outputs: 1 }
+                })
+            });
+
+            var data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            var imageUrl = data.output && data.output[0] ? data.output[0] : null;
+
+            if (!imageUrl && data.urls && data.urls.get) {
+                for (var i = 0; i < 30; i++) {
+                    await new Promise(function(r){ setTimeout(r, 2000); });
+                    var poll = await fetch(data.urls.get, { headers: { 'Authorization': 'Bearer ' + HF_TOKEN } });
+                    var pollData = await poll.json();
+                    if (pollData.status === 'succeeded') { imageUrl = pollData.output[0]; break; }
+                    if (pollData.status === 'failed') throw new Error('فشل التوليد');
+                }
+            }
+
+            if (!imageUrl) throw new Error('لم يتم الحصول على الصورة');
+
+            document.getElementById('ai-result-img').src = imageUrl;
             loading.classList.remove('visible');
             result.classList.add('visible');
             result.scrollIntoView({behavior:'smooth', block:'center'});
             showAdminToast('✅ تم توليد التصميم!');
+
         } catch(e) {
-            showAdminToast('❌ فشل التوليد، حاول مرة ثانية');
+            console.log('[AI] Error:', e.message);
+            showAdminToast('❌ ' + e.message);
+            loading.classList.remove('visible');
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-magic"></i> ولّد التصميم';
-            loading.classList.remove('visible');
         }
     };
 
