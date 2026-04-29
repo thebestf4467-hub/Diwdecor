@@ -4344,25 +4344,28 @@
         loading.classList.add('visible');
         result.classList.remove('visible');
 
-        var fullPrompt = 'interior design, ' + _aiStyle + ' style, ' + prompt + ', photorealistic, high quality, 4k, professional photography, beautiful lighting, luxury home';
-        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(fullPrompt) + '?width=768&height=512&nologo=true&seed=' + Math.floor(Math.random() * 99999);
+        var fullPrompt = 'interior design, ' + _aiStyle + ' style, ' + prompt + ', photorealistic, high quality, 4k, professional interior photography, beautiful lighting';
+        var seed = Math.floor(Math.random() * 999999);
+        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(fullPrompt) + '?width=768&height=512&nologo=true&seed=' + seed;
 
-        var img = document.getElementById('ai-result-img');
-        img.onload = function() {
+        try {
+            var response = await fetch(imageUrl);
+            if (!response.ok) throw new Error('فشل التوليد');
+            var blob = await response.blob();
+            var objectUrl = URL.createObjectURL(blob);
+            var img = document.getElementById('ai-result-img');
+            img.src = objectUrl;
             loading.classList.remove('visible');
             result.classList.add('visible');
             result.scrollIntoView({behavior:'smooth', block:'center'});
             showAdminToast('✅ تم توليد التصميم!');
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-magic"></i> ولّد التصميم';
-        };
-        img.onerror = function() {
-            loading.classList.remove('visible');
+        } catch(e) {
             showAdminToast('❌ فشل التوليد، حاول مرة ثانية');
+        } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-magic"></i> ولّد التصميم';
-        };
-        img.src = imageUrl;
+            loading.classList.remove('visible');
+        }
     };
 
     window.saveAiImage = function() {
