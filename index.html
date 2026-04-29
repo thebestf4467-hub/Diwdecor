@@ -4355,7 +4355,16 @@
             if (data.error) throw new Error(data.error);
             if (!data.image) throw new Error('لم يتم الحصول على الصورة');
 
-            document.getElementById('ai-result-img').src = data.image;
+            // تحميل الصورة مع معالجة الخطأ
+            var img = document.getElementById('ai-result-img');
+            img.crossOrigin = 'anonymous';
+            
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+                img.src = data.image + '&t=' + Date.now();
+                setTimeout(reject, 30000); // timeout 30 ثانية
+            });
             loading.classList.remove('visible');
             result.classList.add('visible');
             result.scrollIntoView({behavior:'smooth', block:'center'});
