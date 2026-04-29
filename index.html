@@ -4329,11 +4329,8 @@
         if (inp) { inp.value = text; inp.scrollIntoView({behavior:'smooth',block:'center'}); }
     };
 
+
     window.generateAIDecor = async function() {
-        if (!HF_TOKEN) {
-            await loadHFToken();
-            if (!HF_TOKEN) { showAdminToast('❌ خطأ في الاتصال، حاول مرة ثانية'); return; }
-        }
         var input  = document.getElementById('ai-prompt-input');
         var prompt = input ? input.value.trim() : '';
         if (!prompt) { showAdminToast('⚠️ اكتب وصف الديكور أولاً'); return; }
@@ -4347,50 +4344,25 @@
         loading.classList.add('visible');
         result.classList.remove('visible');
 
-        var fullPrompt = 'interior design, ' + _aiStyle + ' style, ' + prompt + ', photorealistic, high quality, 4k, professional photography, beautiful lighting';
+        var fullPrompt = 'interior design, ' + _aiStyle + ' style, ' + prompt + ', photorealistic, high quality, 4k, professional photography, beautiful lighting, luxury home';
+        var imageUrl = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(fullPrompt) + '?width=768&height=512&nologo=true&seed=' + Math.floor(Math.random() * 99999);
 
-        try {
-            var response = await fetch(
-                'https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': 'Bearer ' + HF_TOKEN,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ inputs: fullPrompt })
-                }
-            );
-
-            if (response.status === 503) {
-                showAdminToast('⏳ النموذج يتحمّل... انتظر 30 ثانية وحاول مجدداً');
-                return;
-            }
-            if (response.status === 401) {
-                showAdminToast('❌ خطأ في التوثيق');
-                return;
-            }
-            if (!response.ok) {
-                const errText = await response.text().catch(() => '');
-                console.log('[AI] Error:', response.status, errText);
-                throw new Error('خطأ ' + response.status);
-            }
-
-            var blob = await response.blob();
-            var url  = URL.createObjectURL(blob);
-            document.getElementById('ai-result-img').src = url;
+        var img = document.getElementById('ai-result-img');
+        img.onload = function() {
+            loading.classList.remove('visible');
             result.classList.add('visible');
             result.scrollIntoView({behavior:'smooth', block:'center'});
             showAdminToast('✅ تم توليد التصميم!');
-
-        } catch(e) {
-            console.log('[AI] Catch error:', e.message);
-            showAdminToast('❌ ' + e.message);
-        } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-magic"></i> ولّد التصميم';
+        };
+        img.onerror = function() {
             loading.classList.remove('visible');
-        }
+            showAdminToast('❌ فشل التوليد، حاول مرة ثانية');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-magic"></i> ولّد التصميم';
+        };
+        img.src = imageUrl;
     };
 
     window.saveAiImage = function() {
