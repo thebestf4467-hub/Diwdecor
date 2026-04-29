@@ -1,42 +1,24 @@
-// firebase-messaging-sw.js — Web Push للـ iOS و Android
-
-self.addEventListener(‘install’, e => { self.skipWaiting(); });
-self.addEventListener(‘activate’, e => { e.waitUntil(clients.claim()); });
+// Service Worker — Web Push
+self.addEventListener(‘install’, function(e) { self.skipWaiting(); });
+self.addEventListener(‘activate’, function(e) { e.waitUntil(clients.claim()); });
 
 self.addEventListener(‘push’, function(event) {
 if (!event.data) return;
-let data = {};
-try { data = event.data.json(); }
-catch(e) { data = { title: ‘MD Decor’, body: event.data.text() }; }
-
-```
-const title   = data.title || 'MD Decor';
-const options = {
-    body:    data.body  || 'إشعار جديد',
-    icon:    '/app-icon.png',
-    badge:   '/app-icon.png',
-    dir:     'rtl',
-    lang:    'ar',
-    vibrate: [200, 100, 200],
-    data:    { url: data.url || '/' },
-    tag:     'md-decor',
-    renotify: true
-};
-event.waitUntil(self.registration.showNotification(title, options));
-```
-
+var data = {};
+try { data = event.data.json(); } catch(e) { data = { title: ‘MD Decor’, body: event.data.text() }; }
+event.waitUntil(
+self.registration.showNotification(data.title || ‘MD Decor’, {
+body: data.body || ‘’,
+icon: ‘/app-icon.png’,
+badge: ‘/app-icon.png’,
+dir: ‘rtl’,
+data: { url: data.url || ‘/’ }
+})
+);
 });
 
 self.addEventListener(‘notificationclick’, function(event) {
 event.notification.close();
-const url  = event.notification.data?.url || ‘/’;
-const full = url.startsWith(‘http’) ? url : ‘https://iraqdecor.com’ + url;
-event.waitUntil(
-clients.matchAll({ type:‘window’, includeUncontrolled:true }).then(list => {
-for (const c of list) {
-if (c.url.includes(‘iraqdecor.com’) && ‘focus’ in c) return c.focus();
-}
-if (clients.openWindow) return clients.openWindow(full);
-})
-);
+var url = event.notification.data && event.notification.data.url ? event.notification.data.url : ‘/’;
+event.waitUntil(clients.openWindow(‘https://iraqdecor.com’ + url));
 });
