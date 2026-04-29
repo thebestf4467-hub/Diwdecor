@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MD Decor</title>
 
-
+```
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#C8A165">
@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
+```
 
 <script type="text/javascript">
     window.addEventListener('load', function() {
@@ -4345,7 +4345,7 @@
         result.classList.remove('visible');
 
         try {
-            var res = await fetch('/ai-proxy.php', {
+            var res = await fetch('https://twilight-silence-575f.thebestf4467.workers.dev/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt: prompt })
