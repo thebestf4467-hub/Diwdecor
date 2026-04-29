@@ -1,24 +1,120 @@
-// Service Worker — Web Push
-self.addEventListener(‘install’, function(e) { self.skipWaiting(); });
-self.addEventListener(‘activate’, function(e) { e.waitUntil(clients.claim()); });
 
-self.addEventListener(‘push’, function(event) {
-if (!event.data) return;
-var data = {};
-try { data = event.data.json(); } catch(e) { data = { title: ‘MD Decor’, body: event.data.text() }; }
-event.waitUntil(
-self.registration.showNotification(data.title || ‘MD Decor’, {
-body: data.body || ‘’,
-icon: ‘/app-icon.png’,
-badge: ‘/app-icon.png’,
-dir: ‘rtl’,
-data: { url: data.url || ‘/’ }
-})
-);
+importScripts(‘https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js’);
+importScripts(‘https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js’);
+
+firebase.initializeApp({
+apiKey: “AIzaSyB_Rj089s8Pwh5hrZjzAcki-gN7VL8JhB0”,
+authDomain: “diwd-a7709.firebaseapp.com”,
+projectId: “diwd-a7709”,
+storageBucket: “diwd-a7709.firebasestorage.app”,
+messagingSenderId: “190314181686”,
+appId: “1:190314181686:web:97b7f8674522bdbb4d5497”
 });
 
+const messaging = firebase.messaging();
+
+// =============================================
+// إشعارات الخلفية (المتصفح مغلق أو في الخلفية)
+// =============================================
+messaging.onBackgroundMessage(function(payload) {
+console.log(’[SW] Background message received:’, payload);
+
+```
+const data = payload.data || payload.notification || {};
+const title = data.title || 'MD Decor 🏠';
+const body  = data.body  || 'لديك إشعار جديد';
+const icon  = '/app-icon.png';
+const url   = data.url  || '/';
+
+const options = {
+    body,
+    icon,
+    badge: '/app-icon.png',
+    vibrate: [200, 100, 200],
+    tag: 'md-decor-notification',
+    renotify: true,
+    requireInteraction: false,
+    data: { url },
+    // دعم iOS Safari
+    silent: false
+};
+
+// إضافة actions فقط للمتصفحات التي تدعمها (ليس iOS Safari)
+self.registration.getNotifications().then(() => {
+    return self.registration.showNotification(title, options);
+}).catch(() => {
+    return self.registration.showNotification(title, options);
+});
+```
+
+});
+
+// =============================================
+// عند الضغط على الإشعار — فتح الموقع
+// =============================================
 self.addEventListener(‘notificationclick’, function(event) {
 event.notification.close();
-var url = event.notification.data && event.notification.data.url ? event.notification.data.url : ‘/’;
-event.waitUntil(clients.openWindow(‘https://iraqdecor.com’ + url));
+
+```
+const url = event.notification.data?.url || '/';
+const fullUrl = url.startsWith('http') ? url : 'https://iraqdecor.com' + url;
+
+event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
+        // إذا الموقع مفتوح — انتقل إليه
+        for (const client of clientList) {
+            if (client.url.includes('iraqdecor.com') && 'focus' in client) {
+                return client.focus();
+            }
+        }
+        // إذا مغلق — افتح نافذة جديدة
+        if (clients.openWindow) {
+            return clients.openWindow(fullUrl);
+        }
+    })
+);
+```
+
+});
+
+// =============================================
+// تثبيت السيرفس ووركر فوراً
+// =============================================
+self.addEventListener(‘install’, function(event) {
+console.log(’[SW] Installed’);
+self.skipWaiting();
+});
+
+self.addEventListener(‘activate’, function(event) {
+console.log(’[SW] Activated’);
+event.waitUntil(clients.claim());
+});
+
+// =============================================
+// دعم Push مباشر (احتياطي إذا FCM لم يعمل)
+// =============================================
+self.addEventListener(‘push’, function(event) {
+if (!event.data) return;
+
+```
+let data = {};
+try { data = event.data.json(); } 
+catch(e) { data = { title: 'MD Decor', body: event.data.text() }; }
+
+const title = data.title || data.notification?.title || 'MD Decor 🏠';
+const body  = data.body  || data.notification?.body  || 'إشعار جديد';
+const url   = data.url   || data.data?.url || '/';
+
+event.waitUntil(
+    self.registration.showNotification(title, {
+        body,
+        icon: '/app-icon.png',
+        badge: '/app-icon.png',
+        vibrate: [200, 100, 200],
+        data: { url },
+        tag: 'md-decor-push'
+    })
+);
+```
+
 });
