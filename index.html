@@ -4306,8 +4306,17 @@
     // =============================================
     // AI DECOR GENERATOR
     // =============================================
-    const HF_TOKEN = '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';
-    let _aiStyle   = 'luxury classic';
+    let HF_TOKEN = null;
+    let _aiStyle  = 'luxury classic';
+
+    // جيب الـ Token من Firestore
+    async function loadHFToken() {
+        try {
+            const snap = await getDoc(doc(db, 'config', 'ai'));
+            if (snap.exists()) HF_TOKEN = snap.data().hf_token;
+        } catch(e) { console.log('HF token load error:', e.message); }
+    }
+    window.addEventListener('load', loadHFToken);
 
     window.selectStyle = function(el, style) {
         document.querySelectorAll('.ai-chip').forEach(function(c){ c.classList.remove('active'); });
@@ -4321,6 +4330,10 @@
     };
 
     window.generateAIDecor = async function() {
+        if (!HF_TOKEN) {
+            await loadHFToken();
+            if (!HF_TOKEN) { showAdminToast('❌ خطأ في الاتصال، حاول مرة ثانية'); return; }
+        }
         var input  = document.getElementById('ai-prompt-input');
         var prompt = input ? input.value.trim() : '';
         if (!prompt) { showAdminToast('⚠️ اكتب وصف الديكور أولاً'); return; }
