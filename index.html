@@ -183,6 +183,7 @@
             if (!window.isAdminMode) return;
             document.querySelectorAll('.admin-delete-like').forEach(el => el.style.display = 'flex');
             document.querySelectorAll('.admin-rename-btn').forEach(el => el.style.display = 'flex');
+            document.querySelectorAll('.admin-delete-comment-btn').forEach(el => el.style.display = 'flex');
         }
 
         function showAdminToast(msg) {
@@ -269,6 +270,10 @@
             });
             input.value = '';
         }
+
+        function openExternalUrl(url) {
+            window.open(url, '_system');
+        }
     </script>
 
     <style>
@@ -310,7 +315,7 @@
         .menu-section h3 { color: var(--latte-gold); border-bottom: 1px solid var(--latte-gold); padding-bottom: 8px; margin-bottom: 15px; font-size: 1.1rem; }
         .menu-section p { font-size: 0.9rem; line-height: 1.8; color: var(--dark-latte); text-align: justify; }
         .social-links { display: flex; flex-direction: column; gap: 18px; }
-        .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; }
+        .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; cursor: pointer; }
         .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
 
         /* زر القائمة العائم */
@@ -333,11 +338,9 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
             transition: transform 0.2s ease, background 0.3s;
         }
-        .floating-menu-trigger:active {
-            transform: scale(0.9);
-        }
+        .floating-menu-trigger:active { transform: scale(0.9); }
 
-        /* الهيدر العلوي المعدل */
+        /* الهيدر العلوي */
         .sticky-header {
             position: sticky;
             position: -webkit-sticky;
@@ -353,9 +356,7 @@
             height: 65px;
             box-sizing: border-box;
         }
-        body.dark-mode .sticky-header {
-            background: rgba(37, 31, 28, 0.95);
-        }
+        body.dark-mode .sticky-header { background: rgba(37, 31, 28, 0.95); }
 
         .logo-container {
             position: absolute;
@@ -448,43 +449,17 @@
         #color-palette-popup.open { display: block; }
         @keyframes cpSlideDown { from{opacity:0;transform:translateX(-50%) translateY(-8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 
-        .cp-title {
-            font-size: 0.78rem; font-weight: 700;
-            color: var(--dark-latte);
-            margin-bottom: 12px;
-            display: flex; align-items: center; gap: 6px;
-        }
+        .cp-title { font-size: 0.78rem; font-weight: 700; color: var(--dark-latte); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
         .cp-title i { color: var(--latte-gold); }
 
-        .cp-swatches {
-            display: flex; flex-wrap: wrap; gap: 10px;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-        .cp-swatch {
-            width: 36px; height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2.5px solid transparent;
-            transition: transform 0.18s, border-color 0.18s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            position: relative;
-        }
+        .cp-swatches { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 12px; }
+        .cp-swatch { width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 2.5px solid transparent; transition: transform 0.18s, border-color 0.18s; box-shadow: 0 2px 8px rgba(0,0,0,0.15); position: relative; }
         .cp-swatch:active { transform: scale(0.88); }
         .cp-swatch.selected { border-color: white; box-shadow: 0 0 0 3px var(--latte-gold); }
-        .cp-swatch .cp-check {
-            display: none; position: absolute; inset: 0;
-            align-items: center; justify-content: center;
-            color: white; font-size: 0.85rem;
-        }
+        .cp-swatch .cp-check { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; color: white; font-size: 0.85rem; }
         .cp-swatch.selected .cp-check { display: flex; }
 
-        .cp-reset {
-            text-align: center; font-size: 0.72rem; font-weight: 700;
-            color: var(--latte-gold); cursor: pointer;
-            padding: 6px; border-radius: 10px;
-            transition: background 0.15s;
-        }
+        .cp-reset { text-align: center; font-size: 0.72rem; font-weight: 700; color: var(--latte-gold); cursor: pointer; padding: 6px; border-radius: 10px; transition: background 0.15s; }
         .cp-reset:active { background: rgba(200,161,101,0.1); }
 
         .theme-toggle-header {
@@ -558,7 +533,7 @@
         .flying-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0); color: var(--heart-color); font-size: 3.5rem; pointer-events: none; z-index: 100; opacity: 0; -webkit-text-stroke: 1.5px var(--latte-gold); text-shadow: 0 0 25px rgba(200,161,101,0.4); transition: transform 2.5s cubic-bezier(0.2,0,0.2,1), opacity 1.5s ease-in-out; }
 
         .whatsapp-cta { padding: 40px 20px; text-align: center; background: var(--creamy-white); border-top: 1px solid rgba(200,161,101,0.1); }
-        .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200,161,101,0.3); }
+        .whatsapp-link { color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: bold; padding: 15px 30px; background: var(--latte-gold); border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; transition: 0.3s; box-shadow: 0 4px 10px rgba(200,161,101,0.3); cursor: pointer; }
 
         footer { padding: 30px; text-align: center; font-size: 0.8rem; border-top: 1px solid #efe8e1; color: #a39592; background: var(--creamy-white); }
         body.dark-mode footer { border-color: #3d302a; }
@@ -640,10 +615,7 @@
         @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
         /* ADMIN TOOLBAR */
-        #admin-fab {
-            display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000;
-            flex-direction: column; align-items: stretch;
-        }
+        #admin-fab { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000; flex-direction: column; align-items: stretch; }
 
         #admin-sidebar-toggle {
             align-self: center; background: linear-gradient(135deg, var(--latte-gold), #b08040);
@@ -725,6 +697,43 @@
         #upload-progress-text { font-size: 0.78rem; color: var(--latte-gold); text-align: center; font-weight: bold; }
         .upload-submit-btn { width: 100%; padding: 13px; background: var(--admin-green); color: white; border: none; border-radius: 14px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
 
+        /* PROFILE MODAL FULLSCREEN STYLES */
+        #profile-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px); z-index: 15000; display: none;
+            justify-content: center; align-items: center; padding: 15px;
+        }
+        #profile-modal.active { display: flex; }
+        .profile-container {
+            background: var(--creamy-white); border: 1.5px solid var(--latte-gold);
+            border-radius: 24px; width: 100%; max-width: 420px; max-height: 90vh;
+            overflow-y: auto; padding: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            display: flex; flex-direction: column; gap: 15px; text-align: center;
+        }
+        .profile-avatar-wrapper {
+            position: relative; width: 90px; height: 90px; margin: 0 auto 5px;
+        }
+        .profile-avatar-img {
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 3px solid var(--latte-gold); object-fit: cover;
+            background: var(--vanilla-light); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 900; color: var(--latte-gold);
+        }
+        .profile-avatar-edit {
+            position: absolute; bottom: 0; right: 0;
+            background: var(--latte-gold); color: white;
+            border-radius: 50%; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; cursor: pointer; border: 2px solid white;
+        }
+        .profile-input-group {
+            text-align: right; display: flex; flex-direction: column; gap: 5px;
+        }
+        .profile-input-group label {
+            font-size: 0.8rem; font-weight: bold; color: var(--latte-gold);
+        }
+
         /* CUSTOM SECTIONS */
         #dynamic-sections-container { padding: 0 20px 10px; display: flex; flex-direction: column; gap: 15px; }
         .custom-section-card { text-align: center; padding: 30px 15px; border: 1px solid rgba(200,161,101,0.15); border-radius: 15px; background: var(--creamy-white); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.03); animation: fadeIn 0.5s ease; position: relative; }
@@ -758,6 +767,57 @@
         #lightbox-modal.active { display: flex; }
         #lightbox-img { max-width: 95vw; max-height: 80vh; border-radius: 12px; object-fit: contain; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
         #lightbox-close { position: absolute; top: 18px; left: 18px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* PROFILE SECTION STYLES IN SIDEBAR */
+        .profile-card-sidebar {
+            background: var(--vanilla-light);
+            border: 1px solid var(--latte-gold);
+            border-radius: 14px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .profile-card-sidebar:active { transform: scale(0.97); }
+        .profile-avatar-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--latte-gold);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .profile-avatar-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-info-text { flex: 1; overflow: hidden; }
+        .profile-info-text strong { display: block; font-size: 0.9rem; color: var(--dark-latte); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .profile-info-text span { display: block; font-size: 0.72rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .edit-profile-btn {
+            background: transparent;
+            border: 1px solid var(--latte-gold);
+            color: var(--latte-gold);
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .edit-profile-btn:hover { background: var(--latte-gold); color: white; }
     </style>
 </head>
 <body>
@@ -772,6 +832,40 @@
             <button class="back-btn" onclick="openAuthModal()" style="width: 100%; padding: 15px; justify-content: center;">تسجيل الدخول / إنشاء حساب</button>
             <button onclick="continueAsGuest()" style="background: transparent; border: 1px solid var(--latte-gold); color: var(--latte-gold); padding: 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Cairo', sans-serif;">المتابعة كضيف</button>
         </div>
+    </div>
+</div>
+
+<!-- FULLSCREEN PROFILE MODAL -->
+<div id="profile-modal">
+    <div class="profile-container">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--latte-gold); padding-bottom:10px;">
+            <h3 style="color:var(--latte-gold); font-size:1.1rem;"><i class="fas fa-id-card"></i> الملف الشخصي</h3>
+            <i class="fas fa-times" onclick="closeProfileModal()" style="cursor:pointer; font-size:1.2rem; color:var(--latte-gold);"></i>
+        </div>
+        
+        <div class="profile-avatar-wrapper">
+            <div class="profile-avatar-img" id="modal-avatar-box">؟</div>
+            <label class="profile-avatar-edit" for="profile-avatar-file"><i class="fas fa-camera"></i></label>
+            <input type="file" id="profile-avatar-file" accept="image/*" style="display:none;" onchange="handleAvatarSelect(this)">
+        </div>
+
+        <div class="profile-input-group">
+            <label><i class="fas fa-signature"></i> الاسم الكامل</label>
+            <input type="text" id="profile-fullname-input" class="upload-field" placeholder="مثال: محمد البعاج">
+        </div>
+
+        <div class="profile-input-group">
+            <label><i class="fas fa-user-tag"></i> اسم المستخدم</label>
+            <input type="text" id="profile-username-input" class="upload-field" placeholder="اسم المستخدم">
+        </div>
+
+        <div class="profile-input-group">
+            <label><i class="fas fa-envelope"></i> البريد الإلكتروني (غير قابل للتعديل)</label>
+            <input type="email" id="profile-email-input" class="upload-field" disabled style="opacity:0.7;">
+        </div>
+
+        <button class="upload-submit-btn" id="save-profile-btn" onclick="saveProfileChanges()"><i class="fas fa-save"></i> حفظ التعديلات</button>
+        <button onclick="logoutUser()" style="background:transparent; border:1px solid var(--admin-red); color:var(--admin-red); padding:10px; border-radius:12px; font-weight:bold; cursor:pointer; font-family:'Cairo',sans-serif; margin-top:5px;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
     </div>
 </div>
 
@@ -912,6 +1006,21 @@
 <div class="side-menu" id="sideMenu">
     <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
     
+    <!-- قسم الملف الشخصي والحساب -->
+    <div class="menu-section">
+        <h3>الصفحة الشخصية</h3>
+        <div id="sidebar-profile-box">
+            <div class="profile-card-sidebar" onclick="openProfileModal()">
+                <div class="profile-avatar-icon" id="sidebar-avatar">؟</div>
+                <div class="profile-info-text">
+                    <strong id="sidebar-username">زائر</strong>
+                    <span id="sidebar-email">لم يتم تسجيل الدخول</span>
+                </div>
+            </div>
+            <button class="edit-profile-btn" onclick="openProfileModal()"><i class="fas fa-id-card"></i> تعديل الملف الشخصي</button>
+        </div>
+    </div>
+
     <div class="menu-section">
         <h3>من نحن</h3>
         <p>نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم.</p>
@@ -925,9 +1034,9 @@
     <div class="menu-section">
         <h3>تواصل معنا</h3>
         <div class="social-links">
-            <a href="https://wa.me/9647839529360" target="_blank"><i class="fab fa-whatsapp"></i> واتساب</a>
-            <a href="https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln" target="_blank"><i class="fab fa-instagram"></i> انستجرام</a>
-            <a href="https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==" target="_blank"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
+            <a onclick="openExternalUrl('https://wa.me/9647839529360')"><i class="fab fa-whatsapp"></i> واتساب</a>
+            <a onclick="openExternalUrl('https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln')"><i class="fab fa-instagram"></i> انستجرام</a>
+            <a onclick="openExternalUrl('https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==')"><i class="fab fa-instagram"></i> محمد البعاج (المالك)</a>
         </div>
     </div>
     <div class="menu-section">
@@ -980,7 +1089,7 @@
     </section>
     <div id="dynamic-sections-container"></div>
     <div style="padding: 0 20px 20px;">
-        <div class="service-card" onclick="window.location.href='https://wa.me/9647839529360'">
+        <div class="service-card" onclick="openExternalUrl('https://wa.me/9647839529360')">
             <i class="fas fa-comment-dots"></i><h3>استشارات فنية</h3>
             <p>تواصل معنا عبر واتساب</p>
             <span class="click-hint">اضغط للمراسلة</span>
@@ -1091,7 +1200,7 @@
     <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in15')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
     <div id="interior-dynamic-photos"></div>
     <div class="whatsapp-cta">
-        <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
+        <a onclick="openExternalUrl('https://wa.me/9647839529360')" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
     </div>
     <div class="page-counter-block"><div class="page-counter-label"><i class="fas fa-users"></i><span>عدد زوار الموقع</span></div><a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a></div>
     <div class="page-copyright">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
@@ -1207,7 +1316,114 @@
         sendTG("🆕 مستخدم جديد\n👤 " + username + "\n📧 " + email + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
         alert("تم حفظ اسم المستخدم");
         document.getElementById('welcome-gate').classList.remove('active');
+        updateSidebarProfile(username, email);
     }
+
+    function updateSidebarProfile(username, email, avatarUrl, fullname) {
+        const nameEl = document.getElementById('sidebar-username');
+        const emailEl = document.getElementById('sidebar-email');
+        const avatarEl = document.getElementById('sidebar-avatar');
+        
+        const displayName = fullname || username || 'زائر';
+        if (nameEl) nameEl.textContent = displayName;
+        if (emailEl) emailEl.textContent = email || 'لم يتم تسجيل الدخول';
+        
+        if (avatarEl) {
+            if (avatarUrl) {
+                avatarEl.innerHTML = `<img src="${avatarUrl}" alt="Avatar">`;
+            } else {
+                avatarEl.textContent = displayName[0].toUpperCase();
+            }
+        }
+    }
+
+    window.openProfileModal = async () => {
+        if (!window.currentUser) {
+            alert("يرجى تسجيل الدخول أولاً لتعديل الملف الشخصي");
+            openAuthModal();
+            return;
+        }
+        
+        toggleMenu(); // غلق القائمة الجانبية
+        
+        const modal = document.getElementById('profile-modal');
+        const user = window.currentUser;
+        const userData = window._currentUserData || {};
+        
+        document.getElementById('profile-fullname-input').value = userData.fullname || '';
+        document.getElementById('profile-username-input').value = userData.username || user.email.split('@')[0];
+        document.getElementById('profile-email-input').value = user.email;
+        
+        const avatarBox = document.getElementById('modal-avatar-box');
+        if (userData.avatarUrl) {
+            avatarBox.innerHTML = `<img src="${userData.avatarUrl}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        } else {
+            avatarBox.textContent = (userData.fullname || userData.username || 'U')[0].toUpperCase();
+        }
+        
+        modal.classList.add('active');
+    };
+
+    window.closeProfileModal = () => {
+        document.getElementById('profile-modal').classList.remove('active');
+    };
+
+    window.handleAvatarSelect = async (input) => {
+        const file = input.files[0];
+        if (!file) return;
+        try {
+            showAdminToast("جاري ضغط ومعالجة الصورة...");
+            const compressed = await compressImage(file, 300, 0.7);
+            window._newAvatarBase64 = compressed;
+            const avatarBox = document.getElementById('modal-avatar-box');
+            avatarBox.innerHTML = `<img src="${compressed}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
+        } catch(e) {
+            alert("خطأ في معالجة الصورة: " + e.message);
+        }
+    };
+
+    window.saveProfileChanges = async () => {
+        if (!window.currentUser) return;
+        const btn = document.getElementById('save-profile-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+        const newFullname = document.getElementById('profile-fullname-input').value.trim();
+        const newUsername = document.getElementById('profile-username-input').value.trim();
+        
+        try {
+            const updates = {
+                fullname: newFullname,
+                username: newUsername || window.currentUser.email.split('@')[0],
+                updatedAt: serverTimestamp()
+            };
+
+            if (window._newAvatarBase64) {
+                updates.avatarUrl = window._newAvatarBase64;
+            }
+
+            await setDoc(doc(db, "users", window.currentUser.uid), updates, { merge: true });
+            
+            window._currentUserData = { ...window._currentUserData, ...updates };
+            if (window._newAvatarBase64) window._currentUserData.avatarUrl = window._newAvatarBase64;
+
+            updateSidebarProfile(
+                window._currentUserData.username,
+                window.currentUser.email,
+                window._currentUserData.avatarUrl,
+                window._currentUserData.fullname
+            );
+
+            showAdminToast("✅ تم حفظ التعديلات بنجاح");
+            sendTG("✏️ تحديث الملف الشخصي\n👤 " + (newFullname || newUsername) + "\n📧 " + window.currentUser.email);
+            closeProfileModal();
+        } catch(e) {
+            alert("حدث خطأ أثناء حفظ التعديلات: " + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-save"></i> حفظ التعديلات';
+        }
+    };
 
     window.loginWithGoogle = async () => {
         try {
@@ -1220,6 +1436,8 @@
             if (!userSnap.exists() || !userSnap.data().username) {
                 await askForUsername(user.uid, user.email);
             } else {
+                window._currentUserData = userSnap.data();
+                updateSidebarProfile(userSnap.data().username, user.email, userSnap.data().avatarUrl, userSnap.data().fullname);
                 document.getElementById('welcome-gate').classList.remove('active');
                 document.getElementById('auth-modal').classList.remove('active');
             }
@@ -1231,10 +1449,12 @@
             await signOut(auth);
             window.currentUser = null;
             window._currentUserData = null;
+            updateSidebarProfile('زائر', 'لم يتم تسجيل الدخول');
             document.getElementById('welcome-gate').style.opacity = '1';
             document.getElementById('welcome-gate').classList.add('active');
             document.getElementById('auth-modal').classList.remove('active');
             document.getElementById('comments-modal').classList.remove('active');
+            closeProfileModal();
             showPage('main-page');
         } catch(e) { alert("حدث خطأ أثناء تسجيل الخروج"); }
     };
@@ -1268,6 +1488,7 @@
                 const snap = await getDoc(doc(db, "users", user.uid));
                 if (snap.exists()) {
                     window._currentUserData = snap.data();
+                    updateSidebarProfile(snap.data().username, user.email, snap.data().avatarUrl, snap.data().fullname);
                 }
             } catch(e) {}
         }
@@ -1288,6 +1509,9 @@
         list.innerHTML = '<p style="text-align:center;color:var(--latte-gold);">⏳ جاري التحميل...</p>';
 
         const q = query(collection(db, "comments"), where("imageId", "==", id));
+        
+        if (unsubscribeComments) { unsubscribeComments(); }
+
         unsubscribeComments = onSnapshot(q, (snapshot) => {
             list.innerHTML = '';
             if (snapshot.empty) {
@@ -1316,8 +1540,9 @@
                             <button class="comment-action-btn delete-btn" onclick="deleteOwnComment('${docId}')"><i class="fas fa-trash"></i> حذف</button>
                         </div>`;
                 }
-                const adminDelHTML = window.isAdminMode
-                    ? `<button class="admin-delete-comment-btn" style="display:flex" onclick="adminDeleteSingleComment('${docId}')"><i class="fas fa-times"></i></button>` : '';
+                const adminDelStyle = window.isAdminMode ? 'display:flex' : 'display:none';
+                const adminDelHTML = `<button class="admin-delete-comment-btn" style="${adminDelStyle}" onclick="adminDeleteSingleComment('${docId}')"><i class="fas fa-times"></i></button>`;
+                
                 item.innerHTML = `
                     ${adminDelHTML}
                     <div class="comment-avatar-row">
@@ -1356,7 +1581,7 @@
         const text = inp.value.trim();
         if (!text || !currentImageId) return;
         if (!window.currentUser) { alert("يجب تسجيل الدخول للتعليق"); return; }
-        const userName = window._currentUserData?.username || window.currentUser.email.split('@')[0];
+        const userName = window._currentUserData?.fullname || window._currentUserData?.username || window.currentUser.email.split('@')[0];
         sendTG("💬 تعليق جديد\n🖼️ " + currentImageId + "\n👤 " + userName + "\n📝 " + text);
         inp.value = '';
         try {
@@ -1684,7 +1909,7 @@
             </div>
             <div id="custom-photos-${key}"></div>
             <div class="whatsapp-cta">
-                <a href="https://wa.me/9647839529360" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد تواصل واتساب</a>
+                <a onclick="openExternalUrl('https://wa.me/9647839529360')" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد تواصل واتساب</a>
             </div>`;
         var wrapper = document.getElementById("custom-pages-wrapper") || document.body;
         wrapper.appendChild(page);
