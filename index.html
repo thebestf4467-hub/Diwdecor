@@ -307,7 +307,7 @@
         .comment-modal.active { display: flex; }
         .comment-content {
             background: var(--creamy-white); border: 1px solid var(--latte-gold);
-            border-radius: var(--border-radius-card, 20px); box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 90%; max-width: 420px;
+            border-radius: var(--border-radius-card, 20px); box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 92%; max-width: 440px;
         }
 
         :root {
@@ -320,13 +320,14 @@
             --admin-red: #e74c3c; 
             --admin-green: #27ae60;
             --border-radius-card: 20px;
+            --font-scale: 1rem;
         }
         body.dark-mode {
             --bg-gradient: linear-gradient(135deg, #1a1614 0%, #2d241f 100%);
             --dark-latte: #f9f1d8; --creamy-white: #251f1c; --vanilla-light: #3d302a; --heart-color: #f3e5ab;
             background: var(--bg-gradient); color: var(--dark-latte);
         }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; font-size: var(--font-scale); }
         body { background: var(--bg-gradient); color: var(--dark-latte); font-family: 'Cairo', sans-serif; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
 
         .side-menu { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; background: rgba(255,252,249,0.98); z-index: 5000; transition: 0.4s ease; border-left: 1px solid var(--latte-gold); padding: 25px 20px; overflow-y: auto; }
@@ -580,19 +581,28 @@
         /* CMS NAVIGATION TABS */
         .cms-tabs-header {
             display: flex; background: var(--vanilla-light); border-bottom: 1px solid var(--latte-gold);
-            overflow-x: auto; scrollbar-width: none;
+            overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
         }
         .cms-tabs-header::-webkit-scrollbar { display: none; }
         .cms-tab-btn {
-            flex: 1; min-width: 90px; padding: 12px 10px; border: none; background: transparent;
-            color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 0.78rem; font-weight: bold;
+            flex: 1; min-width: 80px; padding: 12px 6px; border: none; background: transparent;
+            color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 0.75rem; font-weight: bold;
             cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
             border-bottom: 3px solid transparent; white-space: nowrap; transition: 0.2s;
         }
         .cms-tab-btn.active {
             color: var(--latte-gold); border-bottom-color: var(--latte-gold); background: var(--creamy-white);
         }
-        .cms-tab-content { display: none; padding: 18px; flex-direction: column; gap: 12px; }
+        
+        /* إصلاح حاوية التمرير للوحة التحكم لتتيح اللمس والتمرير السلس */
+        .cms-scroll-container {
+            flex-grow: 1;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            padding: 18px;
+            max-height: calc(85vh - 120px);
+        }
+        .cms-tab-content { display: none; flex-direction: column; gap: 14px; }
         .cms-tab-content.active { display: flex; }
 
         /* SEARCH OVERLAY */
@@ -787,7 +797,7 @@
         .custom-section-archive-btn:hover { background: var(--latte-gold); color: white; }
         
         #add-section-modal, #archive-modal, #site-control-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
-        #add-section-modal .comment-content, #archive-modal .comment-content, #site-control-modal .comment-content { max-width: 440px; max-height: 90vh; overflow-y: auto; }
+        #add-section-modal .comment-content, #archive-modal .comment-content, #site-control-modal .comment-content { max-width: 440px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; }
         .dynamic-section-page { min-height: 50vh; }
         .archive-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--vanilla-light); border-radius: 12px; border-right: 3px solid var(--latte-gold); margin-bottom: 10px; }
         .archive-item-name { font-weight: bold; font-size: 0.9rem; color: var(--dark-latte); }
@@ -911,10 +921,10 @@
     </div>
 </div>
 
-<!-- SITE CONTROL DASHBOARD (CMS ADMIN ONLY) -->
+<!-- SITE CONTROL DASHBOARD (CMS ADMIN ONLY) - MAPPED WITH SMOOTH SCROLL & NEW CONTROLS -->
 <div id="site-control-modal" class="comment-modal">
-    <div class="comment-content" style="padding:0; overflow:hidden;">
-        <div style="background: linear-gradient(135deg, #2980b9, #1a5276); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div class="comment-content" style="padding:0; overflow:hidden; max-height:85vh; display:flex; flex-direction:column;">
+        <div style="background: linear-gradient(135deg, #2980b9, #1a5276); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
             <span style="font-weight: bold; font-size: 1rem;"><i class="fas fa-sliders-h"></i> لوحة التحكم في الموقع</span>
             <i class="fas fa-times" onclick="closeSiteControlModal()" style="cursor: pointer; font-size: 1.1rem; opacity: 0.85;"></i>
         </div>
@@ -923,96 +933,143 @@
         <div class="cms-tabs-header">
             <button class="cms-tab-btn active" id="tab-btn-content" onclick="switchCmsTab('content')"><i class="fas fa-edit"></i> النصوص</button>
             <button class="cms-tab-btn" id="tab-btn-social" onclick="switchCmsTab('social')"><i class="fas fa-link"></i> الروابط</button>
-
             <button class="cms-tab-btn" id="tab-btn-appearance" onclick="switchCmsTab('appearance')"><i class="fas fa-palette"></i> التصميم</button>
+            <button class="cms-tab-btn" id="tab-btn-display" onclick="switchCmsTab('display')"><i class="fas fa-eye"></i> الظهور</button>
         </div>
 
-        <!-- TAB 1: TEXT CONTENT -->
-        <div class="cms-tab-content active" id="cms-tab-content">
-            <div class="profile-input-group">
-                <label><i class="fas fa-heading"></i> اسم العلامة / اللوجو (Logo Text)</label>
-                <input type="text" id="cms-brand-logo" class="upload-field" placeholder="MD">
+        <!-- SCROLLABLE CONTAINER -->
+        <div class="cms-scroll-container">
+            <!-- TAB 1: TEXT CONTENT -->
+            <div class="cms-tab-content active" id="cms-tab-content">
+                <div class="profile-input-group">
+                    <label><i class="fas fa-heading"></i> اسم العلامة / اللوجو (Logo Text)</label>
+                    <input type="text" id="cms-brand-logo" class="upload-field" placeholder="MD">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-id-badge"></i> الاسم الفرعي للهيدر (Brand Subtitle)</label>
+                    <input type="text" id="cms-brand-name" class="upload-field" placeholder="MOHAMMAD AL-BAAJ">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-star"></i> العنوان الرئيسي للتكست الترحيبي (Hero Title)</label>
+                    <input type="text" id="cms-hero-title" class="upload-field" placeholder="نصمم الفخامة لذوقكم">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-align-left"></i> الوصف الترحيبي (Hero Subtitle)</label>
+                    <textarea id="cms-hero-subtitle" class="upload-field" rows="2" style="resize:none;" placeholder="خبرة سنوات في فن الديكور..."></textarea>
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-info-circle"></i> نص (من نحن) في القائمة الجانبية</label>
+                    <textarea id="cms-about-text" class="upload-field" rows="3" style="resize:none;" placeholder="نحن متخصصون في فن الديكور..."></textarea>
+                </div>
+
+                <!-- خيارات نصوص جديدة -->
+                <div class="profile-input-group">
+                    <label><i class="fas fa-comment-dots"></i> نص بطاقة الاستشارات الفنية</label>
+                    <input type="text" id="cms-consultation-title" class="upload-field" placeholder="استشارات فنية">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fab fa-whatsapp"></i> نص زر الواتساب في المعارض</label>
+                    <input type="text" id="cms-cta-btn-text" class="upload-field" placeholder="للمزيد من التصاميم تواصل واتساب">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-copyright"></i> نص حقوق الملكية (Footer Copyright)</label>
+                    <input type="text" id="cms-footer-text" class="upload-field" placeholder="جميع الحقوق محفوظة لدى محمد البعاج © 2026">
+                </div>
             </div>
 
-            <div class="profile-input-group">
-                <label><i class="fas fa-id-badge"></i> الاسم الفرعي للهيدر (Brand Subtitle)</label>
-                <input type="text" id="cms-brand-name" class="upload-field" placeholder="MOHAMMAD AL-BAAJ">
+            <!-- TAB 2: SOCIAL LINKS -->
+            <div class="cms-tab-content" id="cms-tab-social">
+                <div class="profile-input-group">
+                    <label><i class="fab fa-whatsapp"></i> رقم الواتساب (مع رمز الدولة)</label>
+                    <input type="text" id="cms-whatsapp-num" class="upload-field" placeholder="9647839529360">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fab fa-instagram"></i> رابط انستجرام الصفحة الرسمية</label>
+                    <input type="text" id="cms-insta-official" class="upload-field" placeholder="https://www.instagram.com/diwdecor">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fab fa-instagram"></i> رابط انستجرام المالك</label>
+                    <input type="text" id="cms-insta-owner" class="upload-field" placeholder="https://www.instagram.com/mvbn1">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-user-tag"></i> اسم المالك في القائمة الجانبية</label>
+                    <input type="text" id="cms-owner-name" class="upload-field" placeholder="محمد البعاج (المالك)">
+                </div>
             </div>
 
-            <div class="profile-input-group">
-                <label><i class="fas fa-star"></i> العنوان الرئيسي للتكست الترحيبي (Hero Title)</label>
-                <input type="text" id="cms-hero-title" class="upload-field" placeholder="نصمم الفخامة لذوقكم">
+            <!-- TAB 3: DESIGN & APPEARANCE -->
+            <div class="cms-tab-content" id="cms-tab-appearance">
+                <div class="profile-input-group">
+                    <label><i class="fas fa-paint-brush"></i> اللون الرئيسي (Accent Color)</label>
+                    <input type="color" id="cms-primary-color" style="width:100%; height:40px; border-radius:10px; border:1px solid var(--latte-gold); cursor:pointer;" value="#c8a165">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-fill-drip"></i> اللون الثانوي/البطاقات (Secondary Color)</label>
+                    <input type="color" id="cms-light-color" style="width:100%; height:40px; border-radius:10px; border:1px solid var(--latte-gold); cursor:pointer;" value="#f9f1d8">
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-layer-group"></i> نمط خلفية الموقع</label>
+                    <select id="cms-bg-preset" class="upload-field" style="margin-bottom:0;">
+                        <option value="latte">بيج ذهبي (الافتراضي)</option>
+                        <option value="ocean">أزرق هادئ</option>
+                        <option value="emerald">أخضر زمردي</option>
+                        <option value="purple">بنفسجي ملكي</option>
+                        <option value="rose">وردي فاخر</option>
+                        <option value="dark">داكن فخم</option>
+                    </select>
+                </div>
+
+                <div class="profile-input-group">
+                    <label><i class="fas fa-shapes"></i> انحناء الحواف (Border Radius)</label>
+                    <select id="cms-radius-preset" class="upload-field" style="margin-bottom:0;">
+                        <option value="20px">دائري فخم (20px)</option>
+                        <option value="12px">متناسق عصري (12px)</option>
+                        <option value="4px">مستطيل حاد (4px)</option>
+                    </select>
+                </div>
+
+                <!-- خيارات جديدة للحجم والأشكال -->
+                <div class="profile-input-group">
+                    <label><i class="fas fa-text-height"></i> حجم خطوط الموقع</label>
+                    <select id="cms-font-scale" class="upload-field" style="margin-bottom:0;">
+                        <option value="1rem">افتراضي متناسق (100%)</option>
+                        <option value="1.08rem">كبير مريح (108%)</option>
+                        <option value="0.92rem">ناعم صغير (92%)</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="profile-input-group">
-                <label><i class="fas fa-align-left"></i> الوصف الترحيبي (Hero Subtitle)</label>
-                <textarea id="cms-hero-subtitle" class="upload-field" rows="2" style="resize:none;" placeholder="خبرة سنوات في فن الديكور..."></textarea>
-            </div>
+            <!-- TAB 4: ELEMENT VISIBILITY TOGGLES (جديد) -->
+            <div class="cms-tab-content" id="cms-tab-display">
+                <div class="profile-input-group" style="flex-direction:row; justify-content:space-between; align-items:center;">
+                    <label><i class="fas fa-video"></i> إظهار فيديو الكتالوج الحجري</label>
+                    <input type="checkbox" id="cms-show-video" style="width:20px; height:20px; accent-color:var(--latte-gold);" checked>
+                </div>
 
-            <div class="profile-input-group">
-                <label><i class="fas fa-info-circle"></i> نص (من نحن) في القائمة الجانبية</label>
-                <textarea id="cms-about-text" class="upload-field" rows="3" style="resize:none;" placeholder="نحن متخصصون في فن الديكور..."></textarea>
+                <div class="profile-input-group" style="flex-direction:row; justify-content:space-between; align-items:center;">
+                    <label><i class="fas fa-users"></i> إظهار عداد زوار الموقع</label>
+                    <input type="checkbox" id="cms-show-counter" style="width:20px; height:20px; accent-color:var(--latte-gold);" checked>
+                </div>
+
+                <div class="profile-input-group" style="flex-direction:row; justify-content:space-between; align-items:center;">
+                    <label><i class="fas fa-headset"></i> إظهار بطاقة الاستشارات الفنية</label>
+                    <input type="checkbox" id="cms-show-consultation" style="width:20px; height:20px; accent-color:var(--latte-gold);" checked>
+                </div>
             </div>
         </div>
 
-        <!-- TAB 2: SOCIAL LINKS -->
-        <div class="cms-tab-content" id="cms-tab-social">
-            <div class="profile-input-group">
-                <label><i class="fab fa-whatsapp"></i> رقم الواتساب (مع رمز الدولة)</label>
-                <input type="text" id="cms-whatsapp-num" class="upload-field" placeholder="9647839529360">
-            </div>
-
-            <div class="profile-input-group">
-                <label><i class="fab fa-instagram"></i> رابط انستجرام الصفحة الرسمية</label>
-                <input type="text" id="cms-insta-official" class="upload-field" placeholder="https://www.instagram.com/diwdecor">
-            </div>
-
-            <div class="profile-input-group">
-                <label><i class="fab fa-instagram"></i> رابط انستجرام المالك</label>
-                <input type="text" id="cms-insta-owner" class="upload-field" placeholder="https://www.instagram.com/mvbn1">
-            </div>
-
-            <div class="profile-input-group">
-                <label><i class="fas fa-user-tag"></i> اسم المالك في القائمة الجانبية</label>
-                <input type="text" id="cms-owner-name" class="upload-field" placeholder="محمد البعاج (المالك)">
-            </div>
-        </div>
-
-        <!-- TAB 3: DESIGN & APPEARANCE -->
-        <div class="cms-tab-content" id="cms-tab-appearance">
-            <div class="profile-input-group">
-                <label><i class="fas fa-paint-brush"></i> اللون الرئيسي (Accent Color)</label>
-                <input type="color" id="cms-primary-color" style="width:100%; height:40px; border-radius:10px; border:1px solid var(--latte-gold); cursor:pointer;" value="#c8a165">
-            </div>
-
-            <div class="profile-input-group">
-                <label><i class="fas fa-fill-drip"></i> اللون الثانوي/البطاقات (Secondary Color)</label>
-                <input type="color" id="cms-light-color" style="width:100%; height:40px; border-radius:10px; border:1px solid var(--latte-gold); cursor:pointer;" value="#f9f1d8">
-            </div>
-
-            <div class="profile-input-group">
-                <label><i class="fas fa-layer-group"></i> نمط خلفية الموقع</label>
-                <select id="cms-bg-preset" class="upload-field" style="margin-bottom:0;">
-                    <option value="latte">بيج ذهبي (الافتراضي)</option>
-                    <option value="ocean">أزرق هادئ</option>
-                    <option value="emerald">أخضر زمردي</option>
-                    <option value="purple">بنفسجي ملكي</option>
-                    <option value="rose">وردي فاخر</option>
-                    <option value="dark">داكن فخم</option>
-                </select>
-            </div>
-
-            <div class="profile-input-group">
-                <label><i class="fas fa-shapes"></i> انحناء الحواف (Border Radius)</label>
-                <select id="cms-radius-preset" class="upload-field" style="margin-bottom:0;">
-                    <option value="20px">دائري فخم (20px)</option>
-                    <option value="12px">متناسق عصري (12px)</option>
-                    <option value="4px">مستطيل حاد (4px)</option>
-                </select>
-            </div>
-        </div>
-
-        <div style="padding: 0 18px 18px;">
+        <div style="padding: 14px 18px 18px; border-top:1px solid rgba(200,161,101,0.2); flex-shrink:0; background:var(--creamy-white);">
             <p style="font-size:0.75rem; color:var(--latte-gold); text-align:center; margin-bottom:10px;">💡 عند حفظ البيانات سيتم تطبيقها فوراً على كل زوار الموقع</p>
             <button class="upload-submit-btn" id="save-cms-btn" onclick="saveGlobalCmsSettings()">
                 <i class="fas fa-globe"></i> حفظ وتطبيق الشامل على جميع الزوار
@@ -1243,18 +1300,18 @@
         </div>
     </section>
     <div id="dynamic-sections-container"></div>
-    <div style="padding: 0 20px 20px;">
+    <div style="padding: 0 20px 20px;" id="consultation-wrapper">
         <div class="service-card" id="consultation-card" onclick="openExternalUrl('https://wa.me/9647839529360')">
-            <i class="fas fa-comment-dots"></i><h3>استشارات فنية</h3>
+            <i class="fas fa-comment-dots"></i><h3 id="consultation-title-el">استشارات فنية</h3>
             <p>تواصل معنا عبر واتساب</p>
             <span class="click-hint">اضغط للمراسلة</span>
         </div>
     </div>
-    <div class="page-counter-block">
+    <div class="page-counter-block" id="counter-block-el">
         <div class="page-counter-label"><i class="fas fa-users"></i><span>عدد زوار الموقع</span></div>
         <a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a>
     </div>
-    <div class="page-copyright">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
+    <div class="page-copyright" id="page-copyright-el">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
 </div>
 
 <!-- COMMENTS MODAL -->
@@ -1355,7 +1412,7 @@
     <div class="product-section"><img src="in15.webp" ondblclick="handleDoubleTap('in15')"><div class="model-tag"><span>رؤية عصرية 2026</span><div style="display:flex;gap:10px;align-items:center;"><button class="admin-delete-like" onclick="adminDeleteLikes('in15')"><i class="fas fa-trash"></i> حذف اللايكات</button><button class="like-btn" onclick="openComments('in15')"><i class="far fa-comment"></i></button><button id="btn-in15" class="like-btn" onclick="handleLike('in15')"><i class="fas fa-heart"></i> <span id="count-in15">0</span></button></div></div></div>
     <div id="interior-dynamic-photos"></div>
     <div class="whatsapp-cta">
-        <a id="gallery-wa-link" onclick="openExternalUrl('https://wa.me/9647839529360')" class="whatsapp-link"><i class="fab fa-whatsapp"></i> للمزيد من التصاميم تواصل واتساب</a>
+        <a id="gallery-wa-link" onclick="openExternalUrl('https://wa.me/9647839529360')" class="whatsapp-link"><i class="fab fa-whatsapp"></i> <span id="cta-btn-text-el">للمزيد من التصاميم تواصل واتساب</span></a>
     </div>
     <div class="page-counter-block"><div class="page-counter-label"><i class="fas fa-users"></i><span>عدد زوار الموقع</span></div><a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a></div>
     <div class="page-copyright">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
@@ -1380,7 +1437,7 @@
     </div>
 </div>
 
-<footer><p>جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
+<footer><p id="footer-text-el">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</p></footer>
 
 <!-- FIREBASE MODULE -->
 <script type="module">
@@ -1486,6 +1543,9 @@
         if (settings.borderRadius) {
             r.style.setProperty('--border-radius-card', settings.borderRadius);
         }
+        if (settings.fontScale) {
+            r.style.setProperty('--font-scale', settings.fontScale);
+        }
 
         // 2. النصوص الأساسية
         if (settings.brandLogo) {
@@ -1506,6 +1566,20 @@
         if (settings.aboutText) {
             const abText = document.getElementById('menu-about-text');
             if (abText) abText.textContent = settings.aboutText;
+        }
+        if (settings.consultationTitle) {
+            const conEl = document.getElementById('consultation-title-el');
+            if (conEl) conEl.textContent = settings.consultationTitle;
+        }
+        if (settings.ctaBtnText) {
+            const ctaEl = document.getElementById('cta-btn-text-el');
+            if (ctaEl) ctaEl.textContent = settings.ctaBtnText;
+        }
+        if (settings.footerText) {
+            const ftEl = document.getElementById('footer-text-el');
+            if (ftEl) ftEl.innerHTML = settings.footerText;
+            const ftCopy = document.getElementById('page-copyright-el');
+            if (ftCopy) ftCopy.innerHTML = settings.footerText;
         }
 
         // 3. روابط التواصل الاجتماعي
@@ -1530,6 +1604,21 @@
             const ownText = document.getElementById('menu-owner-name-text');
             if (ownText) ownText.textContent = settings.ownerName;
         }
+
+        // 4. خيارات إظهار وإخفاء العناصر (Display Toggles)
+        if (typeof settings.showVideo !== 'undefined') {
+            const vidBox = document.getElementById('vidPlaceholder');
+            if (vidBox) vidBox.style.display = settings.showVideo ? 'block' : 'none';
+        }
+        if (typeof settings.showCounter !== 'undefined') {
+            document.querySelectorAll('.page-counter-block').forEach(el => {
+                el.style.display = settings.showCounter ? 'flex' : 'none';
+            });
+        }
+        if (typeof settings.showConsultation !== 'undefined') {
+            const consWrap = document.getElementById('consultation-wrapper');
+            if (consWrap) consWrap.style.display = settings.showConsultation ? 'block' : 'none';
+        }
     }
 
     async function loadGlobalCmsSettings() {
@@ -1546,6 +1635,10 @@
                     document.getElementById('cms-hero-subtitle').value = data.heroSubtitle || 'خبرة سنوات في فن الديكور، نحول منزلك إلى لوحة فنية.';
                     document.getElementById('cms-about-text').value = data.aboutText || 'نحن متخصصون في فن الديكور والتصميم المعماري، نمتلك خبرة من عام 2018 وحتى اليوم.';
                     
+                    document.getElementById('cms-consultation-title').value = data.consultationTitle || 'استشارات فنية';
+                    document.getElementById('cms-cta-btn-text').value = data.ctaBtnText || 'للمزيد من التصاميم تواصل واتساب';
+                    document.getElementById('cms-footer-text').value = data.footerText || 'جميع الحقوق محفوظة لدى محمد البعاج © 2026';
+
                     document.getElementById('cms-whatsapp-num').value = data.whatsappNum || '9647839529360';
                     document.getElementById('cms-insta-official').value = data.instaOfficial || 'https://www.instagram.com/diwdecor?igsh=OTMxNWRjenJmcTln';
                     document.getElementById('cms-insta-owner').value = data.instaOwner || 'https://www.instagram.com/mvbn1?igsh=MWlpOWgxajFiN2huZA==';
@@ -1555,6 +1648,11 @@
                     document.getElementById('cms-light-color').value = data.lightColor || '#f9f1d8';
                     document.getElementById('cms-bg-preset').value = data.bgPreset || 'latte';
                     document.getElementById('cms-radius-preset').value = data.borderRadius || '20px';
+                    document.getElementById('cms-font-scale').value = data.fontScale || '1rem';
+
+                    document.getElementById('cms-show-video').checked = typeof data.showVideo !== 'undefined' ? data.showVideo : true;
+                    document.getElementById('cms-show-counter').checked = typeof data.showCounter !== 'undefined' ? data.showCounter : true;
+                    document.getElementById('cms-show-consultation').checked = typeof data.showConsultation !== 'undefined' ? data.showConsultation : true;
                 }
             }
         } catch(e) {
@@ -1575,6 +1673,10 @@
             heroSubtitle: document.getElementById('cms-hero-subtitle').value.trim(),
             aboutText: document.getElementById('cms-about-text').value.trim(),
 
+            consultationTitle: document.getElementById('cms-consultation-title').value.trim(),
+            ctaBtnText: document.getElementById('cms-cta-btn-text').value.trim(),
+            footerText: document.getElementById('cms-footer-text').value.trim(),
+
             whatsappNum: document.getElementById('cms-whatsapp-num').value.trim(),
             instaOfficial: document.getElementById('cms-insta-official').value.trim(),
             instaOwner: document.getElementById('cms-insta-owner').value.trim(),
@@ -1584,6 +1686,12 @@
             lightColor: document.getElementById('cms-light-color').value,
             bgPreset: document.getElementById('cms-bg-preset').value,
             borderRadius: document.getElementById('cms-radius-preset').value,
+            fontScale: document.getElementById('cms-font-scale').value,
+
+            showVideo: document.getElementById('cms-show-video').checked,
+            showCounter: document.getElementById('cms-show-counter').checked,
+            showConsultation: document.getElementById('cms-show-consultation').checked,
+
             updatedAt: Date.now()
         };
 
