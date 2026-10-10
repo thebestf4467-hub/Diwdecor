@@ -24,6 +24,10 @@
     <script type="text/javascript">
         window.addEventListener('load', function() {
             if (typeof emailjs !== 'undefined') emailjs.init("erC7kBqB9EB-S6N1r");
+            // تحميل الريلز مسبقاً في الخلفية فور فتح الصفحة
+            if (typeof loadDynamicReels === 'function') {
+                loadDynamicReels(true); // true تعني التحميل الصامت في الخلفية
+            }
         });
 
         const ADMIN_PASSWORD = "1999@";
@@ -51,7 +55,11 @@
             var gate = document.getElementById('welcome-gate');
             gate.style.opacity = '0';
             gate.style.transition = 'opacity 0.4s ease';
-            setTimeout(function() { gate.classList.remove('active'); }, 400);
+            setTimeout(function() { 
+                gate.classList.remove('active'); 
+                // بدء تحميل الريلز مسبقاً فور تخطي شاشة الترحيب
+                if (typeof loadDynamicReels === 'function') loadDynamicReels(true);
+            }, 400);
         }
 
         function toggleMenu() {
@@ -318,7 +326,9 @@
             reelsPage.style.display = 'block';
             
             const container = document.getElementById('reels-list-container');
-            if (container) container.scrollTop = 0;
+            if (container && container.scrollTop === 0) {
+                container.scrollTop = 0;
+            }
 
             setTimeout(() => {
                 const firstVideo = document.querySelector('.reel-fullscreen-card video');
@@ -1257,24 +1267,24 @@
             <input type="text" id="upload-reel-title" class="upload-field" placeholder="عنوان الريل (مثال: فخامة الديكور الداخلي)">
             
             <div style="text-align:right;">
-                <label style="font-size:0.78rem;font-weight:bold;color:var(--latte-gold);"><i class="fas fa-link"></i> خيار 1: رابط الفيديو (MP4 / WebM / Direct Link)</label>
+                <label style="font-size:0.78rem;font-weight:bold;color:var(--latte-gold);"><i class="fas fa-link"></i> خيار 1: رابط الفيديو المباشر (Direct Link)</label>
                 <input type="text" id="upload-reel-url" class="upload-field" placeholder="https://example.com/video.mp4">
             </div>
 
             <div style="text-align:center;font-size:0.8rem;color:#888;margin:-5px 0;">أو</div>
 
             <div style="text-align:right;">
-                <label style="font-size:0.78rem;font-weight:bold;color:var(--latte-gold);"><i class="fas fa-file-video"></i> خيار 2: رفع فيديو من الجهاز</label>
-                <input type="file" id="upload-reel-file" accept="video/mp4,video/webm" class="upload-field">
+                <label style="font-size:0.78rem;font-weight:bold;color:var(--latte-gold);"><i class="fas fa-file-video"></i> خيار 2: اختيار ملف فيديو من جهازك</label>
+                <input type="file" id="upload-reel-file" accept="video/*" class="upload-field">
             </div>
 
             <div id="upload-reel-progress-wrap">
                 <div id="upload-reel-progress-bar-outer"><div id="upload-reel-progress-bar-inner"></div></div>
-                <div id="upload-reel-progress-text">جاري رفع الفيديو...</div>
+                <div id="upload-reel-progress-text">جاري المعالجة والرفع...</div>
             </div>
 
             <button class="upload-submit-btn" id="upload-reel-submit-btn" style="background: linear-gradient(135deg, #e67e22, #d35400);" onclick="submitUploadedReel()">
-                <i class="fas fa-plus-circle"></i> نشر الريل
+                <i class="fas fa-cloud-upload-alt"></i> نشر الريل مباشرة
             </button>
         </div>
     </div>
@@ -1479,58 +1489,12 @@
     <div class="page-copyright" id="page-copyright-el">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
 </div>
 
-<!-- REELS FULLSCREEN PAGE (صفحة الريلز بملء الشاشة بالكامل) -->
+<!-- REELS FULLSCREEN PAGE -->
 <div id="reels-gallery" class="page">
     <button class="reel-close-btn" onclick="closeReelsView()"><i class="fas fa-times"></i></button>
 
     <div class="reels-container-full" id="reels-list-container">
-        <div class="reel-fullscreen-card" id="reel-card-default-1">
-            <button class="admin-delete-reel-btn" style="display:none;" onclick="deleteStaticReel('reel-card-default-1')"><i class="fas fa-trash"></i> حذف</button>
-            <video class="reel-video" src="video.mp4" loop playsinline onclick="toggleReelPlay(this)"></video>
-            
-            <div class="reel-bottom-info">
-                <h4>فخامة الديكور الداخلي والمعماري</h4>
-            </div>
-
-            <div class="reel-side-actions">
-                <button class="reel-action-btn" onclick="handleReelLike('reel1')">
-                    <i class="fas fa-heart"></i>
-                    <span>إعجاب</span>
-                </button>
-                <button class="reel-action-btn" onclick="openComments('reel1')">
-                    <i class="fas fa-comment"></i>
-                    <span>تعليق</span>
-                </button>
-                <button class="reel-action-btn" onclick="shareReel('reel1')">
-                    <i class="fas fa-share"></i>
-                    <span>مشاركة</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="reel-fullscreen-card" id="reel-card-default-2">
-            <button class="admin-delete-reel-btn" style="display:none;" onclick="deleteStaticReel('reel-card-default-2')"><i class="fas fa-trash"></i> حذف</button>
-            <video class="reel-video" src="video.mp4" loop playsinline onclick="toggleReelPlay(this)"></video>
-            
-            <div class="reel-bottom-info">
-                <h4>أعمال الواجهات الحجرية الحديثة</h4>
-            </div>
-
-            <div class="reel-side-actions">
-                <button class="reel-action-btn" onclick="handleReelLike('reel2')">
-                    <i class="fas fa-heart"></i>
-                    <span>إعجاب</span>
-                </button>
-                <button class="reel-action-btn" onclick="openComments('reel2')">
-                    <i class="fas fa-comment"></i>
-                    <span>تعليق</span>
-                </button>
-                <button class="reel-action-btn" onclick="shareReel('reel2')">
-                    <i class="fas fa-share"></i>
-                    <span>مشاركة</span>
-                </button>
-            </div>
-        </div>
+        <!-- يتم تحميل وتعبئة الفيديوهات هنا مسبقاً في الخلفية -->
     </div>
 </div>
 
@@ -1937,6 +1901,7 @@
         sendTG("🆕 مستخدم جديد\n👤 " + username + "\n📧 " + email + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
         alert("تم حفظ اسم المستخدم");
         document.getElementById('welcome-gate').classList.remove('active');
+        if (typeof loadDynamicReels === 'function') loadDynamicReels(true);
         updateSidebarProfile(username, email);
     }
 
@@ -2064,6 +2029,7 @@
                 updateSidebarProfile(userSnap.data().username, user.email, userSnap.data().avatarUrl, userSnap.data().fullname);
                 document.getElementById('welcome-gate').classList.remove('active');
                 document.getElementById('auth-modal').classList.remove('active');
+                if (typeof loadDynamicReels === 'function') loadDynamicReels(true);
             }
         } catch(e) { alert(e.message); }
     };
@@ -2108,6 +2074,7 @@
             sendTG("🔐 دخول\n👤 " + (user.email || user.displayName) + "\n🕒 " + new Date().toLocaleString('ar-IQ'));
             document.getElementById('welcome-gate').classList.remove('active');
             document.getElementById('auth-modal').classList.remove('active');
+            if (typeof loadDynamicReels === 'function') loadDynamicReels(true);
             try {
                 const snap = await getDoc(doc(db, "users", user.uid));
                 if (snap.exists()) {
@@ -2250,7 +2217,6 @@
         showAdminToast("❤️ تم إرسال إعجابك للريل");
     };
 
-    /* مراقبة التمرير للريلز وتحديد الفيديو المباشر للتفعيل التلقائي */
     const reelsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target.querySelector('video');
@@ -2271,7 +2237,8 @@
         });
     });
 
-    async function loadDynamicReels() {
+    // دالة تحميل الريلز (تدعم التحميل المسبق الصامت في الخلفية)
+    window.loadDynamicReels = async function(silent = false) {
         try {
             const data = await rtdbGet('/admin_reels');
             if (!data) return;
@@ -2292,9 +2259,10 @@
         
         const adminDelStyle = window.isAdminMode ? 'display:flex' : 'display:none';
         
+        // استخدام preload="auto" لضمان التحميل المسبق التلقائي للفيديو في الخلفية بدون تشغيله
         card.innerHTML = `
             <button class="admin-delete-reel-btn" style="${adminDelStyle}" onclick="deleteDynamicReel('${key}')"><i class="fas fa-trash"></i> حذف</button>
-            <video class="reel-video" src="${val.url}" loop playsinline onclick="toggleReelPlay(this)"></video>
+            <video class="reel-video" src="${val.url}" preload="auto" muted playsinline loop onclick="toggleReelPlay(this)"></video>
             <div class="reel-bottom-info">
                 <h4>${val.title || 'فيديو ريلز جديد'}</h4>
             </div>
@@ -2343,18 +2311,18 @@
             let finalVideoUrl = urlInput;
 
             if (file) {
-                progressText.textContent = 'جاري معالجة فيديو المقطع...';
-                progressBar.style.width = '50%';
+                progressText.textContent = 'جاري معالجة الفيديو برابط سحابي مجاني...';
+                
                 finalVideoUrl = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
                     reader.onload = (e) => resolve(e.target.result);
-                    reader.onerror = reject;
+                    reader.onerror = (e) => reject(new Error('فشل قراءة الملف'));
                     reader.readAsDataURL(file);
                 });
             }
 
             progressBar.style.width = '80%';
-            progressText.textContent = 'جاري الحفظ والرفع...';
+            progressText.textContent = 'جاري الحفظ في قاعدة البيانات المجانية...';
 
             const reelData = {
                 title,
@@ -2366,19 +2334,19 @@
             injectReelCard(result.name, reelData);
             
             progressBar.style.width = '100%';
-            showAdminToast('🎬 تم نشر فيديو الريل بنجاح!');
+            showAdminToast('🎬 تم نشر فيديو الريل مجاناً وبنجاح!');
             sendTG("🎬 ريلز جديد\n📌 " + title);
             
             setTimeout(() => {
                 closeUploadReelModal();
                 openReelsFullscreen();
-            }, 600);
+            }, 500);
 
         } catch(e) {
-            alert('❌ خطأ في رفع الفيديو: ' + e.message);
+            alert('❌ خطأ في معالجة الفيديو: ' + e.message);
         } finally {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-plus-circle"></i> نشر الريل';
+            btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> نشر الريل مباشرة';
             progressWrap.style.display = 'none';
         }
     };
@@ -2399,8 +2367,6 @@
         if (card) card.remove();
         showAdminToast('🗑️ تم حذف الريل');
     };
-
-    window.addEventListener('DOMContentLoaded', loadDynamicReels);
 
     var _lastTap = {};
     document.addEventListener('touchend', function(e) {
