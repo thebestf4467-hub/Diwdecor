@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MD Decor</title>
 
     <!-- PWA -->
@@ -66,7 +66,13 @@
             var el = document.getElementById(pageId);
             if (el) el.style.display = 'block';
             if (document.getElementById('sideMenu').classList.contains('open')) toggleMenu();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (pageId !== 'reels-gallery') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.querySelectorAll('.reel-video').forEach(v => v.pause());
+            } else {
+                openReelsFullscreen();
+            }
             setTimeout(applyReveal, 100);
         }
 
@@ -172,7 +178,7 @@
             setTimeout(() => { fab.style.display = 'none'; }, 350);
             document.getElementById('admin-badge').style.display = 'none';
             document.getElementById('admin-stats-panel').classList.remove('active');
-            document.querySelectorAll('.admin-delete-like, .admin-delete-comment-btn').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.admin-delete-like, .admin-delete-comment-btn, .admin-delete-reel-btn').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.custom-section-archive-btn').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.section-rename-btn').forEach(el => el.style.display = 'none');
             document.querySelectorAll('.admin-rename-btn').forEach(el => el.style.display = 'none');
@@ -184,6 +190,7 @@
             document.querySelectorAll('.admin-delete-like').forEach(el => el.style.display = 'flex');
             document.querySelectorAll('.admin-rename-btn').forEach(el => el.style.display = 'flex');
             document.querySelectorAll('.admin-delete-comment-btn').forEach(el => el.style.display = 'flex');
+            document.querySelectorAll('.admin-delete-reel-btn').forEach(el => el.style.display = 'flex');
         }
 
         function showAdminToast(msg) {
@@ -214,6 +221,18 @@
             document.getElementById('upload-gallery-select').value = 'stone-gallery';
             window._uploadFiles = [];
             loadCustomSectionsInSelect();
+        }
+
+        function openUploadReelModal() {
+            if (!window.isAdminMode) return;
+            document.getElementById('upload-reel-title').value = '';
+            document.getElementById('upload-reel-url').value = '';
+            document.getElementById('upload-reel-file').value = '';
+            document.getElementById('upload-reel-modal').classList.add('active');
+        }
+
+        function closeUploadReelModal() {
+            document.getElementById('upload-reel-modal').classList.remove('active');
         }
 
         function loadCustomSectionsInSelect() {
@@ -275,7 +294,6 @@
             window.open(url, '_system');
         }
 
-        /* لوحة التحكم الشاملة بالإدارة */
         function openSiteControlModal() {
             if (!window.isAdminMode) return;
             document.getElementById('site-control-modal').classList.add('active');
@@ -291,6 +309,43 @@
             
             document.getElementById('tab-btn-' + tabName).classList.add('active');
             document.getElementById('cms-tab-' + tabName).classList.add('active');
+        }
+
+        /* --- FULLSCREEN REELS CONTROL --- */
+        function openReelsFullscreen() {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            const reelsPage = document.getElementById('reels-gallery');
+            reelsPage.style.display = 'block';
+            
+            const container = document.getElementById('reels-list-container');
+            if (container) container.scrollTop = 0;
+
+            setTimeout(() => {
+                const firstVideo = document.querySelector('.reel-fullscreen-card video');
+                if (firstVideo) {
+                    document.querySelectorAll('.reel-video').forEach(v => v.pause());
+                    firstVideo.currentTime = 0;
+                    firstVideo.play().catch(() => {});
+                }
+            }, 150);
+        }
+
+        function closeReelsView() {
+            document.querySelectorAll('.reel-video').forEach(v => v.pause());
+            showPage('main-page');
+        }
+
+        function shareReel(reelId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'MD Decor Reels',
+                    text: 'شاهد هذا المقطع المميز من شركة محمد البعاج للديكور!',
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showAdminToast('📋 تم نسخ رابط الصفحة للمشاركة');
+            }
         }
     </script>
 
@@ -328,7 +383,7 @@
             background: var(--bg-gradient); color: var(--dark-latte);
         }
         html { scroll-behavior: smooth; font-size: var(--font-scale); }
-        body { background: var(--bg-gradient); color: var(--dark-latte); font-family: 'Cairo', sans-serif; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; }
+        body { background: var(--bg-gradient); color: var(--dark-latte); font-family: 'Cairo', sans-serif; overflow-x: hidden; transition: background 0.3s ease, color 0.3s ease; padding-bottom: 75px; }
 
         .side-menu { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; background: rgba(255,252,249,0.98); z-index: 5000; transition: 0.4s ease; border-left: 1px solid var(--latte-gold); padding: 25px 20px; overflow-y: auto; }
         body.dark-mode .side-menu { background: rgba(37,31,28,0.98); }
@@ -341,28 +396,6 @@
         .social-links { display: flex; flex-direction: column; gap: 18px; }
         .social-links a { color: var(--dark-latte); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 1rem; cursor: pointer; }
         .social-links a i { color: var(--latte-gold); font-size: 1.3rem; width: 25px; text-align: center; }
-
-        /* زر القائمة العائم */
-        .floating-menu-trigger {
-            position: fixed;
-            top: 75px;
-            right: 15px;
-            z-index: 3000;
-            background: var(--creamy-white);
-            color: var(--latte-gold);
-            border: 1.5px solid var(--latte-gold);
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            transition: transform 0.2s ease, background 0.3s;
-        }
-        .floating-menu-trigger:active { transform: scale(0.9); }
 
         /* الهيدر العلوي */
         .sticky-header {
@@ -412,30 +445,81 @@
             white-space: nowrap;
         }
 
-        /* COLOR PICKER */
-        #color-picker-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
+        /* الهيدر السفلي */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 62px;
+            background: rgba(255, 252, 249, 0.98);
+            border-top: 1.5px solid var(--latte-gold);
             display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 4000;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.08);
+            padding: 0 10px;
+        }
+        body.dark-mode .bottom-nav { background: rgba(37, 31, 28, 0.98); }
+
+        .bottom-nav-btn {
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            flex: 1;
+            color: var(--dark-latte);
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: bold;
+            gap: 2px;
             background: transparent;
             border: none;
+            font-family: 'Cairo', sans-serif;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .bottom-nav-btn i { font-size: 1.25rem; color: var(--latte-gold); }
+        .bottom-nav-btn:active { transform: scale(0.9); }
+
+        /* زر الريلز البارز */
+        .reel-center-btn {
             position: relative;
+            top: -18px;
+            width: 58px;
+            height: 58px;
+            background: linear-gradient(135deg, var(--latte-gold), #b08040);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white !important;
+            border: 4px solid var(--creamy-white);
+            box-shadow: 0 8px 20px rgba(200, 161, 101, 0.45);
+            cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             flex-shrink: 0;
-            z-index: 2;
+            z-index: 4100;
+        }
+        body.dark-mode .reel-center-btn { border-color: #251f1c; }
+        .reel-center-btn i { font-size: 1.4rem; color: white !important; margin-bottom: -1px; }
+        .reel-center-btn span { font-size: 0.62rem; font-weight: 900; letter-spacing: 0.3px; }
+        .reel-center-btn:active { transform: scale(0.92) translateY(-2px); }
+
+        /* COLOR PICKER */
+        #color-picker-btn {
+            width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            background: transparent; border: none; position: relative; flex-shrink: 0; z-index: 2;
         }
         #color-picker-btn:active { transform: scale(0.9); }
 
         #color-picker-btn::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 50%;
-            border: 1.5px solid var(--latte-gold);
-            opacity: 0.6;
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            border: 1.5px solid var(--latte-gold); opacity: 0.6;
             animation: colorRingPulse 2.8s ease-in-out infinite;
         }
         @keyframes colorRingPulse {
@@ -445,28 +529,15 @@
         }
 
         #color-btn-dot {
-            width: 16px; height: 16px;
-            border-radius: 50%;
-            background: var(--latte-gold);
-            box-shadow: 0 0 0 2.5px rgba(255,255,255,0.7);
-            transition: background 0.3s;
-            z-index: 1;
-            position: relative;
+            width: 16px; height: 16px; border-radius: 50%; background: var(--latte-gold);
+            box-shadow: 0 0 0 2.5px rgba(255,255,255,0.7); transition: background 0.3s; z-index: 1; position: relative;
         }
 
         #color-palette-popup {
-            display: none;
-            position: fixed;
-            top: 62px; left: 50%;
-            transform: translateX(-50%);
-            background: var(--creamy-white);
-            border: 1.5px solid rgba(200,161,101,0.3);
-            border-radius: 18px;
-            padding: 14px 16px;
-            z-index: 9500;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.18);
-            min-width: 290px;
-            max-width: 320px;
+            display: none; position: fixed; top: 62px; left: 50%; transform: translateX(-50%);
+            background: var(--creamy-white); border: 1.5px solid rgba(200,161,101,0.3);
+            border-radius: 18px; padding: 14px 16px; z-index: 9500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.18); min-width: 290px; max-width: 320px;
             animation: cpSlideDown 0.22s cubic-bezier(0.4,0,0.2,1);
         }
         body.dark-mode #color-palette-popup { background: #2a2218; }
@@ -487,31 +558,15 @@
         .cp-reset:active { background: rgba(200,161,101,0.1); }
 
         .theme-toggle-header {
-            color: var(--latte-gold);
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
-            width: 30px;
-            text-align: left;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: visible;
-            z-index: 2;
+            color: var(--latte-gold); font-size: 1.3rem; cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.4,0,0.2,1); width: 30px; text-align: left;
+            position: relative; display: flex; align-items: center; justify-content: center; overflow: visible; z-index: 2;
         }
 
         .theme-toggle-header::before {
-            content: '';
-            position: absolute;
-            width: 26px; height: 26px;
-            border-radius: 50%;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(1);
-            border: 1.5px solid var(--latte-gold);
-            opacity: 0.6;
-            animation: themeRingPulse 2.8s ease-in-out infinite;
-            pointer-events: none;
+            content: ''; position: absolute; width: 26px; height: 26px; border-radius: 50%;
+            top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); border: 1.5px solid var(--latte-gold);
+            opacity: 0.6; animation: themeRingPulse 2.8s ease-in-out infinite; pointer-events: none;
         }
         @keyframes themeRingPulse {
             0%   { opacity: 0.6; transform: translate(-50%, -50%) scale(1);    }
@@ -545,6 +600,84 @@
         .video-box { margin: 15px; border: 1px dashed var(--latte-gold); border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: var(--creamy-white); }
         #main-video { display: none; width: 100%; border-radius: 10px; border: 1px solid var(--latte-gold); margin-top: 10px; }
 
+        /* --- FULLSCREEN REELS STYLES --- */
+        #reels-gallery {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 9000;
+            overflow: hidden;
+            padding: 0; margin: 0;
+        }
+
+        .reels-container-full {
+            width: 100%; height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .reels-container-full::-webkit-scrollbar { display: none; }
+
+        .reel-fullscreen-card {
+            position: relative;
+            width: 100vw; height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            background: #000;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .reel-fullscreen-card video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .reel-side-actions {
+            position: absolute;
+            bottom: 90px; left: 15px;
+            display: flex; flex-direction: column;
+            gap: 18px; align-items: center; z-index: 20;
+        }
+
+        .reel-action-btn {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            border: none; color: white;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            cursor: pointer; font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .reel-action-btn:active { transform: scale(0.88); }
+        .reel-action-btn span { font-size: 0.65rem; margin-top: 2px; font-family: 'Cairo', sans-serif; font-weight: bold; }
+
+        .reel-bottom-info {
+            position: absolute;
+            bottom: 85px; right: 15px; left: 80px;
+            color: white; z-index: 20;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+        .reel-bottom-info h4 { font-size: 1rem; margin-bottom: 5px; font-weight: bold; }
+
+        .reel-close-btn {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white; border: none;
+            width: 40px; height: 40px;
+            border-radius: 50%; font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 30; backdrop-filter: blur(5px);
+        }
+
+        .admin-delete-reel-btn { display: none; position: absolute; top: 20px; left: 20px; background: var(--admin-red); color: white; border: none; border-radius: 50px; padding: 6px 14px; font-size: 0.75rem; font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+
         .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); border-radius: var(--border-radius-card, 15px); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); position: relative; }
         .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; cursor: pointer; }
         .product-section:hover img { transform: scale(1.03); }
@@ -565,7 +698,7 @@
         .page-copyright { text-align:center; padding: 16px 20px 4px; font-size:0.72rem; color:#aaa; font-family:'Cairo',sans-serif; }
         body.dark-mode .page-copyright { color:#5a4e48; }
 
-        #admin-fab { bottom: 0; }
+        #admin-fab { bottom: 70px; }
 
         .page-counter-block {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -578,7 +711,6 @@
         body.dark-mode .page-counter-label { color: #e8ddd5; }
         .page-counter-label i { color: var(--latte-gold); }
 
-        /* CMS NAVIGATION TABS */
         .cms-tabs-header {
             display: flex; background: var(--vanilla-light); border-bottom: 1px solid var(--latte-gold);
             overflow-x: auto; scrollbar-width: none; flex-shrink: 0;
@@ -594,13 +726,9 @@
             color: var(--latte-gold); border-bottom-color: var(--latte-gold); background: var(--creamy-white);
         }
         
-        /* إصلاح حاوية التمرير للوحة التحكم لتتيح اللمس والتمرير السلس */
         .cms-scroll-container {
-            flex-grow: 1;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important;
-            padding: 18px;
-            max-height: calc(85vh - 120px);
+            flex-grow: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important;
+            padding: 18px; max-height: calc(85vh - 120px);
         }
         .cms-tab-content { display: none; flex-direction: column; gap: 14px; }
         .cms-tab-content.active { display: flex; }
@@ -666,7 +794,7 @@
         @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
         /* ADMIN TOOLBAR */
-        #admin-fab { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000; flex-direction: column; align-items: stretch; }
+        #admin-fab { display: none; position: fixed; bottom: 70px; left: 0; right: 0; z-index: 8000; flex-direction: column; align-items: stretch; }
 
         #admin-sidebar-toggle {
             align-self: center; background: linear-gradient(135deg, var(--latte-gold), #b08040);
@@ -681,17 +809,17 @@
 
         #admin-sidebar-panel {
             background: var(--creamy-white); border-top: 2px solid var(--latte-gold); padding: 14px 16px 20px;
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
             overflow: hidden; max-height: 0; padding-top: 0; padding-bottom: 0;
             transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), padding 0.35s cubic-bezier(0.4,0,0.2,1);
         }
-        #admin-fab:not(.collapsed) #admin-sidebar-panel { max-height: 140px; padding: 14px 16px 20px; }
+        #admin-fab:not(.collapsed) #admin-sidebar-panel { max-height: 140px; padding: 14px 12px 20px; }
         body.dark-mode #admin-sidebar-panel { background: #2a2218; }
 
         .admin-sidebar-btn {
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
-            border: none; border-radius: 14px; padding: 12px 4px 10px; cursor: pointer; font-family: 'Cairo', sans-serif;
-            font-size: 0.6rem; font-weight: 700; color: white; transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+            border: none; border-radius: 14px; padding: 12px 2px 10px; cursor: pointer; font-family: 'Cairo', sans-serif;
+            font-size: 0.58rem; font-weight: 700; color: white; transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
             box-shadow: 0 3px 10px rgba(0,0,0,0.15); -webkit-tap-highlight-color: transparent;
         }
         .admin-sidebar-btn i { font-size: 1.1rem; }
@@ -701,16 +829,17 @@
         #fab-stats       { background: linear-gradient(135deg, #C8A165, #a07040); }
         #fab-control     { background: linear-gradient(135deg, #2980b9, #1a5276); }
         #fab-upload      { background: linear-gradient(135deg, #27ae60, #1e8449); }
+        #fab-reel        { background: linear-gradient(135deg, #e67e22, #d35400); }
         #fab-new-section { background: linear-gradient(135deg, #8e44ad, #6c3483); }
         #fab-archive     { background: linear-gradient(135deg, #7f8c8d, #5d6d7e); }
         #fab-exit        { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 
-        #admin-stats-panel { display: none; position: fixed; bottom: 110px; left: 10px; right: 10px; width: auto; max-width: 420px; margin: 0 auto; max-height: 75vh; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.22); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
+        #admin-stats-panel { display: none; position: fixed; bottom: 130px; left: 10px; right: 10px; width: auto; max-width: 420px; margin: 0 auto; max-height: 70vh; background: var(--creamy-white); border: 1.5px solid var(--latte-gold); border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.22); z-index: 7900; overflow: hidden; animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1); }
         #admin-stats-panel.active { display: block; }
         @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
         .stats-header { background: linear-gradient(135deg, var(--latte-gold), #a07040); color: white; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
         .stats-close { cursor: pointer; font-size: 1.1rem; opacity: 0.85; }
-        .stats-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 65vh; overflow-y: auto; }
+        .stats-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; }
         .stat-card { display: flex; align-items: center; gap: 14px; background: var(--vanilla-light); border-radius: 14px; padding: 14px 16px; border-right: 3px solid var(--latte-gold); }
         .stat-icon { width: 42px; height: 42px; border-radius: 50%; background: var(--latte-gold); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
         .stat-label { font-size: 0.75rem; color: #888; font-weight: 600; }
@@ -732,58 +861,62 @@
         .stats-error { text-align: center; padding: 20px; color: var(--admin-red); font-size: 0.85rem; }
         #stats-refresh { margin: 0 16px 14px; width: calc(100% - 32px); background: var(--latte-gold); color: white; border: none; border-radius: 12px; padding: 10px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
 
-        #admin-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 30px; font-size: 0.85rem; font-weight: bold; opacity: 0; transition: all 0.4s; z-index: 9999; pointer-events: none; white-space: nowrap; }
+        #admin-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2c2c2c; color: white; padding: 10px 22px; border-radius: 30px; font-size: 0.85rem; font-weight: bold; opacity: 0; transition: all 0.4s; z-index: 9999; pointer-events: none; white-space: nowrap; }
         #admin-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        #upload-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
-        #upload-modal .comment-content { max-width: 420px; max-height: 90vh; overflow-y: auto; }
+        #upload-modal, #upload-reel-modal { background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); z-index: 10000; }
+        #upload-modal .comment-content, #upload-reel-modal .comment-content { max-width: 420px; max-height: 90vh; overflow-y: auto; }
         .upload-drop-zone { border: 2.5px dashed var(--latte-gold); border-radius: 16px; padding: 30px 15px; text-align: center; cursor: pointer; background: var(--vanilla-light); transition: background 0.2s, border-color 0.2s; margin-bottom: 14px; }
         .upload-drop-zone i { font-size: 2.8rem; color: var(--latte-gold); display: block; margin-bottom: 8px; }
         .upload-drop-zone p { font-size: 0.88rem; color: var(--dark-latte); opacity: 0.8; }
         #upload-preview-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 30px; margin-bottom: 14px; }
         .upload-field { width: 100%; padding: 11px 14px; border-radius: 12px; border: 1.5px solid var(--latte-gold); background: var(--vanilla-light); color: var(--dark-latte); font-family: 'Cairo', sans-serif; font-size: 0.95rem; outline: none; margin-bottom: 10px; transition: border-color 0.2s; }
         select.upload-field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8a165' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: left 12px center; padding-left: 32px; }
-        #upload-progress-wrap { display: none; margin-bottom: 10px; }
-        #upload-progress-bar-outer { background: var(--vanilla-light); border-radius: 20px; height: 10px; overflow: hidden; border: 1px solid rgba(200,161,101,0.3); margin-bottom: 5px; }
-        #upload-progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--latte-gold), #e8c07a); border-radius: 20px; width: 0%; transition: width 0.3s ease; }
-        #upload-progress-text { font-size: 0.78rem; color: var(--latte-gold); text-align: center; font-weight: bold; }
+        #upload-progress-wrap, #upload-reel-progress-wrap { display: none; margin-bottom: 10px; }
+        #upload-progress-bar-outer, #upload-reel-progress-bar-outer { background: var(--vanilla-light); border-radius: 20px; height: 10px; overflow: hidden; border: 1px solid rgba(200,161,101,0.3); margin-bottom: 5px; }
+        #upload-progress-bar-inner, #upload-reel-progress-bar-inner { height: 100%; background: linear-gradient(90deg, var(--latte-gold), #e8c07a); border-radius: 20px; width: 0%; transition: width 0.3s ease; }
+        #upload-progress-text, #upload-reel-progress-text { font-size: 0.78rem; color: var(--latte-gold); text-align: center; font-weight: bold; }
         .upload-submit-btn { width: 100%; padding: 13px; background: var(--admin-green); color: white; border: none; border-radius: 14px; font-family: 'Cairo', sans-serif; font-weight: bold; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s; }
 
-        /* PROFILE MODAL FULLSCREEN STYLES */
-        #profile-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px); z-index: 15000; display: none;
-            justify-content: center; align-items: center; padding: 15px;
+        /* PROFILE DRAWER STYLES */
+        .profile-drawer {
+            position: fixed; top: 0; left: -320px; width: 310px; height: 100%;
+            background: rgba(255,252,249,0.99); z-index: 6000; transition: 0.4s ease;
+            border-right: 1px solid var(--latte-gold); padding: 25px 20px; overflow-y: auto;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.15);
         }
-        #profile-modal.active { display: flex; }
+        body.dark-mode .profile-drawer { background: rgba(37,31,28,0.99); }
+        .profile-drawer.open { left: 0; }
+        .profile-drawer-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(75,56,50,0.35); display: none; z-index: 5500; backdrop-filter: blur(2px);
+        }
+
         .profile-container {
-            background: var(--creamy-white); border: 1.5px solid var(--latte-gold);
-            border-radius: 24px; width: 100%; max-width: 420px; max-height: 90vh;
-            overflow-y: auto; padding: 25px; box-shadow: 0 15px 50px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column; gap: 15px; text-align: center;
+            display: flex; flex-direction: column; gap: 15px; text-align: center; margin-top: 10px;
         }
         .profile-avatar-wrapper {
-            position: relative; width: 90px; height: 90px; margin: 0 auto 5px;
+            position: relative; width: 85px; height: 85px; margin: 0 auto 5px;
         }
         .profile-avatar-img {
             width: 100%; height: 100%; border-radius: 50%;
             border: 3px solid var(--latte-gold); object-fit: cover;
             background: var(--vanilla-light); display: flex;
             align-items: center; justify-content: center;
-            font-size: 2.2rem; font-weight: 900; color: var(--latte-gold);
+            font-size: 2rem; font-weight: 900; color: var(--latte-gold);
         }
         .profile-avatar-edit {
             position: absolute; bottom: 0; right: 0;
             background: var(--latte-gold); color: white;
-            border-radius: 50%; width: 30px; height: 30px;
+            border-radius: 50%; width: 28px; height: 28px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; cursor: pointer; border: 2px solid white;
+            font-size: 0.75rem; cursor: pointer; border: 2px solid white;
         }
         .profile-input-group {
             text-align: right; display: flex; flex-direction: column; gap: 5px;
         }
         .profile-input-group label {
-            font-size: 0.8rem; font-weight: bold; color: var(--latte-gold);
+            font-size: 0.78rem; font-weight: bold; color: var(--latte-gold);
         }
 
         /* CUSTOM SECTIONS */
@@ -820,7 +953,6 @@
         #lightbox-img { max-width: 95vw; max-height: 80vh; border-radius: 12px; object-fit: contain; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
         #lightbox-close { position: absolute; top: 18px; left: 18px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; color: white; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* PROFILE SECTION STYLES IN SIDEBAR */
         .profile-card-sidebar {
             background: var(--vanilla-light);
             border: 1px solid var(--latte-gold);
@@ -835,18 +967,12 @@
         }
         .profile-card-sidebar:active { transform: scale(0.97); }
         .profile-avatar-icon {
-            width: 42px;
-            height: 42px;
+            width: 42px; height: 42px;
             border-radius: 50%;
             background: var(--latte-gold);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            font-weight: bold;
-            flex-shrink: 0;
-            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; font-weight: bold; flex-shrink: 0; overflow: hidden;
         }
         .profile-avatar-icon img { width: 100%; height: 100%; object-fit: cover; }
         .profile-info-text { flex: 1; overflow: hidden; }
@@ -863,10 +989,7 @@
             font-weight: bold;
             cursor: pointer;
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
             transition: 0.2s;
         }
         .edit-profile-btn:hover { background: var(--latte-gold); color: white; }
@@ -887,14 +1010,15 @@
     </div>
 </div>
 
-<!-- FULLSCREEN PROFILE MODAL -->
-<div id="profile-modal">
+<!-- PROFILE DRAWER -->
+<div class="profile-drawer-overlay" id="profileOverlay" onclick="closeProfileDrawer()"></div>
+<div class="profile-drawer" id="profileDrawer">
+    <i class="fas fa-times close-menu" onclick="closeProfileDrawer()"></i>
+    <div class="menu-section">
+        <h3><i class="fas fa-id-card"></i> الملف الشخصي</h3>
+    </div>
+    
     <div class="profile-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--latte-gold); padding-bottom:10px;">
-            <h3 style="color:var(--latte-gold); font-size:1.1rem;"><i class="fas fa-id-card"></i> الملف الشخصي</h3>
-            <i class="fas fa-times" onclick="closeProfileModal()" style="cursor:pointer; font-size:1.2rem; color:var(--latte-gold);"></i>
-        </div>
-        
         <div class="profile-avatar-wrapper">
             <div class="profile-avatar-img" id="modal-avatar-box">؟</div>
             <label class="profile-avatar-edit" for="profile-avatar-file"><i class="fas fa-camera"></i></label>
@@ -912,7 +1036,7 @@
         </div>
 
         <div class="profile-input-group">
-            <label><i class="fas fa-envelope"></i> البريد الإلكتروني (غير قابل للتعديل)</label>
+            <label><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
             <input type="email" id="profile-email-input" class="upload-field" disabled style="opacity:0.7;">
         </div>
 
@@ -921,7 +1045,7 @@
     </div>
 </div>
 
-<!-- SITE CONTROL DASHBOARD (CMS ADMIN ONLY) - MAPPED WITH SMOOTH SCROLL & NEW CONTROLS -->
+<!-- SITE CONTROL DASHBOARD -->
 <div id="site-control-modal" class="comment-modal">
     <div class="comment-content" style="padding:0; overflow:hidden; max-height:85vh; display:flex; flex-direction:column;">
         <div style="background: linear-gradient(135deg, #2980b9, #1a5276); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
@@ -929,7 +1053,6 @@
             <i class="fas fa-times" onclick="closeSiteControlModal()" style="cursor: pointer; font-size: 1.1rem; opacity: 0.85;"></i>
         </div>
 
-        <!-- TABS HEADER -->
         <div class="cms-tabs-header">
             <button class="cms-tab-btn active" id="tab-btn-content" onclick="switchCmsTab('content')"><i class="fas fa-edit"></i> النصوص</button>
             <button class="cms-tab-btn" id="tab-btn-social" onclick="switchCmsTab('social')"><i class="fas fa-link"></i> الروابط</button>
@@ -937,9 +1060,7 @@
             <button class="cms-tab-btn" id="tab-btn-display" onclick="switchCmsTab('display')"><i class="fas fa-eye"></i> الظهور</button>
         </div>
 
-        <!-- SCROLLABLE CONTAINER -->
         <div class="cms-scroll-container">
-            <!-- TAB 1: TEXT CONTENT -->
             <div class="cms-tab-content active" id="cms-tab-content">
                 <div class="profile-input-group">
                     <label><i class="fas fa-heading"></i> اسم العلامة / اللوجو (Logo Text)</label>
@@ -966,7 +1087,6 @@
                     <textarea id="cms-about-text" class="upload-field" rows="3" style="resize:none;" placeholder="نحن متخصصون في فن الديكور..."></textarea>
                 </div>
 
-                <!-- خيارات نصوص جديدة -->
                 <div class="profile-input-group">
                     <label><i class="fas fa-comment-dots"></i> نص بطاقة الاستشارات الفنية</label>
                     <input type="text" id="cms-consultation-title" class="upload-field" placeholder="استشارات فنية">
@@ -983,7 +1103,6 @@
                 </div>
             </div>
 
-            <!-- TAB 2: SOCIAL LINKS -->
             <div class="cms-tab-content" id="cms-tab-social">
                 <div class="profile-input-group">
                     <label><i class="fab fa-whatsapp"></i> رقم الواتساب (مع رمز الدولة)</label>
@@ -1006,7 +1125,6 @@
                 </div>
             </div>
 
-            <!-- TAB 3: DESIGN & APPEARANCE -->
             <div class="cms-tab-content" id="cms-tab-appearance">
                 <div class="profile-input-group">
                     <label><i class="fas fa-paint-brush"></i> اللون الرئيسي (Accent Color)</label>
@@ -1039,7 +1157,6 @@
                     </select>
                 </div>
 
-                <!-- خيارات جديدة للحجم والأشكال -->
                 <div class="profile-input-group">
                     <label><i class="fas fa-text-height"></i> حجم خطوط الموقع</label>
                     <select id="cms-font-scale" class="upload-field" style="margin-bottom:0;">
@@ -1050,7 +1167,6 @@
                 </div>
             </div>
 
-            <!-- TAB 4: ELEMENT VISIBILITY TOGGLES (جديد) -->
             <div class="cms-tab-content" id="cms-tab-display">
                 <div class="profile-input-group" style="flex-direction:row; justify-content:space-between; align-items:center;">
                     <label><i class="fas fa-video"></i> إظهار فيديو الكتالوج الحجري</label>
@@ -1130,6 +1246,40 @@
     </div>
 </div>
 
+<!-- UPLOAD REEL MODAL -->
+<div id="upload-reel-modal" class="comment-modal">
+    <div class="comment-content" style="padding: 0; overflow: hidden;">
+        <div style="background: linear-gradient(135deg, #e67e22, #d35400); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: bold; font-size: 1rem;"><i class="fas fa-film"></i> إضافة فيديو ريلز جديد</span>
+            <i class="fas fa-times" onclick="closeUploadReelModal()" style="cursor: pointer; font-size: 1.1rem; opacity: 0.85;"></i>
+        </div>
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 10px;">
+            <input type="text" id="upload-reel-title" class="upload-field" placeholder="عنوان الريل (مثال: فخامة الديكور الداخلي)">
+            
+            <div style="text-align:right;">
+                <label style="font-size:0.78rem;font-weight:bold;color:var(--latte-gold);"><i class="fas fa-link"></i> خيار 1: رابط الفيديو (MP4 / WebM / Direct Link)</label>
+                <input type="text" id="upload-reel-url" class="upload-field" placeholder="https://example.com/video.mp4">
+            </div>
+
+            <div style="text-align:center;font-size:0.8rem;color:#888;margin:-5px 0;">أو</div>
+
+            <div style="text-align:right;">
+                <label style="font-size:0.78rem;font-weight:bold;color:var(--latte-gold);"><i class="fas fa-file-video"></i> خيار 2: رفع فيديو من الجهاز</label>
+                <input type="file" id="upload-reel-file" accept="video/mp4,video/webm" class="upload-field">
+            </div>
+
+            <div id="upload-reel-progress-wrap">
+                <div id="upload-reel-progress-bar-outer"><div id="upload-reel-progress-bar-inner"></div></div>
+                <div id="upload-reel-progress-text">جاري رفع الفيديو...</div>
+            </div>
+
+            <button class="upload-submit-btn" id="upload-reel-submit-btn" style="background: linear-gradient(135deg, #e67e22, #d35400);" onclick="submitUploadedReel()">
+                <i class="fas fa-plus-circle"></i> نشر الريل
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- RENAME PHOTO MODAL -->
 <div id="rename-photo-modal" class="comment-modal">
     <div class="comment-content" style="padding:0;overflow:hidden;">
@@ -1179,6 +1329,9 @@
         <button class="admin-sidebar-btn" id="fab-upload" onclick="openUploadModal()">
             <i class="fas fa-camera"></i><span>إضافة صور</span>
         </button>
+        <button class="admin-sidebar-btn" id="fab-reel" onclick="openUploadReelModal()">
+            <i class="fas fa-film"></i><span>إضافة ريلز</span>
+        </button>
         <button class="admin-sidebar-btn" id="fab-new-section" onclick="openAddSectionModal()">
             <i class="fas fa-folder-plus"></i><span>قسم جديد</span>
         </button>
@@ -1209,27 +1362,21 @@
 <div class="progress-bar" id="myBar"></div>
 <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-<!-- FLOATING MENU TRIGGER BUTTON -->
-<div class="floating-menu-trigger" onclick="toggleMenu()" title="القائمة الرئيسية">
-    <i class="fas fa-bars"></i>
-</div>
-
 <!-- SIDE MENU -->
 <div class="side-menu" id="sideMenu">
     <i class="fas fa-times close-menu" onclick="toggleMenu()"></i>
     
-    <!-- قسم الملف الشخصي والحساب -->
     <div class="menu-section">
         <h3>الصفحة الشخصية</h3>
         <div id="sidebar-profile-box">
-            <div class="profile-card-sidebar" onclick="openProfileModal()">
+            <div class="profile-card-sidebar" onclick="openProfileDrawer()">
                 <div class="profile-avatar-icon" id="sidebar-avatar">؟</div>
                 <div class="profile-info-text">
                     <strong id="sidebar-username">زائر</strong>
                     <span id="sidebar-email">لم يتم تسجيل الدخول</span>
                 </div>
             </div>
-            <button class="edit-profile-btn" onclick="openProfileModal()"><i class="fas fa-id-card"></i> تعديل الملف الشخصي</button>
+            <button class="edit-profile-btn" onclick="openProfileDrawer()"><i class="fas fa-id-card"></i> تعديل الملف الشخصي</button>
         </div>
     </div>
 
@@ -1279,6 +1426,24 @@
     <div class="cp-reset" onclick="resetAccentColor()"><i class="fas fa-undo"></i> الافتراضي</div>
 </div>
 
+<!-- BOTTOM NAVIGATION BAR -->
+<nav class="bottom-nav">
+    <button class="bottom-nav-btn" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+        <span>القائمة</span>
+    </button>
+
+    <button class="reel-center-btn" onclick="openReelsFullscreen()">
+        <i class="fas fa-film"></i>
+        <span>ريلز</span>
+    </button>
+
+    <button class="bottom-nav-btn" onclick="openProfileDrawer()">
+        <i class="fas fa-user-circle"></i>
+        <span>حسابي</span>
+    </button>
+</nav>
+
 <!-- MAIN PAGE -->
 <div id="main-page" class="page" style="display: block;">
     <section class="hero">
@@ -1312,6 +1477,61 @@
         <a href="https://www.freecounterstat.com" title="website counter"><img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=bgldekqmktpww6ctpxw3l8x1uc28hqwd" border="0" title="website counter" alt="website counter"></a>
     </div>
     <div class="page-copyright" id="page-copyright-el">جميع الحقوق محفوظة لدى محمد البعاج &copy; 2026</div>
+</div>
+
+<!-- REELS FULLSCREEN PAGE (صفحة الريلز بملء الشاشة بالكامل) -->
+<div id="reels-gallery" class="page">
+    <button class="reel-close-btn" onclick="closeReelsView()"><i class="fas fa-times"></i></button>
+
+    <div class="reels-container-full" id="reels-list-container">
+        <div class="reel-fullscreen-card" id="reel-card-default-1">
+            <button class="admin-delete-reel-btn" style="display:none;" onclick="deleteStaticReel('reel-card-default-1')"><i class="fas fa-trash"></i> حذف</button>
+            <video class="reel-video" src="video.mp4" loop playsinline onclick="toggleReelPlay(this)"></video>
+            
+            <div class="reel-bottom-info">
+                <h4>فخامة الديكور الداخلي والمعماري</h4>
+            </div>
+
+            <div class="reel-side-actions">
+                <button class="reel-action-btn" onclick="handleReelLike('reel1')">
+                    <i class="fas fa-heart"></i>
+                    <span>إعجاب</span>
+                </button>
+                <button class="reel-action-btn" onclick="openComments('reel1')">
+                    <i class="fas fa-comment"></i>
+                    <span>تعليق</span>
+                </button>
+                <button class="reel-action-btn" onclick="shareReel('reel1')">
+                    <i class="fas fa-share"></i>
+                    <span>مشاركة</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="reel-fullscreen-card" id="reel-card-default-2">
+            <button class="admin-delete-reel-btn" style="display:none;" onclick="deleteStaticReel('reel-card-default-2')"><i class="fas fa-trash"></i> حذف</button>
+            <video class="reel-video" src="video.mp4" loop playsinline onclick="toggleReelPlay(this)"></video>
+            
+            <div class="reel-bottom-info">
+                <h4>أعمال الواجهات الحجرية الحديثة</h4>
+            </div>
+
+            <div class="reel-side-actions">
+                <button class="reel-action-btn" onclick="handleReelLike('reel2')">
+                    <i class="fas fa-heart"></i>
+                    <span>إعجاب</span>
+                </button>
+                <button class="reel-action-btn" onclick="openComments('reel2')">
+                    <i class="fas fa-comment"></i>
+                    <span>تعليق</span>
+                </button>
+                <button class="reel-action-btn" onclick="shareReel('reel2')">
+                    <i class="fas fa-share"></i>
+                    <span>مشاركة</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- COMMENTS MODAL -->
@@ -1512,7 +1732,6 @@
         if (!res.ok) throw new Error('RTDB delete failed');
     }
 
-    /* أنماط خلفيات الموقع */
     const BG_PRESETS = {
         latte: 'linear-gradient(135deg, #fffcf7 0%, #f3e5ab 100%)',
         ocean: 'linear-gradient(135deg, #f0f7ff 0%, #bfdbfe 100%)',
@@ -1522,12 +1741,10 @@
         dark: 'linear-gradient(135deg, #1a1614 0%, #2d241f 100%)'
     };
 
-    /* تطبيق إعدادات الموقع الشاملة لجميع الزوار */
     function applyGlobalCmsSettings(settings) {
         if (!settings) return;
         const r = document.documentElement;
 
-        // 1. التصميم والألوان
         if (settings.primaryColor) {
             r.style.setProperty('--latte-gold', settings.primaryColor);
             r.style.setProperty('--heart-color', settings.primaryColor);
@@ -1547,7 +1764,6 @@
             r.style.setProperty('--font-scale', settings.fontScale);
         }
 
-        // 2. النصوص الأساسية
         if (settings.brandLogo) {
             document.querySelectorAll('.logo, #gate-logo').forEach(el => el.textContent = settings.brandLogo);
         }
@@ -1582,7 +1798,6 @@
             if (ftCopy) ftCopy.innerHTML = settings.footerText;
         }
 
-        // 3. روابط التواصل الاجتماعي
         if (settings.whatsappNum) {
             const waUrl = 'https://wa.me/' + settings.whatsappNum;
             const menuWa = document.getElementById('menu-wa-link');
@@ -1605,7 +1820,6 @@
             if (ownText) ownText.textContent = settings.ownerName;
         }
 
-        // 4. خيارات إظهار وإخفاء العناصر (Display Toggles)
         if (typeof settings.showVideo !== 'undefined') {
             const vidBox = document.getElementById('vidPlaceholder');
             if (vidBox) vidBox.style.display = settings.showVideo ? 'block' : 'none';
@@ -1626,8 +1840,6 @@
             const data = await rtdbGet('/site_cms_settings');
             if (data) {
                 applyGlobalCmsSettings(data);
-                
-                // تعبئة البيانات في لوحة الإدارة عند فتحها
                 if (document.getElementById('cms-brand-logo')) {
                     document.getElementById('cms-brand-logo').value = data.brandLogo || 'MD';
                     document.getElementById('cms-brand-name').value = data.brandName || 'MOHAMMAD AL-BAAJ';
@@ -1655,9 +1867,7 @@
                     document.getElementById('cms-show-consultation').checked = typeof data.showConsultation !== 'undefined' ? data.showConsultation : true;
                 }
             }
-        } catch(e) {
-            console.error("خطأ في تحميل إعدادات التحكم الشاملة:", e);
-        }
+        } catch(e) {}
     }
 
     window.saveGlobalCmsSettings = async function() {
@@ -1748,16 +1958,17 @@
         }
     }
 
-    window.openProfileModal = async () => {
+    window.openProfileDrawer = async () => {
         if (!window.currentUser) {
             alert("يرجى تسجيل الدخول أولاً لتعديل الملف الشخصي");
             openAuthModal();
             return;
         }
         
-        toggleMenu();
+        document.getElementById('sideMenu').classList.remove('open');
         
-        const modal = document.getElementById('profile-modal');
+        const drawer = document.getElementById('profileDrawer');
+        const overlay = document.getElementById('profileOverlay');
         const user = window.currentUser;
         const userData = window._currentUserData || {};
         
@@ -1772,11 +1983,13 @@
             avatarBox.textContent = (userData.fullname || userData.username || 'U')[0].toUpperCase();
         }
         
-        modal.classList.add('active');
+        drawer.classList.add('open');
+        overlay.style.display = 'block';
     };
 
-    window.closeProfileModal = () => {
-        document.getElementById('profile-modal').classList.remove('active');
+    window.closeProfileDrawer = () => {
+        document.getElementById('profileDrawer').classList.remove('open');
+        document.getElementById('profileOverlay').style.display = 'none';
     };
 
     window.handleAvatarSelect = async (input) => {
@@ -1827,7 +2040,7 @@
 
             showAdminToast("✅ تم حفظ التعديلات بنجاح");
             sendTG("✏️ تحديث الملف الشخصي\n👤 " + (newFullname || newUsername) + "\n📧 " + window.currentUser.email);
-            closeProfileModal();
+            closeProfileDrawer();
         } catch(e) {
             alert("حدث خطأ أثناء حفظ التعديلات: " + e.message);
         } finally {
@@ -1865,7 +2078,7 @@
             document.getElementById('welcome-gate').classList.add('active');
             document.getElementById('auth-modal').classList.remove('active');
             document.getElementById('comments-modal').classList.remove('active');
-            closeProfileModal();
+            closeProfileDrawer();
             showPage('main-page');
         } catch(e) { alert("حدث خطأ أثناء تسجيل الخروج"); }
     };
@@ -2007,7 +2220,7 @@
         if (!window.isAdminMode) return;
         if (!confirm("حذف هذا التعليق؟")) return;
         try {
-            await window._deleteDoc(window._doc(window._db, "comments", docId));
+            await window._deleteDoc(window._doc(window._doc(window._db, "comments", docId)));
             showAdminToast('✅ تم حذف التعليق');
         } catch(e) { alert("خطأ: " + e.message); }
     };
@@ -2022,6 +2235,172 @@
             showAdminToast('✅ تم إعادة تعيين اللايكات');
         } catch(e) { alert("خطأ: " + e.message); }
     };
+
+    window.toggleReelPlay = function(video) {
+        if (video.paused) {
+            document.querySelectorAll('.reel-video').forEach(v => { if (v !== video) v.pause(); });
+            video.play();
+        } else {
+            video.pause();
+        }
+    };
+
+    window.handleReelLike = function(reelId) {
+        sendTG("❤️ إعجاب بريل\n🎬 " + reelId);
+        showAdminToast("❤️ تم إرسال إعجابك للريل");
+    };
+
+    /* مراقبة التمرير للريلز وتحديد الفيديو المباشر للتفعيل التلقائي */
+    const reelsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target.querySelector('video');
+            if (video) {
+                if (entry.isIntersecting) {
+                    video.currentTime = 0;
+                    video.play().catch(() => {});
+                } else {
+                    video.pause();
+                }
+            }
+        });
+    }, { threshold: 0.6 });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.reel-fullscreen-card').forEach(card => {
+            reelsObserver.observe(card);
+        });
+    });
+
+    async function loadDynamicReels() {
+        try {
+            const data = await rtdbGet('/admin_reels');
+            if (!data) return;
+            const entries = Object.entries(data).sort((a,b) => (a[1].createdAt||0) - (b[1].createdAt||0));
+            entries.forEach(([key, val]) => {
+                injectReelCard(key, val);
+            });
+        } catch(e) {}
+    }
+
+    function injectReelCard(key, val) {
+        const container = document.getElementById('reels-list-container');
+        if (!container || document.getElementById('reel-card-' + key)) return;
+        
+        const card = document.createElement('div');
+        card.className = 'reel-fullscreen-card';
+        card.id = 'reel-card-' + key;
+        
+        const adminDelStyle = window.isAdminMode ? 'display:flex' : 'display:none';
+        
+        card.innerHTML = `
+            <button class="admin-delete-reel-btn" style="${adminDelStyle}" onclick="deleteDynamicReel('${key}')"><i class="fas fa-trash"></i> حذف</button>
+            <video class="reel-video" src="${val.url}" loop playsinline onclick="toggleReelPlay(this)"></video>
+            <div class="reel-bottom-info">
+                <h4>${val.title || 'فيديو ريلز جديد'}</h4>
+            </div>
+            <div class="reel-side-actions">
+                <button class="reel-action-btn" onclick="handleReelLike('${key}')">
+                    <i class="fas fa-heart"></i>
+                    <span>إعجاب</span>
+                </button>
+                <button class="reel-action-btn" onclick="openComments('${key}')">
+                    <i class="fas fa-comment"></i>
+                    <span>تعليق</span>
+                </button>
+                <button class="reel-action-btn" onclick="shareReel('${key}')">
+                    <i class="fas fa-share"></i>
+                    <span>مشاركة</span>
+                </button>
+            </div>`;
+            
+        container.appendChild(card);
+        if (typeof reelsObserver !== 'undefined') reelsObserver.observe(card);
+    }
+
+    window.submitUploadedReel = async function() {
+        if (!window.isAdminMode) return;
+        const title = document.getElementById('upload-reel-title').value.trim() || 'فيديو ريلز جديد';
+        const urlInput = document.getElementById('upload-reel-url').value.trim();
+        const fileInput = document.getElementById('upload-reel-file');
+        const file = fileInput.files[0];
+
+        if (!urlInput && !file) {
+            showAdminToast('⚠️ يرجى إدخال رابط أو اختيار ملف فيديو');
+            return;
+        }
+
+        const btn = document.getElementById('upload-reel-submit-btn');
+        const progressWrap = document.getElementById('upload-reel-progress-wrap');
+        const progressBar = document.getElementById('upload-reel-progress-bar-inner');
+        const progressText = document.getElementById('upload-reel-progress-text');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
+        progressWrap.style.display = 'block';
+        progressBar.style.width = '20%';
+
+        try {
+            let finalVideoUrl = urlInput;
+
+            if (file) {
+                progressText.textContent = 'جاري معالجة فيديو المقطع...';
+                progressBar.style.width = '50%';
+                finalVideoUrl = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            progressBar.style.width = '80%';
+            progressText.textContent = 'جاري الحفظ والرفع...';
+
+            const reelData = {
+                title,
+                url: finalVideoUrl,
+                createdAt: Date.now()
+            };
+
+            const result = await rtdbPush('/admin_reels', reelData);
+            injectReelCard(result.name, reelData);
+            
+            progressBar.style.width = '100%';
+            showAdminToast('🎬 تم نشر فيديو الريل بنجاح!');
+            sendTG("🎬 ريلز جديد\n📌 " + title);
+            
+            setTimeout(() => {
+                closeUploadReelModal();
+                openReelsFullscreen();
+            }, 600);
+
+        } catch(e) {
+            alert('❌ خطأ في رفع الفيديو: ' + e.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-plus-circle"></i> نشر الريل';
+            progressWrap.style.display = 'none';
+        }
+    };
+
+    window.deleteDynamicReel = async function(key) {
+        if (!window.isAdminMode || !confirm("حذف هذا الريل نهائياً؟")) return;
+        try {
+            await rtdbDelete('/admin_reels/' + key);
+            const card = document.getElementById('reel-card-' + key);
+            if (card) card.remove();
+            showAdminToast('🗑️ تم حذف الريل');
+        } catch(e) { alert("خطأ: " + e.message); }
+    };
+
+    window.deleteStaticReel = function(id) {
+        if (!window.isAdminMode || !confirm("حذف هذا الريل؟")) return;
+        const card = document.getElementById(id);
+        if (card) card.remove();
+        showAdminToast('🗑️ تم حذف الريل');
+    };
+
+    window.addEventListener('DOMContentLoaded', loadDynamicReels);
 
     var _lastTap = {};
     document.addEventListener('touchend', function(e) {
@@ -2178,8 +2557,7 @@
                 </div>
                 <div style="text-align:center; font-size:0.68rem; opacity:0.45; padding-top:4px;">آخر تحديث: ${new Date().toLocaleTimeString('ar-IQ')}</div>`;
         } catch(e) {
-            console.error("Stats error:", e);
-            body.innerHTML = `<div class="stats-error"><i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i><strong>تعذر تحميل البيانات</strong><br><small style="opacity:0.7;">${e.message}</small></div>`;
+            body.innerHTML = `<div class="stats-error"><i class="fas fa-exclamation-triangle" style="font-size:2rem;display:block;margin-bottom:10px;"></i><strong>تعذر تحميل البيانات</strong></div>`;
         } finally {
             if (refreshBtn) { refreshBtn.disabled = false; refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> تحديث البيانات'; }
         }
@@ -2194,7 +2572,7 @@
                 injectPhotoCard(val.photoId, val.caption || 'تصميم جديد', val.gallery, val.url, key);
                 refreshUI(val.photoId);
             });
-        } catch(e) { console.error("خطأ تحميل الصور:", e); }
+        } catch(e) {}
     }
 
     function injectPhotoCard(photoId, caption, gallery, url, rtdbKey) {
@@ -2279,7 +2657,7 @@
                 if (!val.archived) injectSectionCard(key, val);
                 else injectSectionPage(key, val);
             });
-        } catch(e) { console.error('خطأ تحميل الأقسام:', e); }
+        } catch(e) {}
     }
 
     function injectSectionCard(key, val) {
@@ -2527,6 +2905,7 @@
         _origActivate();
         document.querySelectorAll('.custom-section-archive-btn').forEach(el => el.style.display = 'block');
         document.querySelectorAll('.section-rename-btn').forEach(el => el.style.display = 'block');
+        document.querySelectorAll('.admin-delete-reel-btn').forEach(el => el.style.display = 'flex');
         loadFixedSectionsState();
     };
 
@@ -2583,7 +2962,6 @@
         } catch(e) { showAdminToast('❌ خطأ: ' + e.message); }
     };
 
-    // ACCENT COLOR PICKER
     var _accentColors = [
         { name:'ذهبي',      hex:'#c8a165', light:'#f9f1d8', bg1:'#fffcf7', bg2:'#f3e5ab' },
         { name:'أزرق',      hex:'#3b82f6', light:'#dbeafe', bg1:'#f0f7ff', bg2:'#bfdbfe' },
