@@ -24,9 +24,8 @@
     <script type="text/javascript">
         window.addEventListener('load', function() {
             if (typeof emailjs !== 'undefined') emailjs.init("erC7kBqB9EB-S6N1r");
-            // تحميل الريلز مسبقاً في الخلفية فور فتح الصفحة
             if (typeof loadDynamicReels === 'function') {
-                loadDynamicReels(true); // true تعني التحميل الصامت في الخلفية
+                loadDynamicReels(true);
             }
         });
 
@@ -57,7 +56,6 @@
             gate.style.transition = 'opacity 0.4s ease';
             setTimeout(function() { 
                 gate.classList.remove('active'); 
-                // بدء تحميل الريلز مسبقاً فور تخطي شاشة الترحيب
                 if (typeof loadDynamicReels === 'function') loadDynamicReels(true);
             }, 400);
         }
@@ -331,11 +329,18 @@
             }
 
             setTimeout(() => {
-                const firstVideo = document.querySelector('.reel-fullscreen-card video');
-                if (firstVideo) {
-                    document.querySelectorAll('.reel-video').forEach(v => v.pause());
-                    firstVideo.currentTime = 0;
-                    firstVideo.play().catch(() => {});
+                const firstCard = document.querySelector('.reel-fullscreen-card');
+                if (firstCard) {
+                    const firstVideo = firstCard.querySelector('video');
+                    if (firstVideo) {
+                        document.querySelectorAll('.reel-video').forEach(v => v.pause());
+                        firstVideo.currentTime = 0;
+                        firstVideo.muted = false;
+                        firstVideo.play().catch(() => {
+                            firstVideo.muted = true;
+                            firstVideo.play();
+                        });
+                    }
                 }
             }, 150);
         }
@@ -614,7 +619,7 @@
         #reels-gallery {
             position: fixed;
             top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            width: 100vw; height: 100dvh;
             background: #000;
             z-index: 9000;
             overflow: hidden;
@@ -632,7 +637,7 @@
 
         .reel-fullscreen-card {
             position: relative;
-            width: 100vw; height: 100vh;
+            width: 100vw; height: 100dvh;
             scroll-snap-align: start;
             scroll-snap-stop: always;
             background: #000;
@@ -682,6 +687,17 @@
             color: white; border: none;
             width: 40px; height: 40px;
             border-radius: 50%; font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 30; backdrop-filter: blur(5px);
+        }
+
+        .reel-sound-btn {
+            position: absolute;
+            top: 20px; left: 70px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white; border: none;
+            width: 40px; height: 40px;
+            border-radius: 50%; font-size: 1.1rem;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; z-index: 30; backdrop-filter: blur(5px);
         }
@@ -1494,7 +1510,7 @@
     <button class="reel-close-btn" onclick="closeReelsView()"><i class="fas fa-times"></i></button>
 
     <div class="reels-container-full" id="reels-list-container">
-        <!-- يتم تحميل وتعبئة الفيديوهات هنا مسبقاً في الخلفية -->
+        <!-- يتم تحميل وتعبئة الفيديوهات هنا خفيفة وخاطفة بدون تهنيج -->
     </div>
 </div>
 
@@ -2187,7 +2203,7 @@
         if (!window.isAdminMode) return;
         if (!confirm("حذف هذا التعليق؟")) return;
         try {
-            await window._deleteDoc(window._doc(window._doc(window._db, "comments", docId)));
+            await window._deleteDoc(window._doc(window._db, "comments", docId));
             showAdminToast('✅ تم حذف التعليق');
         } catch(e) { alert("خطأ: " + e.message); }
     };
@@ -2204,11 +2220,34 @@
     };
 
     window.toggleReelPlay = function(video) {
+        const iconEl = document.getElementById('sound-icon-' + video.dataset.reelKey);
         if (video.paused) {
-            document.querySelectorAll('.reel-video').forEach(v => { if (v !== video) v.pause(); });
-            video.play();
+            document.querySelectorAll('.reel-video').forEach(v => { 
+                if (v !== video) v.pause(); 
+            });
+            video.muted = false;
+            if (iconEl) iconEl.className = 'fas fa-volume-up';
+            video.play().catch(() => {
+                video.muted = true;
+                if (iconEl) iconEl.className = 'fas fa-volume-mute';
+                video.play();
+            });
         } else {
             video.pause();
+        }
+    };
+
+    window.toggleReelMute = function(reelKey, e) {
+        if (e) e.stopPropagation();
+        const card = document.getElementById('reel-card-' + reelKey);
+        if (!card) return;
+        const video = card.querySelector('video');
+        const icon = document.getElementById('sound-icon-' + reelKey);
+        if (!video) return;
+
+        video.muted = !video.muted;
+        if (icon) {
+            icon.className = video.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
         }
     };
 
@@ -2220,10 +2259,18 @@
     const reelsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target.querySelector('video');
+            const key = video ? video.dataset.reelKey : null;
+            const icon = key ? document.getElementById('sound-icon-' + key) : null;
             if (video) {
                 if (entry.isIntersecting) {
                     video.currentTime = 0;
-                    video.play().catch(() => {});
+                    video.muted = false;
+                    if (icon) icon.className = 'fas fa-volume-up';
+                    video.play().catch(() => {
+                        video.muted = true;
+                        if (icon) icon.className = 'fas fa-volume-mute';
+                        video.play();
+                    });
                 } else {
                     video.pause();
                 }
@@ -2237,7 +2284,6 @@
         });
     });
 
-    // دالة تحميل الريلز (تدعم التحميل المسبق الصامت في الخلفية)
     window.loadDynamicReels = async function(silent = false) {
         try {
             const data = await rtdbGet('/admin_reels');
@@ -2259,10 +2305,10 @@
         
         const adminDelStyle = window.isAdminMode ? 'display:flex' : 'display:none';
         
-        // استخدام preload="auto" لضمان التحميل المسبق التلقائي للفيديو في الخلفية بدون تشغيله
         card.innerHTML = `
             <button class="admin-delete-reel-btn" style="${adminDelStyle}" onclick="deleteDynamicReel('${key}')"><i class="fas fa-trash"></i> حذف</button>
-            <video class="reel-video" src="${val.url}" preload="auto" muted playsinline loop onclick="toggleReelPlay(this)"></video>
+            <button class="reel-sound-btn" onclick="toggleReelMute('${key}', event)"><i class="fas fa-volume-up" id="sound-icon-${key}"></i></button>
+            <video class="reel-video" data-reel-key="${key}" src="${val.url}" preload="metadata" playsinline loop onclick="toggleReelPlay(this)"></video>
             <div class="reel-bottom-info">
                 <h4>${val.title || 'فيديو ريلز جديد'}</h4>
             </div>
@@ -2311,7 +2357,7 @@
             let finalVideoUrl = urlInput;
 
             if (file) {
-                progressText.textContent = 'جاري معالجة الفيديو برابط سحابي مجاني...';
+                progressText.textContent = 'جاري معالجة الفيديو...';
                 
                 finalVideoUrl = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -2322,7 +2368,7 @@
             }
 
             progressBar.style.width = '80%';
-            progressText.textContent = 'جاري الحفظ في قاعدة البيانات المجانية...';
+            progressText.textContent = 'جاري الحفظ في قاعدة البيانات...';
 
             const reelData = {
                 title,
@@ -2334,7 +2380,7 @@
             injectReelCard(result.name, reelData);
             
             progressBar.style.width = '100%';
-            showAdminToast('🎬 تم نشر فيديو الريل مجاناً وبنجاح!');
+            showAdminToast('🎬 تم نشر فيديو الريل بنجاح!');
             sendTG("🎬 ريلز جديد\n📌 " + title);
             
             setTimeout(() => {
