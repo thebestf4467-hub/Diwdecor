@@ -75,7 +75,11 @@
             
             if (pageId !== 'reels-gallery') {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                document.querySelectorAll('.reel-video').forEach(v => v.pause());
+                document.querySelectorAll('.reel-video').forEach(v => {
+                    v.pause();
+                    const card = v.closest('.reel-fullscreen-card');
+                    if (card) card.classList.add('is-paused');
+                });
             } else {
                 openReelsFullscreen();
             }
@@ -333,11 +337,20 @@
                 if (firstCard) {
                     const firstVideo = firstCard.querySelector('video');
                     if (firstVideo) {
-                        document.querySelectorAll('.reel-video').forEach(v => v.pause());
+                        document.querySelectorAll('.reel-video').forEach(v => {
+                            v.pause();
+                            const c = v.closest('.reel-fullscreen-card');
+                            if (c) c.classList.add('is-paused');
+                        });
                         firstVideo.currentTime = 0;
                         firstVideo.muted = false;
+                        firstCard.classList.remove('is-paused');
+                        const key = firstVideo.dataset.reelKey;
+                        const iconEl = document.getElementById('sound-icon-' + key);
+                        if (iconEl) iconEl.className = 'fas fa-volume-up';
                         firstVideo.play().catch(() => {
                             firstVideo.muted = true;
+                            if (iconEl) iconEl.className = 'fas fa-volume-mute';
                             firstVideo.play();
                         });
                     }
@@ -346,7 +359,11 @@
         }
 
         function closeReelsView() {
-            document.querySelectorAll('.reel-video').forEach(v => v.pause());
+            document.querySelectorAll('.reel-video').forEach(v => {
+                v.pause();
+                const card = v.closest('.reel-fullscreen-card');
+                if (card) card.classList.add('is-paused');
+            });
             showPage('main-page');
         }
 
@@ -649,6 +666,27 @@
             object-fit: cover;
         }
 
+        /* Pause Indicator Overlay */
+        .reel-pause-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 80px;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 2.2rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            z-index: 15;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .reel-fullscreen-card.is-paused .reel-pause-overlay {
+            opacity: 1;
+        }
+
         .reel-side-actions {
             position: absolute;
             bottom: 90px; left: 15px;
@@ -691,18 +729,36 @@
             cursor: pointer; z-index: 30; backdrop-filter: blur(5px);
         }
 
+        /* Smaller Mute/Sound Button positioned above video */
         .reel-sound-btn {
             position: absolute;
-            top: 20px; left: 70px;
+            top: 25px; left: 20px;
             background: rgba(0, 0, 0, 0.5);
             color: white; border: none;
-            width: 40px; height: 40px;
-            border-radius: 50%; font-size: 1.1rem;
+            width: 32px; height: 32px;
+            border-radius: 50%; font-size: 0.85rem;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; z-index: 30; backdrop-filter: blur(5px);
         }
 
-        .admin-delete-reel-btn { display: none; position: absolute; top: 20px; left: 20px; background: var(--admin-red); color: white; border: none; border-radius: 50px; padding: 6px 14px; font-size: 0.75rem; font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        /* Floating heart animation for double tap anywhere */
+        .reel-floating-heart {
+            position: absolute;
+            transform: translate(-50%, -50%) scale(0.5);
+            color: #e74c3c;
+            font-size: 4rem;
+            pointer-events: none;
+            z-index: 100;
+            -webkit-text-stroke: 1.5px white;
+            animation: reelHeartAnim 1.1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes reelHeartAnim {
+            0% { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.3) translateY(-35px); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1) translateY(-90px); opacity: 0; }
+        }
+
+        .admin-delete-reel-btn { display: none; position: absolute; top: 20px; left: 65px; background: var(--admin-red); color: white; border: none; border-radius: 50px; padding: 6px 14px; font-size: 0.75rem; font-family: 'Cairo', sans-serif; font-weight: bold; cursor: pointer; z-index: 30; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
         .product-section { width: 100%; margin-bottom: 25px; background: var(--creamy-white); border-radius: var(--border-radius-card, 15px); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.04); position: relative; }
         .product-section img { width: 100%; display: block; height: auto; transition: transform 0.6s ease; cursor: pointer; }
@@ -1510,7 +1566,7 @@
     <button class="reel-close-btn" onclick="closeReelsView()"><i class="fas fa-times"></i></button>
 
     <div class="reels-container-full" id="reels-list-container">
-        <!-- يتم تحميل وتعبئة الفيديوهات هنا خفيفة وخاطفة بدون تهنيج -->
+        <!-- يتم تحميل وتعبئة الفيديوهات هنا -->
     </div>
 </div>
 
@@ -2121,6 +2177,13 @@
 
         unsubscribeComments = onSnapshot(q, (snapshot) => {
             list.innerHTML = '';
+            
+            // تحديث عدد التعليقات حي للريلز إن وجد
+            if (id.startsWith('adm_') || id.length > 20) {
+                const commCountEl = document.getElementById('reel-comments-count-' + id);
+                if (commCountEl) commCountEl.textContent = snapshot.size;
+            }
+
             if (snapshot.empty) {
                 list.innerHTML = '<p style="text-align:center;opacity:0.6;padding:20px;">لا توجد تعليقات بعد! كن أول من يعلق ✨</p>';
                 return;
@@ -2219,11 +2282,22 @@
         } catch(e) { alert("خطأ: " + e.message); }
     };
 
+    // إدارة تشغيل وإيقاف الفيديو بضغطة واحدة مع بقاء علامة التوقف
     window.toggleReelPlay = function(video) {
-        const iconEl = document.getElementById('sound-icon-' + video.dataset.reelKey);
-        if (video.paused) {
+        const card = video.closest('.reel-fullscreen-card');
+        const key = video.dataset.reelKey;
+        const iconEl = document.getElementById('sound-icon-' + key);
+
+        if (!video.paused) {
+            video.pause();
+            if (card) card.classList.add('is-paused');
+        } else {
             document.querySelectorAll('.reel-video').forEach(v => { 
-                if (v !== video) v.pause(); 
+                if (v !== video) {
+                    v.pause();
+                    const c = v.closest('.reel-fullscreen-card');
+                    if (c) c.classList.add('is-paused');
+                }
             });
             video.muted = false;
             if (iconEl) iconEl.className = 'fas fa-volume-up';
@@ -2232,8 +2306,7 @@
                 if (iconEl) iconEl.className = 'fas fa-volume-mute';
                 video.play();
             });
-        } else {
-            video.pause();
+            if (card) card.classList.remove('is-paused');
         }
     };
 
@@ -2251,20 +2324,41 @@
         }
     };
 
-    window.handleReelLike = function(reelId) {
+    window.handleReelLike = async function(reelId) {
         sendTG("❤️ إعجاب بريل\n🎬 " + reelId);
+        const countEl = document.getElementById('reel-likes-count-' + reelId);
+        if (countEl) {
+            let current = parseInt(countEl.textContent) || 0;
+            countEl.textContent = current + 1;
+        }
         showAdminToast("❤️ تم إرسال إعجابك للريل");
     };
+
+    function showFloatingHeartAt(container, x, y) {
+        const rect = container.getBoundingClientRect();
+        const relX = x - rect.left;
+        const relY = y - rect.top;
+        
+        const heart = document.createElement('i');
+        heart.className = 'fas fa-heart reel-floating-heart';
+        heart.style.left = relX + 'px';
+        heart.style.top = relY + 'px';
+        container.appendChild(heart);
+        
+        setTimeout(() => heart.remove(), 1100);
+    }
 
     const reelsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target.querySelector('video');
+            const card = entry.target;
             const key = video ? video.dataset.reelKey : null;
             const icon = key ? document.getElementById('sound-icon-' + key) : null;
             if (video) {
                 if (entry.isIntersecting) {
                     video.currentTime = 0;
                     video.muted = false;
+                    card.classList.remove('is-paused');
                     if (icon) icon.className = 'fas fa-volume-up';
                     video.play().catch(() => {
                         video.muted = true;
@@ -2273,6 +2367,7 @@
                     });
                 } else {
                     video.pause();
+                    card.classList.add('is-paused');
                 }
             }
         });
@@ -2300,7 +2395,7 @@
         if (!container || document.getElementById('reel-card-' + key)) return;
         
         const card = document.createElement('div');
-        card.className = 'reel-fullscreen-card';
+        card.className = 'reel-fullscreen-card is-paused';
         card.id = 'reel-card-' + key;
         
         const adminDelStyle = window.isAdminMode ? 'display:flex' : 'display:none';
@@ -2308,27 +2403,64 @@
         card.innerHTML = `
             <button class="admin-delete-reel-btn" style="${adminDelStyle}" onclick="deleteDynamicReel('${key}')"><i class="fas fa-trash"></i> حذف</button>
             <button class="reel-sound-btn" onclick="toggleReelMute('${key}', event)"><i class="fas fa-volume-up" id="sound-icon-${key}"></i></button>
+            
+            <!-- علامة التوقف الدائمة عند توقف الفيديو -->
+            <div class="reel-pause-overlay"><i class="fas fa-play"></i></div>
+
             <video class="reel-video" data-reel-key="${key}" src="${val.url}" preload="metadata" playsinline loop onclick="toggleReelPlay(this)"></video>
+            
             <div class="reel-bottom-info">
                 <h4>${val.title || 'فيديو ريلز جديد'}</h4>
             </div>
+            
             <div class="reel-side-actions">
                 <button class="reel-action-btn" onclick="handleReelLike('${key}')">
                     <i class="fas fa-heart"></i>
-                    <span>إعجاب</span>
+                    <span id="reel-likes-count-${key}">${val.likesCount || 0}</span>
                 </button>
                 <button class="reel-action-btn" onclick="openComments('${key}')">
                     <i class="fas fa-comment"></i>
-                    <span>تعليق</span>
+                    <span id="reel-comments-count-${key}">0</span>
                 </button>
                 <button class="reel-action-btn" onclick="shareReel('${key}')">
                     <i class="fas fa-share"></i>
                     <span>مشاركة</span>
                 </button>
             </div>`;
+
+        // إضافة دعم النقر المزدوج (Double Tap) في أي مكان بالريل لإعطاء لايك وإظهار القلب
+        let lastTapTime = 0;
+        card.addEventListener('touchend', function(e) {
+            if (e.target.closest('.reel-side-actions') || e.target.closest('.reel-sound-btn') || e.target.closest('.reel-close-btn') || e.target.closest('.admin-delete-reel-btn')) return;
+            const now = Date.now();
+            if (now - lastTapTime < 400) {
+                e.preventDefault();
+                const touch = e.changedTouches[0];
+                showFloatingHeartAt(card, touch.clientX, touch.clientY);
+                handleReelLike(key);
+                lastTapTime = 0;
+            } else {
+                lastTapTime = now;
+            }
+        });
+
+        card.addEventListener('dblclick', function(e) {
+            if (e.target.closest('.reel-side-actions') || e.target.closest('.reel-sound-btn') || e.target.closest('.reel-close-btn') || e.target.closest('.admin-delete-reel-btn')) return;
+            showFloatingHeartAt(card, e.clientX, e.clientY);
+            handleReelLike(key);
+        });
             
         container.appendChild(card);
         if (typeof reelsObserver !== 'undefined') reelsObserver.observe(card);
+
+        // جلب عدد التعليقات الحقيقي من فايرستور
+        try {
+            const q = query(collection(db, "comments"), where("imageId", "==", key));
+            getDocs(q).then(snap => {
+                const countEl = document.getElementById('reel-comments-count-' + key);
+                if (countEl) countEl.textContent = snap.size;
+            });
+        } catch(e) {}
     }
 
     window.submitUploadedReel = async function() {
@@ -2373,6 +2505,7 @@
             const reelData = {
                 title,
                 url: finalVideoUrl,
+                likesCount: 0,
                 createdAt: Date.now()
             };
 
@@ -2405,13 +2538,6 @@
             if (card) card.remove();
             showAdminToast('🗑️ تم حذف الريل');
         } catch(e) { alert("خطأ: " + e.message); }
-    };
-
-    window.deleteStaticReel = function(id) {
-        if (!window.isAdminMode || !confirm("حذف هذا الريل؟")) return;
-        const card = document.getElementById(id);
-        if (card) card.remove();
-        showAdminToast('🗑️ تم حذف الريل');
     };
 
     var _lastTap = {};
